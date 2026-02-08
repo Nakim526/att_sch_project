@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AttendanceStatus {
+  HADIR
+  IZIN
+  SAKIT
+  ALFA
+}
+
+model School {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  createdAt DateTime @default(now())
+
+  users    User[]
+  classes  Class[]
+  subjects Subject[]
+  students Student[]
+  Teacher  Teacher[]
+}
+
+model Role {
+  id   String @id @default(uuid())
+  name String @unique
+
+  users UserRole[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  schoolId  String
+  fullName  String
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  school          School              @relation(fields: [schoolId], references: [id])
+  roles           UserRole[]
+  teacherSubjects TeacherSubject[]
+  studentAttend   StudentAttendance[]
+  teacherAttend   TeacherAttendance[]
+  Teacher         Teacher?
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+model Class {
+  id       String @id @default(uuid())
+  schoolId String
+  name     String
+  grade    Int
+
+  school             School              @relation(fields: [schoolId], references: [id])
+  students           Student[]
+  teacherSubjects    TeacherSubject[]
+  studentAttendances StudentAttendance[]
+}
+
+model Subject {
+  id       String @id @default(uuid())
+  schoolId String
+  name     String
+
+  school             School              @relation(fields: [schoolId], references: [id])
+  teacherSubjects    TeacherSubject[]
+  studentAttendances StudentAttendance[]
+}
+
+model Student {
+  id       String  @id @default(uuid())
+  schoolId String
+  classId  String
+  nis      String
+  fullName String
+  isActive Boolean @default(true)
+
+  school School @relation(fields: [schoolId], references: [id])
+  class  Class  @relation(fields: [classId], references: [id])
+
+  attendances StudentAttendance[]
+
+  @@unique([schoolId, nis])
+}
+
+model Teacher {
+  id       String  @id @default(uuid())
+  nip      String? @unique
+  name     String
+  userId   String  @unique
+  schoolId String
+  isActive Boolean @default(true)
+
+  user   User   @relation(fields: [userId], references: [id])
+  school School @relation(fields: [schoolId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeacherSubject {
+  id        String @id @default(uuid())
+  teacherId String
+  subjectId String
+  classId   String
+
+  teacher User    @relation(fields: [teacherId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+
+  @@unique([teacherId, subjectId, classId])
+}
+
+model StudentAttendance {
+  id        String @id @default(uuid())
+  studentId String
+  teacherId String
+  subjectId String
+  classId   String
+
+  attendanceDate DateTime
+  status         AttendanceStatus
+  createdAt      DateTime         @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+  teacher User    @relation(fields: [teacherId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  class   Class   @relation(fields: [classId], references: [id])
+
+  @@unique([studentId, subjectId, attendanceDate])
+}
+
+model TeacherAttendance {
+  id             String   @id @default(uuid())
+  teacherId      String
+  attendanceDate DateTime
+  checkInTime    DateTime
+
+  latitude  Float
+  longitude Float
+  photoUrl  String
+
+  createdAt DateTime @default(now())
+
+  teacher User @relation(fields: [teacherId], references: [id])
+
+  @@unique([teacherId, attendanceDate])
+}
+
+model AllowedEmail {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
