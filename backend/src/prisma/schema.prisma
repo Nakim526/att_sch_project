@@ -110,25 +110,31 @@ model Teacher {
   user   User   @relation(fields: [userId], references: [id])
   school School @relation(fields: [schoolId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  TeacherSubject    TeacherSubject[]
+  StudentAttendance StudentAttendance[]
+  TeacherAttendance TeacherAttendance[]
 }
 
 model TeacherSubject {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
+  userId    String?
   teacherId String
   subjectId String
   classId   String
 
-  teacher User    @relation(fields: [teacherId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
   class   Class   @relation(fields: [classId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
 
   @@unique([teacherId, subjectId, classId])
 }
 
 model StudentAttendance {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
+  userId    String?
   studentId String
   teacherId String
   subjectId String
@@ -139,15 +145,17 @@ model StudentAttendance {
   createdAt      DateTime         @default(now())
 
   student Student @relation(fields: [studentId], references: [id])
-  teacher User    @relation(fields: [teacherId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
   subject Subject @relation(fields: [subjectId], references: [id])
   class   Class   @relation(fields: [classId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
 
   @@unique([studentId, subjectId, attendanceDate])
 }
 
 model TeacherAttendance {
   id             String   @id @default(uuid())
+  userId         String?
   teacherId      String
   attendanceDate DateTime
   checkInTime    DateTime
@@ -158,7 +166,8 @@ model TeacherAttendance {
 
   createdAt DateTime @default(now())
 
-  teacher User @relation(fields: [teacherId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
 
   @@unique([teacherId, attendanceDate])
 }
