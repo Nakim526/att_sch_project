@@ -23,6 +23,6 @@ export async function googleLogin(req: Request, res: Response) {
     }
 
     console.error(err);
-    res.status(500).json({ message: "Login failed" });
+    res.status(500).json({ message: err.message.split(":")[0] });
   }
 }
