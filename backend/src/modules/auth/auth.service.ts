@@ -30,11 +30,13 @@ export async function loginWithGoogle(idToken: string) {
 
   // 4️⃣ JWT payload
   const payload = {
-    userId: user.id,
+    id: user.id,
     email: user.email,
     roles: user.roles.map((r) => r.role.name),
     schoolId: user.schoolId,
   };
+
+  console.log("payload", payload);
 
   const token = signToken(payload);
 

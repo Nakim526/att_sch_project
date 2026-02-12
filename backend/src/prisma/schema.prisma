@@ -37,7 +37,7 @@ model Role {
 model User {
   id        String   @id @default(uuid())
   schoolId  String
-  fullName  String
+  name      String
   email     String   @unique
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -88,7 +88,7 @@ model Student {
   schoolId String
   classId  String
   nis      String
-  fullName String
+  name     String
   isActive Boolean @default(true)
 
   school School @relation(fields: [schoolId], references: [id])

@@ -1,13 +1,13 @@
 // src/modules/student/student.dto.ts
 
 export interface CreateStudentTypes {
-  fullName: string;
+  name: string;
   nis: string;
   classId: string;
 }
 
 export interface UpdateStudentTypes {
-  fullName?: string;
+  name?: string;
   nis?: string;
   classId?: string;
 }

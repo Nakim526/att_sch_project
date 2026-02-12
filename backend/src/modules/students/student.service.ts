@@ -7,7 +7,7 @@ class StudentService {
   async create(schoolId: string, data: CreateStudentTypes) {
     return prisma.student.create({
       data: {
-        fullName: data.fullName,
+        name: data.name,
         nis: data.nis,
         schoolId,
         classId: data.classId,
@@ -29,7 +29,7 @@ class StudentService {
   async findByClass(classId: string) {
     return prisma.student.findMany({
       where: { classId },
-      orderBy: { fullName: "asc" },
+      orderBy: { name: "asc" },
     });
   }
 

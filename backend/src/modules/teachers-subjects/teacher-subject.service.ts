@@ -23,7 +23,7 @@ class TeacherSubjectService {
       },
       include: {
         teacher: {
-          select: { id: true, fullName: true, email: true },
+          select: { id: true, name: true, user: { select: { email: true } } },
         },
         subject: {
           select: { id: true, name: true },

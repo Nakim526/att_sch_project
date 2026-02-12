@@ -97,13 +97,13 @@ class StudentAttendanceService {
         student: {
           select: {
             id: true,
-            fullName: true,
+            name: true,
             nis: true,
           },
         },
       },
       orderBy: {
-        student: { fullName: "asc" },
+        student: { name: "asc" },
       },
     });
   }

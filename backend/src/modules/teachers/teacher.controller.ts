@@ -3,12 +3,13 @@ import * as service from "./teacher.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
 export async function create(req: AuthRequest, res: Response) {
-  const { name, nip, userId } = req.body;
+  const { name, nip, userId, email } = req.body;
 
   const teacher = await service.createTeacher({
     name,
     nip,
     userId,
+    email,
     schoolId: req.user!.schoolId,
   });
 

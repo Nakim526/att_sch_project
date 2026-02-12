@@ -1,5 +1,8 @@
 import { Router } from "express";
 import authRoutes from "../modules/auth/auth.route";
+import roleRoutes from "../modules/roles/role.route";
+import userRoutes from "../modules/users/user.route";
+import schoolRoutes from "../modules/schools/school.route";
 import teacherRoutes from "../modules/teachers/teacher.route";
 import classRoutes from "../modules/classes/class.route";
 import subjectRoutes from "../modules/subjects/subject.route";
@@ -10,6 +13,9 @@ import studentAttendanceRoute from "../modules/attendances/students/student-atte
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/roles", roleRoutes);
+router.use("/users", userRoutes);
+router.use("/schools", schoolRoutes);
 router.use("/teachers", teacherRoutes);
 router.use("/classes", classRoutes);
 router.use("/subjects", subjectRoutes);

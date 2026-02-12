@@ -1,9 +1,19 @@
 import prisma from "../config/prisma";
 
 async function main() {
-  console.log("🌱 Seeding initial data...");
+  // console.log("🌱 Dropping existing data...");
 
-  const schoolId = "SDN 1 Tassese Manuju";
+  // await prisma.allowedEmail.deleteMany();
+  // await prisma.userRole.deleteMany();
+  // await prisma.user.deleteMany();
+  // await prisma.school.deleteMany();
+  // await prisma.role.deleteMany();
+  // await prisma.teacher.deleteMany();
+  // await prisma.class.deleteMany();
+  // await prisma.subject.deleteMany();
+  // await prisma.teacherSubject.deleteMany();
+
+  console.log("🌱 Seeding initial data...");
 
   const adminRole = await prisma.role.upsert({
     where: { name: "ADMIN" },
@@ -12,9 +22,15 @@ async function main() {
   });
 
   await prisma.role.upsert({
-    where: { name: "KEPALA_SEKOLAH" },
+    where: { name: "OPERATOR" },
     update: {},
-    create: { name: "KEPALA_SEKOLAH" },
+    create: { name: "OPERATOR" },
+  });
+
+  await prisma.role.upsert({
+    where: { name: "KEPSEK" },
+    update: {},
+    create: { name: "KEPSEK" },
   });
 
   const guruRole = await prisma.role.upsert({
@@ -39,13 +55,13 @@ async function main() {
   const adminUser = await prisma.user.upsert({
     where: { email: "knabilhakin@gmail.com" },
     update: {
-      fullName: "Admin Demo",
+      name: "Admin Demo",
       email: "knabilhakin@gmail.com",
       schoolId: school.id,
       isActive: true,
     },
     create: {
-      fullName: "Admin Demo",
+      name: "Admin Demo",
       email: "knabilhakin@gmail.com",
       schoolId: school.id,
       isActive: true,
@@ -69,13 +85,13 @@ async function main() {
   const guruUser = await prisma.user.upsert({
     where: { email: "nakim050206@gmail.com" },
     update: {
-      fullName: "Guru Demo",
+      name: "Guru Demo",
       email: "nakim050206@gmail.com",
       schoolId: school.id,
       isActive: true,
     },
     create: {
-      fullName: "Guru Demo",
+      name: "Guru Demo",
       email: "nakim050206@gmail.com",
       schoolId: school.id,
       isActive: true,
