@@ -2,7 +2,7 @@ import e from "express";
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { CreateTeacherTypes } from "./teacher.types";
-import { createUser } from "../users/user.service";
+import { createUser, createUserTransaction } from "../users/user.service";
 
 export async function createTeacher(data: CreateTeacherTypes) {
   // pastikan school ada
@@ -32,7 +32,7 @@ export async function createTeacher(data: CreateTeacherTypes) {
         throw new Error("Email harus diisi");
       }
 
-      user = await createUser(tx, {
+      user = await createUserTransaction(tx, {
         name: data.name,
         email: data.email!,
         roles: ["GURU"],

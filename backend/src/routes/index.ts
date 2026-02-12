@@ -9,6 +9,17 @@ import subjectRoutes from "../modules/subjects/subject.route";
 import teacherSubjectRoutes from "../modules/teachers-subjects/teacher-subject.route";
 import studentRoutes from "../modules/students/student.route";
 import studentAttendanceRoute from "../modules/attendances/students/student-attendance.route";
+import { minioClient, MINIO_BUCKET } from "../config/minio";
+
+async function ensureMinioBucket() {
+  const exists = await minioClient.bucketExists(MINIO_BUCKET);
+  if (!exists) {
+    await minioClient.makeBucket(MINIO_BUCKET, "us-east-1");
+    console.log(`Bucket "${MINIO_BUCKET}" dibuat`);
+  }
+}
+
+ensureMinioBucket();
 
 const router = Router();
 

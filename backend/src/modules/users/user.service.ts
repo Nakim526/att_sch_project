@@ -3,7 +3,13 @@ import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { CreateUserTypes } from "./user.types";
 
-export async function createUser(
+export async function createUser(data: CreateUserTypes) {
+  return prisma.$transaction(async (tx) => {
+    return createUserTransaction(tx, data);
+  });
+}
+
+export async function createUserTransaction(
   tx: Prisma.TransactionClient,
   data: CreateUserTypes,
 ) {

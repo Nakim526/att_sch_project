@@ -1,14 +1,13 @@
 // src/config/minio.ts
 
 import { Client } from 'minio';
-import { env } from './env';
 
 export const minioClient = new Client({
-  endPoint: env.MINIO_ENDPOINT!,
-  port: Number(env.MINIO_PORT),
-  useSSL: env.MINIO_USE_SSL === 'true',
-  accessKey: env.MINIO_ACCESS_KEY,
-  secretKey: env.MINIO_SECRET_KEY,
+  endPoint: process.env.MINIO_ENDPOINT!,
+  port: Number(process.env.MINIO_PORT),
+  useSSL: process.env.MINIO_USE_SSL === 'true',
+  accessKey: process.env.MINIO_ACCESS_KEY,
+  secretKey: process.env.MINIO_SECRET_KEY,
 });
 
-export const MINIO_BUCKET = env.MINIO_BUCKET!;
+export const MINIO_BUCKET = process.env.MINIO_BUCKET!;
