@@ -9,6 +9,7 @@ enum AppTextVariant {
   h2,
   h3,
   h4,
+  button,
   caption,
   overline,
   link,
@@ -64,16 +65,11 @@ class AppText extends StatelessWidget {
     if (overflow != null) return overflow;
 
     switch (variant) {
-      case AppTextVariant.body:
       case AppTextVariant.title:
       case AppTextVariant.subtitle:
-      case AppTextVariant.h1:
-      case AppTextVariant.h2:
-      case AppTextVariant.h3:
-      case AppTextVariant.h4:
         return TextOverflow.ellipsis;
       default:
-        return TextOverflow.visible;
+        return TextOverflow.clip;
     }
   }
 }

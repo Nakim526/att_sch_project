@@ -18,6 +18,7 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.h2: _TextStyleConfig(28, FontWeight.w900),
   AppTextVariant.h3: _TextStyleConfig(24, FontWeight.w800),
   AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
+  AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
   AppTextVariant.caption: _TextStyleConfig(AppSize.small, FontWeight.normal),
   AppTextVariant.overline: _TextStyleConfig(AppSize.xSmall, FontWeight.normal),
   AppTextVariant.link: _TextStyleConfig(AppSize.normal, FontWeight.w500),
@@ -40,23 +41,27 @@ class AppTextStyle {
       fontWeight: config.weight,
       color: color ?? _defaultColor(context, variant),
       decoration: underline ? TextDecoration.underline : null,
+      decorationColor: color ?? _defaultColor(context, variant),
     );
   }
 
-  static Color _defaultColor(
-    BuildContext context,
-    AppTextVariant variant,
-  ) {
+  static Color _defaultColor(BuildContext context, AppTextVariant variant) {
     switch (variant) {
       case AppTextVariant.caption:
       case AppTextVariant.overline:
-        return context.outline;
+        return context.onSurface.withValues(alpha: 0.6);
+
       case AppTextVariant.error:
-        return context.error;
+        return context.onError;
+
       case AppTextVariant.link:
         return context.primary;
+
+      case AppTextVariant.button:
+        return context.onPrimaryContainer;
+
       default:
-        return context.surface;
+        return context.onSurface;
     }
   }
 }

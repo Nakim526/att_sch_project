@@ -14,7 +14,7 @@ abstract class AppSpacing {
 
   static const EdgeInsets button = EdgeInsets.symmetric(
     horizontal: AppSize.large,
-    vertical: AppSize.medium,
+    vertical: AppSize.normal,
   );
 
   static EdgeInsets horizontal(double value) =>

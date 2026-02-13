@@ -2,18 +2,39 @@ import 'package:att_school/core/constant/app_color.dart';
 import 'package:flutter/material.dart';
 
 extension ThemeX on BuildContext {
-  Color get primary => Theme.of(this).colorScheme.primary;
+  /* ======================
+   * COLOR SCHEME SHORTCUT
+   * ====================== */
 
-  Color get secondary => Theme.of(this).colorScheme.secondary;
+  Color get primary => theme.colorScheme.primary;
+  Color get onPrimary => theme.colorScheme.onPrimary;
 
-  Color get tertiary => Theme.of(this).colorScheme.tertiary;
+  Color get secondary => theme.colorScheme.secondary;
+  Color get onSecondary => theme.colorScheme.onSecondary;
 
-  Color get primaryContainer => Theme.of(this).colorScheme.primaryContainer;
+  Color get tertiary => theme.colorScheme.tertiary;
+  Color get onTertiary => theme.colorScheme.onTertiary;
 
-  Color get secondaryContainer => Theme.of(this).colorScheme.secondaryContainer;
+  Color get primaryContainer => theme.colorScheme.primaryContainer;
+  Color get onPrimaryContainer => theme.colorScheme.onPrimaryContainer;
 
-  Color get tertiaryContainer => Theme.of(this).colorScheme.tertiaryContainer;
-  
+  Color get secondaryContainer => theme.colorScheme.secondaryContainer;
+  Color get onSecondaryContainer => theme.colorScheme.onSecondaryContainer;
+
+  Color get tertiaryContainer => theme.colorScheme.tertiaryContainer;
+  Color get onTertiaryContainer => theme.colorScheme.onTertiaryContainer;
+
+  Color get error => theme.colorScheme.error;
+  Color get onError => theme.colorScheme.onError;
+
+  Color get surface => theme.colorScheme.surface;
+  Color get onSurface => theme.colorScheme.onSurface;
+  Color get outline => theme.colorScheme.outline;
+
+  /* ======================
+   * SEMANTIC STATES
+   * ====================== */
+
   Color get success =>
       brightness == Brightness.light
           ? AppColor.lightSuccess
@@ -29,15 +50,20 @@ extension ThemeX on BuildContext {
           ? AppColor.lightInfo
           : AppColor.darkInfo;
 
-  Color get error => Theme.of(this).colorScheme.error;
+  Color get disabled => theme.disabledColor;
 
-  Color get surface => Theme.of(this).colorScheme.surface;
+  /* ======================
+   * INTERACTION STATES
+   * ====================== */
 
-  Color get outline => Theme.of(this).colorScheme.outline;
+  Color get hoverOverlay => onSurface.withValues(alpha: 0.12);
+  Color get pressedOverlay => onSurface.withValues(alpha: 0.24);
 
-  Color get disabled => Theme.of(this).disabledColor;
+  /* ======================
+   * THEME SHORTCUT
+   * ====================== */
 
-  Brightness get brightness => Theme.of(this).brightness;
-
-  TextTheme get text => Theme.of(this).textTheme;
+  ThemeData get theme => Theme.of(this);
+  TextTheme get text => theme.textTheme;
+  Brightness get brightness => theme.brightness;
 }
