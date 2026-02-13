@@ -1,3 +1,4 @@
+import 'package:att_school/features/auth/data/auth_result.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<bool> login() async {
+  Future<AuthResult> login() async {
     _isLoading = true;
     notifyListeners();
 
@@ -21,12 +22,12 @@ class AuthProvider extends ChangeNotifier {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('roles', result['roles'].toString());
 
-        return true;
+        return AuthResult(true);
       }
-      return false;
+      return AuthResult(false);
     } catch (e) {
-      print(e);
-      return false;
+      debugPrint("$e");
+      return AuthResult(false, errorMessage: e.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

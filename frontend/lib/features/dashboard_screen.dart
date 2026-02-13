@@ -1,4 +1,10 @@
+import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/constant/size/app_spacing.dart';
+import 'package:att_school/core/constant/size/screen/app_size_screen.dart';
 import 'package:att_school/features/admin/dashboard_admin.dart';
+import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_text.dart';
+import 'package:att_school/shared/widgets/elements/app_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +39,92 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: Stack(children: [if (_isAdmin) const DashboardAdmin()]),
+      body: Stack(
+        children: [
+          Container(
+            padding: AppSpacing.large,
+            width: double.infinity,
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              spacing: AppSize.large,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppTile(
+                      onTap: () {},
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: AppSizeScreen.iconCard(context),
+                        ),
+                        AppText(
+                          "Profil",
+                          variant: AppTextVariant.title,
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
+                    AppTile(
+                      onTap: () {},
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: AppSizeScreen.iconCard(context),
+                        ),
+                        AppText(
+                          "Siswa",
+                          variant: AppTextVariant.title,
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppTile(
+                      onTap: () {},
+                      maxWidth: AppSizeScreen.card(context),
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: AppSizeScreen.iconCard(context),
+                        ),
+                        AppText(
+                          "Absen Guru",
+                          variant: AppTextVariant.title,
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
+                    AppTile(
+                      onTap: () {},
+                      maxWidth: AppSizeScreen.card(context),
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: AppSizeScreen.iconCard(context),
+                        ),
+                        AppText(
+                          "Absen Siswa",
+                          variant: AppTextVariant.title,
+                          align: TextAlign.center,
+                          maxLines: 2,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (_isAdmin) const DashboardAdmin(),
+        ],
+      ),
     );
   }
 }

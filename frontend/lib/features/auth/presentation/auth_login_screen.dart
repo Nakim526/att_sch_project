@@ -1,7 +1,10 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/auth/provider/auth_provider.dart';
+import 'package:att_school/shared/styles/app_button_style.dart';
+import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_button.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,11 +35,19 @@ class AuthLoginScreen extends StatelessWidget {
                 ),
                 AppButton(
                   'Masuk dengan Google',
-                  variant: AppButtonVariant.secondary,
+                  variant: AppButtonVariant.primary,
                   onPressed: () async {
-                    final loggedIn = await provider.login();
-                    if (loggedIn && context.mounted) {
-                      Navigator.pushNamed(context, '/dashboard');
+                    final result = await provider.login();
+                    if (context.mounted) {
+                      if (result.success) {
+                        Navigator.pushNamed(context, '/dashboard');
+                        return;
+                      }
+                      await AppDialog.show(
+                        context,
+                        title: 'Error',
+                        message: result.errorMessage,
+                      );
                     }
                   },
                   prefixIcon: Image.asset('assets/icons/google.png', width: 24),

@@ -1,7 +1,21 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/theme/theme_extension.dart';
-import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:flutter/material.dart';
+
+enum AppTextVariant {
+  body,
+  title,
+  subtitle,
+  h1,
+  h2,
+  h3,
+  h4,
+  button,
+  caption,
+  overline,
+  link,
+  error,
+}
 
 class _TextStyleConfig {
   final double size;
@@ -11,7 +25,7 @@ class _TextStyleConfig {
 }
 
 const Map<AppTextVariant, _TextStyleConfig> _config = {
-  AppTextVariant.body: _TextStyleConfig(AppSize.normal, FontWeight.normal),
+  AppTextVariant.body: _TextStyleConfig(AppSize.base, FontWeight.normal),
   AppTextVariant.title: _TextStyleConfig(18, FontWeight.bold),
   AppTextVariant.subtitle: _TextStyleConfig(16, FontWeight.w600),
   AppTextVariant.h1: _TextStyleConfig(36, FontWeight.w900),
@@ -19,10 +33,10 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.h3: _TextStyleConfig(24, FontWeight.w800),
   AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
   AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
-  AppTextVariant.caption: _TextStyleConfig(AppSize.small, FontWeight.normal),
-  AppTextVariant.overline: _TextStyleConfig(AppSize.xSmall, FontWeight.normal),
-  AppTextVariant.link: _TextStyleConfig(AppSize.normal, FontWeight.w500),
-  AppTextVariant.error: _TextStyleConfig(AppSize.small, FontWeight.normal),
+  AppTextVariant.caption: _TextStyleConfig(AppSize.normal, FontWeight.normal),
+  AppTextVariant.overline: _TextStyleConfig(AppSize.small, FontWeight.normal),
+  AppTextVariant.link: _TextStyleConfig(AppSize.base, FontWeight.w500),
+  AppTextVariant.error: _TextStyleConfig(AppSize.base, FontWeight.normal),
 };
 
 class AppTextStyle {

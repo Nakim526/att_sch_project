@@ -1,21 +1,6 @@
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:flutter/material.dart';
 
-enum AppTextVariant {
-  body,
-  title,
-  subtitle,
-  h1,
-  h2,
-  h3,
-  h4,
-  button,
-  caption,
-  overline,
-  link,
-  error,
-}
-
 class AppText extends StatelessWidget {
   final String text;
   final AppTextVariant variant;
@@ -23,6 +8,7 @@ class AppText extends StatelessWidget {
   final TextAlign? align;
   final bool underline;
   final TextOverflow? overflow;
+  final int? maxLines;
 
   const AppText.body(
     this.text, {
@@ -31,6 +17,7 @@ class AppText extends StatelessWidget {
     this.align,
     this.underline = false,
     this.overflow,
+    this.maxLines,
   }) : variant = AppTextVariant.body;
 
   const AppText(
@@ -41,6 +28,7 @@ class AppText extends StatelessWidget {
     this.align,
     this.underline = false,
     this.overflow,
+    this.maxLines,
   });
 
   @override
@@ -54,6 +42,7 @@ class AppText extends StatelessWidget {
         color: color,
         underline: underline,
       ),
+      maxLines: maxLines,
       overflow: _overflow(variant, overflow: overflow),
     );
   }

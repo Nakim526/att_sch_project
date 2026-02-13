@@ -1,9 +1,8 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
+import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:flutter/material.dart';
-
-enum AppButtonVariant { primary, secondary, tertiary, link }
 
 class AppButton extends StatelessWidget {
   final String text;

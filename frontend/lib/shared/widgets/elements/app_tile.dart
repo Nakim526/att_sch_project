@@ -7,14 +7,16 @@ class AppTile extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double? borderCircular;
   final VoidCallback onTap;
-  final Widget child;
+  final List<Widget> children;
+  final double? maxWidth;
 
   const AppTile({
     super.key,
     this.padding,
     this.borderCircular,
     required this.onTap,
-    required this.child,
+    required this.children,
+    this.maxWidth,
   });
 
   @override
@@ -37,7 +39,20 @@ class AppTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderCircular ?? AppSize.small),
         onTap: onTap,
         child: Ink(
-          child: Padding(padding: padding ?? AppSpacing.medium, child: child),
+          child: Container(
+            padding: padding ?? AppSpacing.medium,
+            constraints: BoxConstraints(
+              minWidth: 0.0,
+              minHeight: 0.0,
+              maxWidth: maxWidth ?? double.infinity,
+              maxHeight: double.infinity,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: children,
+            ),
+          ),
         ),
       ),
     );

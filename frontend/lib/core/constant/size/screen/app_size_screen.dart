@@ -13,6 +13,10 @@ class AppSizeScreen {
   }
 
   static double card(BuildContext context) {
+    return width(context) / 2 - AppSize.large * 1.5;
+  }
+
+  static double iconCard(BuildContext context) {
     return width(context) / 2 - AppSize.large * 3;
   }
 }
