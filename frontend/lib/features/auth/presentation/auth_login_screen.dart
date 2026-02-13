@@ -25,7 +25,11 @@ class AuthLoginScreen extends StatelessWidget {
                   align: TextAlign.center,
                   variant: AppTextVariant.h1,
                 ),
-                Image.asset('assets/images/kemendikbud.png'),
+                Image.asset(
+                  'assets/images/kemendikbud.png',
+                  height: 200,
+                  cacheHeight: 200,
+                ),
                 AppButton(
                   'Masuk dengan Google',
                   variant: AppButtonVariant.secondary,

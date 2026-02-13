@@ -1,5 +1,6 @@
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService service;
@@ -14,8 +15,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await service.login();
-      return true;
+      final result = await service.login();
+
+      if (result != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('roles', result['roles'].toString());
+
+        return true;
+      }
+      return false;
     } catch (e) {
       print(e);
       return false;
@@ -24,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   void logout() {
     service.logout();
     notifyListeners();
