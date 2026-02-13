@@ -1,4 +1,5 @@
 import 'package:att_school/app/app.dart';
+import 'package:att_school/core/constant/theme/theme_controller.dart';
 import 'package:att_school/core/network/dio_client.dart';
 import 'package:att_school/core/network/dio_interceptors.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
@@ -31,6 +32,10 @@ void main() {
           create: (context) {
             return AuthProvider(context.read<AuthService>());
           },
+        ),
+
+        ChangeNotifierProvider(
+          create: (_) => ThemeController(),
         ),
       ],
       child: const MainApp(),

@@ -1,0 +1,62 @@
+import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/shared/widgets/elements/app_text.dart';
+import 'package:flutter/material.dart';
+
+class _TextStyleConfig {
+  final double size;
+  final FontWeight weight;
+
+  const _TextStyleConfig(this.size, this.weight);
+}
+
+const Map<AppTextVariant, _TextStyleConfig> _config = {
+  AppTextVariant.body: _TextStyleConfig(AppSize.normal, FontWeight.normal),
+  AppTextVariant.title: _TextStyleConfig(18, FontWeight.bold),
+  AppTextVariant.subtitle: _TextStyleConfig(16, FontWeight.w600),
+  AppTextVariant.h1: _TextStyleConfig(36, FontWeight.w900),
+  AppTextVariant.h2: _TextStyleConfig(28, FontWeight.w900),
+  AppTextVariant.h3: _TextStyleConfig(24, FontWeight.w800),
+  AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
+  AppTextVariant.caption: _TextStyleConfig(AppSize.small, FontWeight.normal),
+  AppTextVariant.overline: _TextStyleConfig(AppSize.xSmall, FontWeight.normal),
+  AppTextVariant.link: _TextStyleConfig(AppSize.normal, FontWeight.w500),
+  AppTextVariant.error: _TextStyleConfig(AppSize.small, FontWeight.normal),
+};
+
+class AppTextStyle {
+  AppTextStyle._();
+
+  static TextStyle of(
+    BuildContext context,
+    AppTextVariant variant, {
+    Color? color,
+    bool underline = false,
+  }) {
+    final config = _config[variant]!;
+
+    return TextStyle(
+      fontSize: config.size,
+      fontWeight: config.weight,
+      color: color ?? _defaultColor(context, variant),
+      decoration: underline ? TextDecoration.underline : null,
+    );
+  }
+
+  static Color _defaultColor(
+    BuildContext context,
+    AppTextVariant variant,
+  ) {
+    switch (variant) {
+      case AppTextVariant.caption:
+      case AppTextVariant.overline:
+        return context.outline;
+      case AppTextVariant.error:
+        return context.error;
+      case AppTextVariant.link:
+        return context.primary;
+      default:
+        return context.surface;
+    }
+  }
+}

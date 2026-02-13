@@ -11,7 +11,7 @@ class AppString {
 
   static const String appName = 'Att School';
 
-  static const String baseUrl = 'http://10.88.241.135:3000/api';
+  static const String baseUrl = 'http://192.168.1.15:3000/api';
 
   static const String loginUrl = '/auth/google';
 }
