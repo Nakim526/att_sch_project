@@ -95,7 +95,13 @@ docker-compose.override.yml
 *.sqlite
 *.db
 *.dump
+
+# Ignore general SQL dumps
 *.sql
+
+# BUT keep Prisma migration SQL
+!prisma/migrations/**/*.sql
+!src/prisma/migrations/**/*.sql
 
 ############################
 # LOGS
