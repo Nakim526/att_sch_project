@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy file dependency dulu (biar cache efisien)
 COPY package*.json ./
 
-RUN npm install --production
+RUN npm install
 
 # Copy semua source code
 COPY . .
