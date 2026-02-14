@@ -5,11 +5,7 @@ import path from "path";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  const filePath = path.join(__dirname, "../../public/index.html");
-  console.log("FILE PATH:", filePath);
-  res.sendFile(filePath);
-});
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
 app.use("/api", routes);
