@@ -36,5 +36,14 @@ export async function createAccess(input: CreateAccessTypes) {
 }
 
 export async function getAllAccess() {
-  return prisma.allowedEmail.findMany();
+  return prisma.allowedEmail.findMany(
+    {
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        
+      },
+    }
+  );
 }

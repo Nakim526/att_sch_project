@@ -48,15 +48,18 @@ model User {
   studentAttend   StudentAttendance[]
   teacherAttend   TeacherAttendance[]
   Teacher         Teacher?
+  AllowedEmail    AllowedEmail[]
 }
 
 model UserRole {
-  id     String @id @default(uuid())
-  userId String
-  roleId String
+  id             String  @id @default(uuid())
+  userId         String
+  roleId         String
+  allowedEmailId String?
 
-  user User @relation(fields: [userId], references: [id])
-  role Role @relation(fields: [roleId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  role         Role          @relation(fields: [roleId], references: [id])
+  AllowedEmail AllowedEmail? @relation(fields: [allowedEmailId], references: [id])
 
   @@unique([userId, roleId])
 }
@@ -175,6 +178,10 @@ model TeacherAttendance {
 model AllowedEmail {
   id        String   @id @default(uuid())
   email     String   @unique
+  userId    String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+
+  user  User       @relation(fields: [userId], references: [id])
+  roles UserRole[]
 }
