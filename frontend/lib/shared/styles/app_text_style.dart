@@ -1,5 +1,5 @@
 import 'package:att_school/core/constant/size/app_size.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:flutter/material.dart';
 
 enum AppTextVariant {
@@ -33,7 +33,7 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.h2: _TextStyleConfig(28, FontWeight.w900),
   AppTextVariant.h3: _TextStyleConfig(24, FontWeight.w800),
   AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
-  AppTextVariant.input: _TextStyleConfig(AppSize.base, FontWeight.normal),
+  AppTextVariant.input: _TextStyleConfig(AppSize.normal, FontWeight.normal),
   AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
   AppTextVariant.caption: _TextStyleConfig(AppSize.normal, FontWeight.normal),
   AppTextVariant.overline: _TextStyleConfig(AppSize.small, FontWeight.normal),

@@ -1,4 +1,4 @@
-import 'package:att_school/core/utils/helper/backend_helper.dart';
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/class/delete/data/delete_class_service.dart';
 import 'package:flutter/material.dart';
 
@@ -13,14 +13,14 @@ class DeleteClassProvider extends ChangeNotifier {
 
   String? get error => _error;
 
-  Future<BackendHelper> deleteClass(String id) async {
+  Future<BackendMessageHelper> deleteClass(String id) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       final response = await service.deleteClass(id);
 
-      return BackendHelper(
+      return BackendMessageHelper(
         response.statusCode == 200,
         message: response.statusMessage,
       );
@@ -28,7 +28,7 @@ class DeleteClassProvider extends ChangeNotifier {
       _error = e.toString();
       debugPrint(_error);
 
-      return BackendHelper(false, message: _error);
+      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();

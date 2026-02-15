@@ -8,6 +8,7 @@ import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
 import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
+import 'package:att_school/shared/widgets/layout/app_search.dart';
 import 'package:att_school/shared/widgets/layout/app_table_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,61 +32,73 @@ class ReadClassListScreen extends StatelessWidget {
           }
         });
 
-        return AppScreen(
-          appBar: AppBar(title: const Text('Read Class List')),
+        return Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSize.medium,
+            AppScreen(
+              appBar: AppBar(title: const Text('Read Class List')),
               children: [
-                AppText("Class List", variant: AppTextVariant.h2),
-                AppButton(
-                  "Create Class",
-                  onPressed: () async {
-                    await Navigator.pushNamed(context, '/classes/create');
-                    list.reload();
-                  },
-                  variant: AppButtonVariant.primary,
-                ),
-                AppTableList(
-                  columns: {'Grade': 'grade', 'Name': 'name'},
-                  data: list.classes,
-                  cellLink: ['name'],
-                  onDetail: (id) async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ReadClassDetailPage(id),
-                      ),
-                    );
-
-                    list.reload();
-                  },
-                  onRemove: (detail) {
-                    AppDialog.confirm(
-                      context,
-                      title: 'Delete Data',
-                      message: "Are you sure to delete ${detail['name']}?",
-                      onConfirm: () async {
-                        final result = await provider.deleteClass(detail['id']);
-
-                        if (result.success) {
-                          return list.reload();
-                        }
-
-                        if (context.mounted) {
-                          AppDialog.show(
-                            context,
-                            title: "Error",
-                            message: result.message,
-                          );
-                        }
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSize.medium,
+                  children: [
+                    AppText("Class List", variant: AppTextVariant.h2),
+                    AppButton(
+                      "Create Class",
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/classes/create');
+                        list.reload();
                       },
-                    );
-                  },
+                      variant: AppButtonVariant.primary,
+                    ),
+                    AppSearch(onChanged: list.search),
+                    AppTableList(
+                      columns: {'Grade': 'grade', 'Name': 'name'},
+                      data: list.classes,
+                      cellLink: ['name'],
+                      onDetail: (id) async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ReadClassDetailPage(id),
+                          ),
+                        );
+
+                        list.reload();
+                      },
+                      onRemove: (detail) {
+                        AppDialog.confirm(
+                          context,
+                          title: 'Delete Data',
+                          message: "Are you sure to delete ${detail['name']}?",
+                          onConfirm: () async {
+                            final result = await provider.deleteClass(
+                              detail['id'],
+                            );
+
+                            if (result.success) {
+                              return list.reload();
+                            }
+
+                            if (context.mounted) {
+                              AppDialog.show(
+                                context,
+                                title: "Error",
+                                message: result.message,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
+            if (list.isLoading)
+              Container(
+                color: Colors.black45,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
           ],
         );
       },

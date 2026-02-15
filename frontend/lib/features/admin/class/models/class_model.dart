@@ -27,10 +27,8 @@ class ClassModel {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'id': id,
       'name': name,
       'grade': grade,
-      'schoolId': schoolId,
     };
   }
 

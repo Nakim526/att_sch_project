@@ -1,5 +1,7 @@
 import 'package:att_school/features/admin/class/create/presentation/create_class_screen.dart';
 import 'package:att_school/features/admin/class/read/list/presentation/read_class_list_screen.dart';
+import 'package:att_school/features/admin/has-access/create/presentation/create_has_access_screen.dart';
+import 'package:att_school/features/admin/has-access/read/list/presentation/read_has_access_list_screen.dart';
 import 'package:att_school/features/auth/presentation/auth_login_screen.dart';
 import 'package:att_school/features/dashboard_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ class AppRoutes {
       '/dashboard': (context) => const DashboardScreen(),
       '/classes': (context) => const ReadClassListScreen(),
       '/classes/create': (context) => const CreateClassScreen(),
+      '/has-access': (context) => const ReadHasAccessListScreen(),
+      '/has-access/create': (context) => const CreateHasAccessScreen(),
     };
   }
 }

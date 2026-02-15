@@ -1,6 +1,6 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:flutter/material.dart';
 

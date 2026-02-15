@@ -19,5 +19,7 @@ class AppString {
 
   static const String schoolUrl = '$baseUrl/schools';
 
+  static const String hasAccessUrl = '$baseUrl/has-access';
+
   static const String classUrl = '$baseUrl/classes';
 }

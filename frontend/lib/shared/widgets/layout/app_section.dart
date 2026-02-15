@@ -1,6 +1,6 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:flutter/material.dart';
 
 class AppSection extends StatelessWidget {
@@ -22,6 +22,7 @@ class AppSection extends StatelessWidget {
     final isDark = context.brightness == Brightness.dark;
 
     return Card(
+      margin: AppSpacing.none,
       color: context.sectionContainer,
       elevation: AppSize.small,
       clipBehavior: Clip.antiAlias,

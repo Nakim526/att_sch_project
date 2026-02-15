@@ -1,3 +1,4 @@
+import 'package:att_school/core/constant/item/app_items.dart';
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/class/class_form_screen.dart';
 import 'package:att_school/features/admin/class/models/class_model.dart';
@@ -23,7 +24,7 @@ class UpdateClassScreen extends StatefulWidget {
 class _UpdateClassScreenState extends State<UpdateClassScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _grades = [null, 1, 2, 3, 4, 5, 6];
+  final _grades = AppItems.grades;
   int? _selectedGrade;
   bool _errorName = false;
   bool _errorGrade = false;

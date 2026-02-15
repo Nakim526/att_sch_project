@@ -65,7 +65,7 @@ class AppTextInput extends StatelessWidget {
           textAlignVertical:
               alignLabelWithHint ? TextAlignVertical.center : null,
         ),
-        if (errorText != null && isError!)
+        if (errorText != null && isError != null && isError!)
           AppText(errorText!, variant: AppTextVariant.error),
       ],
     );

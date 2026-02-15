@@ -1,3 +1,4 @@
+import 'package:att_school/core/constant/item/app_items.dart';
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/class/class_form_screen.dart';
 import 'package:att_school/features/admin/class/create/provider/create_class_provider.dart';
@@ -8,6 +9,7 @@ import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
 import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
+import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +24,7 @@ class CreateClassScreen extends StatefulWidget {
 class _CreateClassScreenState extends State<CreateClassScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _grades = [null, 1, 2, 3, 4, 5, 6];
+  final _grades = AppItems.grades;
   int? _selectedGrade;
   bool _errorName = false;
   bool _errorGrade = false;
@@ -57,59 +59,64 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
   Widget build(BuildContext context) {
     final provider = Provider.of<CreateClassProvider>(context);
 
-    return AppScreen(
-      appBar: AppBar(title: const Text('Create Class')),
+    return Stack(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSize.medium,
+        AppScreen(
+          appBar: AppBar(title: const Text('Create Class')),
           children: [
-            AppText("Create Class", variant: AppTextVariant.h2),
-            AppButton(
-              "Save",
-              onPressed: () async {
-                if (!_validate()) return;
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: AppSize.medium,
+              children: [
+                AppText("Create Class", variant: AppTextVariant.h2),
+                AppButton(
+                  "Save",
+                  onPressed: () async {
+                    if (!_validate()) return;
 
-                final result = await provider.createClass(
-                  ClassModel(
-                    name: _nameController.text,
-                    grade: _selectedGrade!,
-                  ),
-                );
-
-                if (context.mounted) {
-                  if (result.success) {
-                    final id = result.message['id'];
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReadClassDetailPage(id),
+                    final result = await provider.createClass(
+                      ClassModel(
+                        name: _nameController.text,
+                        grade: _selectedGrade!,
                       ),
                     );
-                    return;
-                  }
 
-                  AppDialog.show(
-                    context,
-                    title: 'Error',
-                    message: result.message,
-                  );
-                }
-              },
-              variant: AppButtonVariant.primary,
-            ),
-            ClassFormScreen(
-              formKey: _formKey,
-              nameController: _nameController,
-              errorName: _errorName,
-              errorGrade: _errorGrade,
-              grades: _grades,
-              selectedGrade: _selectedGrade,
-              onChangedName: _onChangedName,
-              onChangedGrade: (value) => _onChangedGrade(value),
+                    if (context.mounted) {
+                      if (result.success) {
+                        final id = result.message['id'];
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReadClassDetailPage(id),
+                          ),
+                        );
+                        return;
+                      }
+
+                      AppDialog.show(
+                        context,
+                        title: 'Error',
+                        message: result.message,
+                      );
+                    }
+                  },
+                  variant: AppButtonVariant.primary,
+                ),
+                ClassFormScreen(
+                  formKey: _formKey,
+                  nameController: _nameController,
+                  errorName: _errorName,
+                  errorGrade: _errorGrade,
+                  grades: _grades,
+                  selectedGrade: _selectedGrade,
+                  onChangedName: _onChangedName,
+                  onChangedGrade: (value) => _onChangedGrade(value),
+                ),
+              ],
             ),
           ],
         ),
+        if (provider.isLoading) AppLoading(),
       ],
     );
   }

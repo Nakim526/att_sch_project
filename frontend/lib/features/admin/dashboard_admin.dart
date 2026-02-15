@@ -28,7 +28,9 @@ class DashboardAdmin extends StatelessWidget {
               ],
             ),
             AppTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/has-access');
+              },
               maxWidth: AppSizeScreen.card(context),
               children: [
                 Icon(Icons.security, size: AppSizeScreen.iconCard(context)),

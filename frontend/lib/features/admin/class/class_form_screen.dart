@@ -1,4 +1,4 @@
-import 'package:att_school/shared/widgets/elements/input/app_dropdown_input.dart';
+import 'package:att_school/shared/widgets/elements/input/app_select_one_input.dart';
 import 'package:att_school/shared/widgets/elements/input/app_text_input.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
 import 'package:flutter/material.dart';
@@ -31,12 +31,12 @@ class ClassFormScreen extends StatelessWidget {
       key: formKey,
       child: AppSection(
         children: [
-          AppDropdownInput(
+          AppSelectOneInput(
             items: grades,
             labelText: 'Grade',
             errorText: 'Grade is required',
             isError: errorGrade,
-            value: selectedGrade,
+            initialValue: selectedGrade,
             onChanged: onChangedGrade,
           ),
           AppTextInput(

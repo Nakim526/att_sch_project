@@ -1,4 +1,4 @@
-import 'package:att_school/core/utils/helper/backend_helper.dart';
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/class/models/class_model.dart';
 import 'package:att_school/features/admin/class/update/data/update_class_service.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class UpdateClassProvider extends ChangeNotifier {
 
   String? get error => _error;
 
-  Future<BackendHelper> updateClass(ClassModel? payload) async {
+  Future<BackendMessageHelper> updateClass(ClassModel? payload) async {
     _isLoading = true;
     notifyListeners();
 
@@ -23,13 +23,13 @@ class UpdateClassProvider extends ChangeNotifier {
         payload!.id!,
         payload: payload.toJson(),
       );
-      
+
       final data = response.data['data'];
 
-      return BackendHelper(true, message: data['id']);
+      return BackendMessageHelper(true, message: data['id']);
     } catch (e) {
       debugPrint(e.toString());
-      return BackendHelper(false, message: e.toString());
+      return BackendMessageHelper(false, message: e.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -5,6 +5,7 @@ import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class ReadClassDetailScreen extends StatelessWidget {
                         },
                       ),
                     );
+
                     provider.reload();
                   },
                   variant: AppButtonVariant.primary,
@@ -77,7 +79,7 @@ class ReadClassDetailScreen extends StatelessWidget {
                           Expanded(
                             flex: 3,
                             child: AppText(
-                              "${provider.class_!.school!} aadaaaaaaaaaaaa",
+                              provider.class_!.school!,
                               variant: AppTextVariant.body,
                             ),
                           ),
@@ -87,11 +89,7 @@ class ReadClassDetailScreen extends StatelessWidget {
                   ),
               ],
             ),
-            if (provider.isLoading || provider.class_ == null)
-              Container(
-                color: Colors.black12,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
+            if (provider.isLoading || provider.class_ == null) AppLoading(),
           ],
         );
       },

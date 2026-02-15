@@ -1,15 +1,15 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:att_school/shared/styles/app_input_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 
-class AppDropdownInput extends StatelessWidget {
-  final List<dynamic> items;
-  final int? value;
+class AppSelectOneInput extends StatelessWidget {
+  final List<dynamic>? items;
+  final dynamic initialValue;
   final String? labelText;
   final String? errorText;
   final bool? isError;
@@ -17,16 +17,13 @@ class AppDropdownInput extends StatelessWidget {
   final InputDecoration? decoration;
   final BoxConstraints? constraints;
   final bool showSearchBox;
-  final MenuAlign? align;
   final BorderRadius? borderRadius;
-  final InputBorder? enabledBorder;
-  final InputBorder? focusedBorder;
   final Function(dynamic)? onChanged;
 
-  const AppDropdownInput({
+  const AppSelectOneInput({
     super.key,
     required this.items,
-    this.value,
+    this.initialValue,
     this.labelText,
     this.errorText,
     this.isError,
@@ -34,10 +31,7 @@ class AppDropdownInput extends StatelessWidget {
     this.decoration,
     this.constraints,
     this.showSearchBox = true,
-    this.align,
     this.borderRadius,
-    this.enabledBorder,
-    this.focusedBorder,
     this.onChanged,
   });
 
@@ -50,28 +44,26 @@ class AppDropdownInput extends StatelessWidget {
         if (labelText != null)
           AppText(labelText!, variant: AppTextVariant.caption),
         DropdownSearch<dynamic>(
-          items: (f, cs) => items,
-          selectedItem: value,
-
+          items: (f, cs) => items ?? [null],
+          selectedItem: initialValue,
           compareFn: (item1, item2) => item1 == item2,
 
           decoratorProps: DropDownDecoratorProps(
-            decoration:
-                decoration ??
-                AppInputStyle.dropdown(
-                  context,
-                  isError: isError ?? false,
-                  constraints: constraints,
-                  borderRadius: borderRadius,
-                ),
+            decoration: AppInputStyle.dropdown(
+              context,
+              isError: isError ?? false,
+              constraints: constraints,
+              borderRadius: borderRadius,
+            ),
             baseStyle: AppTextStyle.of(context, AppTextVariant.body),
           ),
-          suffixProps: suffixProps ?? DropdownSuffixProps(),
+
           popupProps: PopupProps.menu(
             menuProps: MenuProps(
               color: context.onError,
               backgroundColor: context.sectionContainer,
             ),
+
             emptyBuilder: (context, searchEntry) {
               return Padding(
                 padding: AppSpacing.button,
@@ -81,12 +73,14 @@ class AppDropdownInput extends StatelessWidget {
                 ),
               );
             },
+
             searchFieldProps: TextFieldProps(
               padding: AppSpacing.none,
               cursorColor: context.onPrimary,
               decoration: AppInputStyle.text(context, hintText: 'Search...'),
               style: AppTextStyle.of(context, AppTextVariant.body),
             ),
+
             itemBuilder: (context, item, isDisabled, isSelected) {
               return Padding(
                 padding: AppSpacing.button,
@@ -96,6 +90,7 @@ class AppDropdownInput extends StatelessWidget {
                 ),
               );
             },
+
             searchDelay: Duration(seconds: 1),
             showSearchBox: showSearchBox,
             fit: FlexFit.loose,

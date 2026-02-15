@@ -11,6 +11,15 @@ import 'package:att_school/features/admin/class/read/detail/provider/read_class_
 import 'package:att_school/features/admin/class/read/list/provider/read_class_list_provider.dart';
 import 'package:att_school/features/admin/class/update/data/update_class_service.dart';
 import 'package:att_school/features/admin/class/update/provider/update_class_provider.dart';
+import 'package:att_school/features/admin/has-access/create/data/create_has_access_service.dart';
+import 'package:att_school/features/admin/has-access/create/provider/create_has_acces_provider.dart';
+import 'package:att_school/features/admin/has-access/delete/data/delete_has_access_service.dart';
+import 'package:att_school/features/admin/has-access/delete/provider/delete_has_access_provider.dart';
+import 'package:att_school/features/admin/has-access/read/data/read_has_access_service.dart';
+import 'package:att_school/features/admin/has-access/read/detail/provider/read_has_access_detail_provider.dart';
+import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
+import 'package:att_school/features/admin/has-access/update/data/update_has_access_service.dart';
+import 'package:att_school/features/admin/has-access/update/provider/update_has_access_provider.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:att_school/features/auth/provider/auth_provider.dart';
 import 'package:att_school/features/school/data/school_service.dart';
@@ -56,6 +65,20 @@ void main() {
           create: (context) => DeleteClassService(context.read<Dio>()),
         ),
 
+        /// 🔸 Has Access
+        Provider<ReadHasAccessService>(
+          create: (context) => ReadHasAccessService(context.read<Dio>()),
+        ),
+        Provider<CreateHasAccessService>(
+          create: (context) => CreateHasAccessService(context.read<Dio>()),
+        ),
+        Provider<UpdateHasAccessService>(
+          create: (context) => UpdateHasAccessService(context.read<Dio>()),
+        ),
+        Provider<DeleteHasAccessService>(
+          create: (context) => DeleteHasAccessService(context.read<Dio>()),
+        ),
+
         /// 🔹 Providers (State)
         /// 🔸 Auth
         ChangeNotifierProvider<AuthProvider>(
@@ -63,7 +86,7 @@ void main() {
             return AuthProvider(context.read<AuthService>());
           },
         ),
-        
+
         /// 🔸 School
         ChangeNotifierProvider<SchoolProvider>(
           create: (context) {
@@ -98,6 +121,44 @@ void main() {
         ChangeNotifierProvider<DeleteClassProvider>(
           create: (context) {
             return DeleteClassProvider(context.read<DeleteClassService>());
+          },
+        ),
+
+        /// 🔸 Has Access
+        ChangeNotifierProvider<ReadHasAccessListProvider>(
+          create: (context) {
+            return ReadHasAccessListProvider(
+              context.read<ReadHasAccessService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<CreateHasAccessProvider>(
+          create: (context) {
+            return CreateHasAccessProvider(
+              context.read<CreateHasAccessService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<ReadHasAccessDetailProvider>(
+          create: (context) {
+            return ReadHasAccessDetailProvider(
+              context.read<ReadHasAccessService>(),
+              context.read<SchoolProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateHasAccessProvider>(
+          create: (context) {
+            return UpdateHasAccessProvider(
+              context.read<UpdateHasAccessService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<DeleteHasAccessProvider>(
+          create: (context) {
+            return DeleteHasAccessProvider(
+              context.read<DeleteHasAccessService>(),
+            );
           },
         ),
 

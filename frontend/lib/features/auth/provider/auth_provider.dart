@@ -1,4 +1,4 @@
-import 'package:att_school/core/utils/helper/backend_helper.dart';
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<BackendHelper> login() async {
+  Future<BackendMessageHelper> login() async {
     _isLoading = true;
     notifyListeners();
 
@@ -26,15 +26,15 @@ class AuthProvider extends ChangeNotifier {
           response.data['user']['roles'].toString(),
         );
 
-        return BackendHelper(true);
+        return BackendMessageHelper(true);
       }
 
-      return BackendHelper(false);
+      return BackendMessageHelper(false);
     } catch (e) {
       _error = e.toString();
       debugPrint(e.toString());
 
-      return BackendHelper(false, message: _error);
+      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,0 +1,46 @@
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
+import 'package:att_school/features/admin/has-access/create/data/create_has_access_service.dart';
+import 'package:att_school/features/admin/has-access/models/has_access_model.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+
+class CreateHasAccessProvider extends ChangeNotifier {
+  final CreateHasAccessService service;
+  bool _isLoading = false;
+  String? _error;
+
+  CreateHasAccessProvider(this.service);
+
+  bool get isLoading => _isLoading;
+
+  Future<BackendMessageHelper> createHasAccess(HasAccessModel payload) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      debugPrint(payload.toJson().toString());
+      final response = await service.createHasAccess(payload.toJson());
+
+      return BackendMessageHelper(
+        true,
+        message: response.data['message'],
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == null) {
+        throw e.message.toString();
+      }
+      _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
+      debugPrint(_error);
+
+      return BackendMessageHelper(false, message: _error);
+    } catch (e) {
+      _error = e.toString();
+      debugPrint(_error);
+
+      return BackendMessageHelper(false, message: _error);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}

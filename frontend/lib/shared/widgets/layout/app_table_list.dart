@@ -1,6 +1,6 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 // import 'package:att_school/core/utils/formatter/currency_formatter.dart';
 // import 'package:att_school/core/utils/formatter/date_time_formatter.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 
 class AppTableList extends StatefulWidget {
   final Map<String, String> columns;
+  final Map<String, String? Function(dynamic value)>? customData;
   final List<Map<String, dynamic>> data;
   final List<String> cellLink;
   final Function(String) onDetail;
@@ -25,6 +26,7 @@ class AppTableList extends StatefulWidget {
   const AppTableList({
     super.key,
     required this.columns,
+    this.customData,
     required this.data,
     required this.cellLink,
     required this.onDetail,
@@ -60,6 +62,14 @@ class _AppTableListState extends State<AppTableList> {
     return DataRow(
       cells: [
         ...widget.columns.values.map((key) {
+          dynamic value = detail[key];
+
+          if (widget.customData != null) {
+            if (widget.customData!.containsKey(key)) {
+              value = widget.customData![key]!(value);
+            }
+          }
+
           if (widget.cellLink.contains(key)) {
             return DataCell(
               ConstrainedBox(
@@ -74,7 +84,7 @@ class _AppTableListState extends State<AppTableList> {
                   children: [
                     Expanded(
                       child: AppButton(
-                        detail[key],
+                        value ?? '',
                         variant: AppButtonVariant.link,
                         onPressed: () => widget.onDetail(detail['id']),
                       ),
@@ -92,18 +102,18 @@ class _AppTableListState extends State<AppTableList> {
               ),
               child: Row(
                 children: [
-                  if (detail[key] is String)
+                  if (value is String)
                     Expanded(
                       child: AppText(
-                        detail[key] ?? '',
+                        value,
                         variant: AppTextVariant.body,
                         textAlign: key == 'grade' ? TextAlign.center : null,
                       ),
                     )
-                  else if (detail[key] is int)
+                  else
                     Expanded(
                       child: AppText(
-                        detail[key].toString(),
+                        value.toString(),
                         variant: AppTextVariant.body,
                         textAlign: key == 'grade' ? TextAlign.center : null,
                       ),

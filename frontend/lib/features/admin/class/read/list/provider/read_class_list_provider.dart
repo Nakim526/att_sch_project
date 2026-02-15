@@ -28,7 +28,7 @@ class ReadClassListProvider extends ChangeNotifier {
       _classes = (response.data['data'] as List).cast<Map<String, dynamic>>();
     } on DioException catch (e) {
       _error = "${e.response?.statusCode} - ${e.response?.statusMessage}";
-      
+
       if (e.response?.statusCode == null) {
         debugPrint(e.message);
         _error = "${e.message}";
@@ -45,4 +45,19 @@ class ReadClassListProvider extends ChangeNotifier {
   void reload() => _fetch();
 
   void clearError() => _error = '';
+
+  Future<void> search(String query) async {
+    await _fetch();
+    _isLoading = true;
+    notifyListeners();
+
+    _classes =
+        _classes.where((e) {
+          return e['name'].toString().toLowerCase().contains(
+            query.toLowerCase(),
+          );
+        }).toList();
+    _isLoading = false;
+    notifyListeners();
+  }
 }

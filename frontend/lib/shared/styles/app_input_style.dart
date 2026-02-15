@@ -1,6 +1,7 @@
 import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/constant/size/app_spacing.dart';
 import 'package:att_school/core/constant/size/border-radius/app_border_radius.dart';
-import 'package:att_school/core/constant/theme/theme_extension.dart';
+import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:flutter/material.dart';
 
 class AppInputStyle {
@@ -43,6 +44,7 @@ class AppInputStyle {
     BuildContext context, {
     String? hintText,
     BorderRadius? borderRadius,
+    EdgeInsets? padding,
     bool isError = false,
     BoxConstraints? constraints,
   }) {
@@ -53,6 +55,7 @@ class AppInputStyle {
       fillColor: context.surface,
       isDense: true,
       hintText: hintText,
+      contentPadding: padding ?? AppSpacing.normal,
       constraints: constraints ?? _singleLineConstraints,
       border: _border(radius),
       enabledBorder: _border(
@@ -70,10 +73,7 @@ class AppInputStyle {
    * PRIVATE HELPERS
    * ======================= */
 
-  static OutlineInputBorder _border(
-    BorderRadius radius, {
-    Color? color,
-  }) {
+  static OutlineInputBorder _border(BorderRadius radius, {Color? color}) {
     return OutlineInputBorder(
       borderRadius: radius,
       borderSide: BorderSide(color: color ?? Colors.transparent),
@@ -86,7 +86,7 @@ class AppInputStyle {
   }
 
   static const BoxConstraints _singleLineConstraints = BoxConstraints(
-    minHeight: AppSize.large,
+    minHeight: AppSize.fieldHeight,
     maxHeight: AppSize.fieldHeight,
   );
 

@@ -6,6 +6,7 @@ abstract class AppSpacing {
 
   static const EdgeInsets xSmall = EdgeInsets.all(AppSize.xSmall);
   static const EdgeInsets small = EdgeInsets.all(AppSize.small);
+  static const EdgeInsets normal = EdgeInsets.all(AppSize.normal);
   static const EdgeInsets medium = EdgeInsets.all(AppSize.medium);
   static const EdgeInsets large = EdgeInsets.all(AppSize.large);
   static const EdgeInsets xLarge = EdgeInsets.all(AppSize.xLarge);

@@ -10,7 +10,7 @@ class ReadClassDetailProvider extends ChangeNotifier {
   ClassModel? _class;
   bool _isLoading = false;
   String _error = '';
-  String _id = '';
+  String? _id ;
 
   ReadClassDetailProvider(this.service, this.provider);
 
@@ -29,7 +29,7 @@ class ReadClassDetailProvider extends ChangeNotifier {
 
     try {
       Map<String, dynamic> data = {};
-      final response = await service.readClassById(id);
+      final response = await service.readClassDetail(id);
       final school = await provider.getSchoolName();
 
       if (response.data != null) {
@@ -50,5 +50,5 @@ class ReadClassDetailProvider extends ChangeNotifier {
     }
   }
 
-  void reload() => fetchById(_id);
+  void reload() => fetchById(_id!);
 }
