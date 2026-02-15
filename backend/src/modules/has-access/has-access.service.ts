@@ -40,6 +40,7 @@ class HasAccessService {
 
   async getAllHasAccess() {
     return prisma.allowedEmail.findMany({
+      where: { isActive: true },
       select: {
         id: true,
         isActive: true,
@@ -62,7 +63,7 @@ class HasAccessService {
 
   async getHasAccessById(id: string) {
     return prisma.allowedEmail.findUnique({
-      where: { id },
+      where: { id, isActive: true },
       select: {
         id: true,
         isActive: true,
@@ -83,14 +84,10 @@ class HasAccessService {
     const { email } = payload;
 
     return prisma.$transaction(async (tx) => {
-      // 1️⃣ Cek email sudah pernah dipakai atau belum
-      const allowed = await tx.allowedEmail.findUnique({
+      await tx.user.update({
         where: { email },
+        data: { isActive: true },
       });
-
-      if (allowed) {
-        throw new Error("Email already allowed");
-      }
 
       return await tx.allowedEmail.update({
         where: { id },

@@ -50,9 +50,9 @@ class TeacherService {
     });
   }
 
-  async getTeachersById(schoolId: string, id: string) {
+  async getTeacherById(id: string) {
     return prisma.teacher.findUnique({
-      where: { schoolId, id, isActive: true },
+      where: { id, isActive: true },
       include: {
         user: true,
       },
@@ -65,14 +65,17 @@ class TeacherService {
     });
   }
 
-  async updateTeacher(schoolId: string, id: string, data: UpdateTeacherTypes) {
+  async updateTeacher(id: string, data: UpdateTeacherTypes) {
     return prisma.teacher.update({
-      where: { schoolId, id },
-      data,
+      where: { id },
+      data: {
+        isActive: true,
+        ...data,
+      },
     });
   }
 
-  async deleteTeacher(schoolId: string, id: string) {
+  async deleteTeacher(id: string) {
     return prisma.$transaction(async (tx) => {
       const teacher = await tx.teacher.findUnique({ where: { id } });
 
