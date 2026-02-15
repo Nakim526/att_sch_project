@@ -66,11 +66,7 @@ export async function getHasAccessById(id: string) {
       id: true,
       isActive: true,
       user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          schoolId: true,
+        include: {
           roles: {
             select: {
               role: true,
