@@ -63,7 +63,7 @@ export async function createUserTransaction(
     skipDuplicates: true, // aman kalau role dobel
   });
 
-  return user;
+  return { user, roles };
 }
 
 export async function getAllUsers(schoolId: string) {
