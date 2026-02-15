@@ -5,7 +5,7 @@ class AppText extends StatelessWidget {
   final String text;
   final AppTextVariant variant;
   final Color? color;
-  final TextAlign? align;
+  final TextAlign? textAlign;
   final bool underline;
   final TextOverflow? overflow;
   final int? maxLines;
@@ -14,7 +14,7 @@ class AppText extends StatelessWidget {
     this.text, {
     super.key,
     this.color,
-    this.align,
+    this.textAlign,
     this.underline = false,
     this.overflow,
     this.maxLines,
@@ -25,7 +25,7 @@ class AppText extends StatelessWidget {
     super.key,
     required this.variant,
     this.color,
-    this.align,
+    this.textAlign,
     this.underline = false,
     this.overflow,
     this.maxLines,
@@ -35,7 +35,7 @@ class AppText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      textAlign: align,
+      textAlign: textAlign,
       style: AppTextStyle.of(
         context,
         variant,

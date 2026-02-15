@@ -27,7 +27,7 @@ class AppButtonStyle {
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSize.small),
+          borderRadius: BorderRadius.circular(AppSize.xSmall),
           side: _border(context, variant),
         ),
       ),
@@ -58,6 +58,7 @@ class AppButtonStyle {
         }
         return color;
       }),
+      alignment: Alignment.centerLeft,
       textStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
         final active =
             states.contains(WidgetState.hovered) ||

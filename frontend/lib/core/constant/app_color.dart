@@ -9,7 +9,7 @@ class AppColor {
   static const Color lightPrimaryBg = Color(0xFFF8FAFC);
   static const Color lightSecondaryBg = Color(0xFFF1F5F9);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightOutline = Color(0xFFFFFFFF);
+  static const Color lightOutline = Color(0xFFCBD5E1);
 
   static const Color lightBorder = Color(0xFFE2E8F0);
   static const Color lightDivider = Color(0xFFCBD5E1);
@@ -47,7 +47,7 @@ class AppColor {
   static const Color darkPrimaryBg = Color(0xFF020617);
   static const Color darkSecondaryBg = Color(0xFF0F172A);
   static const Color darkSurface = Color(0xFF020617);
-  static const Color darkOutline = Color(0xFF0F172A);
+  static const Color darkOutline = Color(0xFF334155);
 
   static const Color darkBorder = Color(0xFF020617);
   static const Color darkDivider = Color(0xFF020617);

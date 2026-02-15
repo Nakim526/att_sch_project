@@ -2,6 +2,7 @@ class AppSize {
   const AppSize._();
   
   static const double zero = 0.0;
+  static const double tiny = 2.0;
   static const double xSmall = 4.0;
   static const double small = 8.0;
   static const double normal = 12.0;

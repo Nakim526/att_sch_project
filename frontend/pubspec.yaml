@@ -7,7 +7,9 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
+  connectivity_plus: ^7.0.0
   dio: ^5.9.1
+  dropdown_search: ^6.0.2
   flutter:
     sdk: flutter
   google_sign_in: ^7.1.1

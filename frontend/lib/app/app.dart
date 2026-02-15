@@ -13,14 +13,17 @@ class MainApp extends StatelessWidget {
 
     themeController.loadTheme();
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeController.themeMode,
-      title: 'Att School',
-      routes: AppRoutes.routes(context),
-      initialRoute: '/login',
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeController.themeMode,
+        title: 'Att School',
+        routes: AppRoutes.routes(context),
+        initialRoute: '/login',
+      ),
     );
   }
 }

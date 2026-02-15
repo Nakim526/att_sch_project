@@ -1,4 +1,4 @@
-import 'package:att_school/features/auth/data/auth_result.dart';
+import 'package:att_school/core/utils/helper/backend_helper.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,28 +6,35 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthProvider extends ChangeNotifier {
   final AuthService service;
   bool _isLoading = false;
+  String? _error;
 
   AuthProvider(this.service);
 
   bool get isLoading => _isLoading;
 
-  Future<AuthResult> login() async {
+  Future<BackendHelper> login() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final result = await service.login();
+      final response = await service.login();
 
-      if (result != null) {
+      if (response.data != null) {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('roles', result['roles'].toString());
+        await prefs.setString(
+          'roles',
+          response.data['user']['roles'].toString(),
+        );
 
-        return AuthResult(true);
+        return BackendHelper(true);
       }
-      return AuthResult(false);
+
+      return BackendHelper(false);
     } catch (e) {
-      debugPrint("$e");
-      return AuthResult(false, errorMessage: e.toString());
+      _error = e.toString();
+      debugPrint(e.toString());
+
+      return BackendHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();

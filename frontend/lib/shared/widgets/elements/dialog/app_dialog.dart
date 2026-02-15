@@ -3,7 +3,7 @@ import 'package:att_school/core/constant/size/border-radius/app_border_radius.da
 import 'package:att_school/core/constant/theme/theme_extension.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
-import 'package:att_school/shared/widgets/elements/app_button.dart';
+import 'package:att_school/shared/widgets/elements/button/app_button.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +18,6 @@ class AppDialog {
   }) async {
     return await showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: context.surface,
@@ -45,12 +44,12 @@ class AppDialog {
     BuildContext context, {
     required String title,
     String? message,
-    String ifTrue = 'Yes',
-    String ifFalse = 'Cancel',
+    String true_ = 'Yes',
+    String false_ = 'Cancel',
+    VoidCallback? onConfirm,
     bool exit = false,
   }) async {
     return await showDialog(
-      barrierDismissible: false,
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
@@ -64,17 +63,18 @@ class AppDialog {
           content: AppText(message ?? '', variant: AppTextVariant.body),
           actions: [
             AppButton(
-              ifFalse,
+              false_,
               variant: AppButtonVariant.secondary,
               onPressed: () => Navigator.of(dialogContext).pop(false),
             ),
             AppButton(
-              ifTrue,
+              true_,
               variant: AppButtonVariant.primary,
               onPressed: () {
                 exit
                     ? SystemNavigator.pop()
                     : Navigator.of(dialogContext).pop(true);
+                onConfirm?.call();
               },
             ),
           ],

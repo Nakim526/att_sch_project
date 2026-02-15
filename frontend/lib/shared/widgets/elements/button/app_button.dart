@@ -9,6 +9,7 @@ class AppButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final AppButtonVariant variant;
   final Widget? prefixIcon;
+  final TextAlign? textAlign;
 
   const AppButton(
     this.text, {
@@ -16,15 +17,22 @@ class AppButton extends StatelessWidget {
     required this.variant,
     this.onPressed,
     this.prefixIcon,
+    this.textAlign,
   });
 
   @override
   Widget build(BuildContext context) {
     if (variant == AppButtonVariant.link) {
-      return TextButton(
-        onPressed: onPressed,
-        style: AppButtonStyle.link(context),
-        child: AppText(text, variant: AppTextVariant.link),
+      return SizedBox(
+        width: double.infinity,
+        child: TextButton(
+          onPressed: onPressed,
+          style: AppButtonStyle.link(context),
+          child: AppText(
+            text,
+            variant: AppTextVariant.link,
+          ),
+        ),
       );
     }
 
@@ -33,10 +41,14 @@ class AppButton extends StatelessWidget {
       style: AppButtonStyle.elevated(context, variant),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSize.medium,
+        spacing: AppSize.normal,
         children: [
           if (prefixIcon != null) prefixIcon!,
-          AppText(text, variant: AppTextVariant.button),
+          AppText(
+            text,
+            variant: AppTextVariant.button,
+            textAlign: textAlign,
+          ),
         ],
       ),
     );

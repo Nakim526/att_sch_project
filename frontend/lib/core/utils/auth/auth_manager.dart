@@ -4,7 +4,7 @@ class AuthManager {
   static String? _idToken;
 
   static void setCredential(String token) {
-    _idToken = 'Basic $token';
+    _idToken = token;
   }
 
   static String? get idToken => _idToken;

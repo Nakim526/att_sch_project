@@ -27,6 +27,7 @@ extension ThemeX on BuildContext {
   Color get error => theme.colorScheme.error;
   Color get onError => theme.colorScheme.onError;
 
+  Color get sectionContainer => theme.appBarTheme.backgroundColor!;
   Color get surface => theme.colorScheme.surface;
   Color get onSurface => theme.colorScheme.onSurface;
   Color get outline => theme.colorScheme.outline;
@@ -46,9 +47,7 @@ extension ThemeX on BuildContext {
           : AppColor.darkWarning;
 
   Color get info =>
-      brightness == Brightness.light
-          ? AppColor.lightInfo
-          : AppColor.darkInfo;
+      brightness == Brightness.light ? AppColor.lightInfo : AppColor.darkInfo;
 
   Color get disabled => theme.disabledColor;
 

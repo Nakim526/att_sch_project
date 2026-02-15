@@ -13,23 +13,33 @@ abstract class AppSpacing {
   static const EdgeInsets xxxLarge = EdgeInsets.all(AppSize.xxxLarge);
 
   static const EdgeInsets button = EdgeInsets.symmetric(
-    horizontal: AppSize.large,
-    vertical: AppSize.normal,
+    horizontal: AppSize.normal,
+    vertical: AppSize.small,
   );
 
-  static EdgeInsets horizontal(double value) =>
-      EdgeInsets.symmetric(horizontal: value);
+  static EdgeInsets horizontal(double value) {
+    return EdgeInsets.symmetric(horizontal: value);
+  }
 
-  static EdgeInsets vertical(double value) =>
-      EdgeInsets.symmetric(vertical: value);
+  static EdgeInsets vertical(double value) {
+    return EdgeInsets.symmetric(vertical: value);
+  }
 
   static EdgeInsets all(double value) => EdgeInsets.all(value);
+
+  static EdgeInsets symetric({
+    required double horizontal,
+    required double vertical,
+  }) {
+    return EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical);
+  }
 
   static EdgeInsets only({
     double top = 0,
     double right = 0,
     double bottom = 0,
     double left = 0,
-  }) =>
-      EdgeInsets.only(top: top, right: right, bottom: bottom, left: left);
+  }) {
+    return EdgeInsets.only(top: top, right: right, bottom: bottom, left: left);
+  }
 }

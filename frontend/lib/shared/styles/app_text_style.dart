@@ -10,6 +10,7 @@ enum AppTextVariant {
   h2,
   h3,
   h4,
+  input,
   button,
   caption,
   overline,
@@ -32,11 +33,12 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.h2: _TextStyleConfig(28, FontWeight.w900),
   AppTextVariant.h3: _TextStyleConfig(24, FontWeight.w800),
   AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
+  AppTextVariant.input: _TextStyleConfig(AppSize.base, FontWeight.normal),
   AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
   AppTextVariant.caption: _TextStyleConfig(AppSize.normal, FontWeight.normal),
   AppTextVariant.overline: _TextStyleConfig(AppSize.small, FontWeight.normal),
   AppTextVariant.link: _TextStyleConfig(AppSize.base, FontWeight.w500),
-  AppTextVariant.error: _TextStyleConfig(AppSize.base, FontWeight.normal),
+  AppTextVariant.error: _TextStyleConfig(AppSize.normal, FontWeight.normal),
 };
 
 class AppTextStyle {
@@ -66,7 +68,7 @@ class AppTextStyle {
         return context.onSurface.withValues(alpha: 0.6);
 
       case AppTextVariant.error:
-        return context.onError;
+        return context.error;
 
       case AppTextVariant.link:
         return context.primary;
