@@ -79,20 +79,58 @@ class HasAccessService {
       },
     });
   }
-
   async updateHasAccess(id: string, payload: UpdateHasAccessTypes) {
-    const { email } = payload;
+    const { name, email, roles } = payload;
 
     return prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: { email },
-        data: { isActive: true },
+      // 1️⃣ Ambil allowed email dulu
+      const allowed = await tx.allowedEmail.findUnique({
+        where: { id },
       });
 
-      return await tx.allowedEmail.update({
-        where: { id },
-        data: payload,
+      if (!allowed) {
+        throw new Error("Allowed email not found");
+      }
+
+      const userId = allowed.userId;
+
+      // 2️⃣ Update user basic info
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          name,
+          email,
+          isActive: true,
+        },
       });
+
+      // 3️⃣ Hapus semua role lama
+      await tx.userRole.deleteMany({
+        where: { userId },
+      });
+
+      // 4️⃣ Ambil roleId berdasarkan nama role
+      const roleRecords = await tx.role.findMany({
+        where: {
+          name: { in: roles },
+        },
+      });
+
+      // 5️⃣ Insert role baru
+      await tx.userRole.createMany({
+        data: roleRecords.map((role) => ({
+          userId,
+          roleId: role.id,
+        })),
+      });
+
+      // 6️⃣ Update allowed email jika perlu
+      await tx.allowedEmail.update({
+        where: { id },
+        data: { email },
+      });
+
+      return { message: "User updated successfully" };
     });
   }
 
