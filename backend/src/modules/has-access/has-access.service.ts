@@ -41,6 +41,7 @@ export async function createHasAccess(input: CreateHasAccessTypes) {
 export async function getAllHasAccess() {
   return prisma.allowedEmail.findMany({
     select: {
+      id: true,
       isActive: true,
       user: {
         select: {
@@ -49,7 +50,7 @@ export async function getAllHasAccess() {
           email: true,
           schoolId: true,
           roles: {
-            include: {
+            select: {
               role: true,
             },
           },
