@@ -74,9 +74,11 @@ class HasAccessService {
   async getAllHasAccess() {
     return prisma.allowedEmail.findMany({
       where: { isActive: true },
+      orderBy: { createdAt: "desc" },
       select: {
         id: true,
         isActive: true,
+        createdAt: true,
         user: {
           select: {
             id: true,
@@ -100,6 +102,7 @@ class HasAccessService {
       select: {
         id: true,
         isActive: true,
+        createdAt: true,
         user: {
           include: {
             roles: {
