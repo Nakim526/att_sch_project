@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import * as service from "./has-access.service";
+import service from "./has-access.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
 class HasAccessController {
