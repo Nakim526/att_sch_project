@@ -30,10 +30,21 @@ class StudentController {
     }
   }
 
-  async findByClass(req: AuthRequest, res: Response, next: NextFunction) {
+  async findAllByClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { classId } = req.params as { classId: string };
-      const result = await studentService.findByClass(classId);
+      const result = await studentService.findAllByClass(classId);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async findOneByClass(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { classId, id } = req.params as { classId: string, id: string };
+      const result = await studentService.findOneByClass(classId, id);
 
       res.json({ data: result });
     } catch (error) {

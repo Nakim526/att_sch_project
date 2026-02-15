@@ -4,3 +4,9 @@ export interface CreateHasAccessTypes {
   email: string;
   roles: string[];
 }
+
+export interface UpdateHasAccessTypes {
+  name?: string;
+  email?: string;
+  roles?: string[];
+}

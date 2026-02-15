@@ -1,15 +1,63 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import * as service from "./has-access.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
-export async function create(req: AuthRequest, res: Response) {
-  console.log(`req.body: ${JSON.stringify(req.body)}`);
-  const data = await service.createHasAccess(req.body);
-  res.json(data);
+class HasAccessController {
+  async create(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const data = await service.createHasAccess(req.body);
+      res.status(201).json({
+        message: "Data berhasil ditambahkan",
+        data: data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async readList(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const data = await service.getAllHasAccess();
+      res.json({ data: data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async readDetail(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params as { id: string };
+      const data = await service.getHasAccessById(id);
+      res.json({ data: data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params as { id: string };
+      const data = await service.updateHasAccess(id, req.body);
+      res.json({
+        message: "Data berhasil diperbarui",
+        data: data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params as { id: string };
+      await service.deleteHasAccess(id);
+      res.json({
+        message: "Data berhasil dihapus",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
-export async function list(req: AuthRequest, res: Response) {
-  console.log(req.user);
-  const data = await service.getAllHasAccess();
-  res.json(data);
-}
+export default new HasAccessController();

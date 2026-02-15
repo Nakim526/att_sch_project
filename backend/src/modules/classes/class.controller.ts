@@ -1,6 +1,6 @@
 // src/modules/class/class.controller.ts
 
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import classService from "./class.service";
 

@@ -1,10 +1,9 @@
 import prisma from "../../config/prisma";
-import { AuthRequest } from "../../middlewares/auth.middleware";
 import { createUserTransaction } from "../users/user.service";
-import { CreateHasAccessTypes } from "./has-access.types";
+import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 
-export async function createHasAccess(input: CreateHasAccessTypes) {
-  const { schoolId, name, email, roles } = input;
+export async function createHasAccess(payload: CreateHasAccessTypes) {
+  const { schoolId, name, email, roles } = payload;
 
   return await prisma.$transaction(async (tx) => {
     // 1️⃣ Cek email sudah pernah dipakai atau belum
@@ -57,5 +56,57 @@ export async function getAllHasAccess() {
         },
       },
     },
+  });
+}
+
+export async function getHasAccessById(id: string) {
+  return prisma.allowedEmail.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      isActive: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          schoolId: true,
+          roles: {
+            select: {
+              role: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function updateHasAccess(
+  id: string,
+  payload: UpdateHasAccessTypes,
+) {
+  const { name, email, roles } = payload;
+
+  return prisma.$transaction(async (tx) => {
+    // 1️⃣ Cek email sudah pernah dipakai atau belum
+    const allowed = await tx.allowedEmail.findUnique({
+      where: { email },
+    });
+
+    if (allowed) {
+      throw new Error("Email already allowed");
+    }
+
+    return await tx.allowedEmail.update({
+      where: { id },
+      data: payload,
+    });
+  });
+}
+
+export async function deleteHasAccess(id: string) {
+  return prisma.allowedEmail.delete({
+    where: { id },
   });
 }

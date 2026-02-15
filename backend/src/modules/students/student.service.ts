@@ -26,16 +26,16 @@ class StudentService {
     });
   }
 
-  async findByClass(classId: string) {
+  async findAllByClass(classId: string) {
     return prisma.student.findMany({
       where: { classId },
       orderBy: { name: "asc" },
     });
   }
 
-  async findById(id: string) {
+  async findOneByClass(classId: string, id: string) {
     return prisma.student.findUnique({
-      where: { id },
+      where: { id, classId },
     });
   }
 
