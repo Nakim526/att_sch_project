@@ -115,13 +115,19 @@ async function main() {
   await prisma.allowedEmail.upsert({
     where: { email: "knabilhakin@gmail.com" },
     update: { isActive: true },
-    create: { email: "knabilhakin@gmail.com" },
+    create: {
+      email: "knabilhakin@gmail.com",
+      userId: adminUser.id,
+    },
   });
 
   await prisma.allowedEmail.upsert({
     where: { email: "nakim050206@gmail.com" },
     update: { isActive: true },
-    create: { email: "nakim050206@gmail.com" },
+    create: {
+      email: "nakim050206@gmail.com",
+      userId: guruUser.id,
+    },
   });
 
   console.log("✅ Seed completed");

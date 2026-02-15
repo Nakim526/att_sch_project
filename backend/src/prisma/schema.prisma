@@ -52,14 +52,12 @@ model User {
 }
 
 model UserRole {
-  id             String  @id @default(uuid())
-  userId         String
-  roleId         String
-  allowedEmailId String?
+  id     String @id @default(uuid())
+  userId String
+  roleId String
 
-  user         User          @relation(fields: [userId], references: [id])
-  role         Role          @relation(fields: [roleId], references: [id])
-  AllowedEmail AllowedEmail? @relation(fields: [allowedEmailId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
 
   @@unique([userId, roleId])
 }
@@ -182,6 +180,5 @@ model AllowedEmail {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  user  User       @relation(fields: [userId], references: [id])
-  roles UserRole[]
+  user User @relation(fields: [userId], references: [id])
 }

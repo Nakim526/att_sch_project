@@ -27,6 +27,7 @@ export async function createAccess(input: CreateAccessTypes) {
     await tx.allowedEmail.create({
       data: {
         email,
+        user.id
       },
     });
 
