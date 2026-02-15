@@ -5,31 +5,65 @@ import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 class HasAccessService {
   async createHasAccess(schoolId: string, payload: CreateHasAccessTypes) {
     const { name, email, roles } = payload;
+    let user = null;
 
     return await prisma.$transaction(async (tx) => {
       // 1️⃣ Cek email sudah pernah dipakai atau belum
-      const allowed = await tx.allowedEmail.findUnique({
+      const existed = await tx.allowedEmail.findUnique({
         where: { email },
       });
 
-      if (allowed) {
-        throw new Error("Email already allowed");
+      if (existed) {
+        user = await tx.user.findUnique({
+          where: { id: existed.userId },
+        });
+
+        if (user?.isActive) {
+          throw new Error("Email already allowed");
+        }
+
+        const userId = user!.id;
+
+        await tx.user.update({
+          where: { id: userId },
+          data: { isActive: true },
+        });
+
+        // 3️⃣ Hapus semua role lama
+        await tx.userRole.deleteMany({
+          where: { userId },
+        });
+
+        // 4️⃣ Ambil roleId berdasarkan nama role
+        const roleRecords = await tx.role.findMany({
+          where: {
+            name: { in: roles },
+          },
+        });
+
+        // 5️⃣ Insert role baru
+        await tx.userRole.createMany({
+          data: roleRecords.map((role) => ({
+            userId,
+            roleId: role.id,
+          })),
+        });
+      } else {
+        const result = await userService.createUserTransaction(tx, {
+          name,
+          email,
+          roles,
+          schoolId,
+        });
+
+        user = result.user;
       }
-
-      const result = await userService.createUserTransaction(tx, {
-        name,
-        email,
-        roles,
-        schoolId,
-      });
-
-      const user = result.user;
-
+      
       // 5️⃣ TERAKHIR: simpan ke AllowedEmail
       await tx.allowedEmail.create({
         data: {
           email,
-          userId: user.id,
+          userId: user!.id,
         },
       });
 
@@ -127,7 +161,7 @@ class HasAccessService {
       // 6️⃣ Update allowed email jika perlu
       await tx.allowedEmail.update({
         where: { id },
-        data: { email },
+        data: { email: email, isActive: true },
       });
 
       return { message: "User updated successfully" };
