@@ -58,13 +58,12 @@ class HasAccessService {
 
         user = result.user;
       }
-      
+
       // 5️⃣ TERAKHIR: simpan ke AllowedEmail
-      await tx.allowedEmail.create({
-        data: {
-          email,
-          userId: user!.id,
-        },
+      await tx.allowedEmail.upsert({
+        where: { email },
+        update: { isActive: true, userId: user!.id },
+        create: { email, userId: user!.id },
       });
 
       // 6️⃣ Return hasil (commit otomatis)
