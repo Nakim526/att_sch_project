@@ -2,8 +2,11 @@ import prisma from "../../config/prisma";
 import { createUserTransaction } from "../users/user.service";
 import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 
-export async function createHasAccess(payload: CreateHasAccessTypes) {
-  const { schoolId, name, email, roles } = payload;
+export async function createHasAccess(
+  schoolId: string,
+  payload: CreateHasAccessTypes,
+) {
+  const { name, email, roles } = payload;
 
   return await prisma.$transaction(async (tx) => {
     // 1️⃣ Cek email sudah pernah dipakai atau belum
@@ -82,7 +85,7 @@ export async function updateHasAccess(
   id: string,
   payload: UpdateHasAccessTypes,
 ) {
-  const { name, email, roles } = payload;
+  const { email } = payload;
 
   return prisma.$transaction(async (tx) => {
     // 1️⃣ Cek email sudah pernah dipakai atau belum

@@ -5,7 +5,8 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 class HasAccessController {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await service.createHasAccess(req.body);
+      const schoolId = req.user!.schoolId;
+      const data = await service.createHasAccess(schoolId, req.body);
       res.status(201).json({
         message: "Data berhasil ditambahkan",
         data: data,
