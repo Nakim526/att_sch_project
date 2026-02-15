@@ -13,17 +13,6 @@ export async function createUserTransaction(
   tx: Prisma.TransactionClient,
   data: CreateUserTypes,
 ) {
-  // 1. allowed email
-  const existingAllowed = await tx.allowedEmail.findUnique({
-    where: { email: data.email },
-  });
-
-  if (!existingAllowed) {
-    await tx.allowedEmail.create({
-      data: { email: data.email, userId: data.userId! },
-    });
-  }
-
   let user = null;
 
   if (data.userId) {
