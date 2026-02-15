@@ -20,7 +20,7 @@ export async function createUserTransaction(
 
   if (!existingAllowed) {
     await tx.allowedEmail.create({
-      data: { email: data.email },
+      data: { email: data.email, userId: data.userId! },
     });
   }
 

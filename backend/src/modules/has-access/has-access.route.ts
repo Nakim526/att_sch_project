@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as controller from "./access.controller";
+import * as controller from "./has-access.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { roleMiddleware } from "../../middlewares/role.middleware";
 

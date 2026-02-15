@@ -1,9 +1,9 @@
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { createUserTransaction } from "../users/user.service";
-import { CreateAccessTypes } from "./access.types";
+import { CreateHasAccessTypes } from "./has-access.types";
 
-export async function createAccess(input: CreateAccessTypes) {
+export async function createHasAccess(input: CreateHasAccessTypes) {
   const { schoolId, name, email, roles } = input;
 
   return await prisma.$transaction(async (tx) => {
@@ -16,18 +16,20 @@ export async function createAccess(input: CreateAccessTypes) {
       throw new Error("Email already allowed");
     }
 
-    const user = await createUserTransaction(tx, {
+    const result = await createUserTransaction(tx, {
       name,
       email,
       roles,
       schoolId,
     });
 
+    const user = result.user;
+
     // 5️⃣ TERAKHIR: simpan ke AllowedEmail
     await tx.allowedEmail.create({
       data: {
         email,
-        user.id
+        userId: user.id,
       },
     });
 
@@ -36,7 +38,7 @@ export async function createAccess(input: CreateAccessTypes) {
   });
 }
 
-export async function getAllAccess() {
+export async function getAllHasAccess() {
   return prisma.allowedEmail.findMany(
     {
       orderBy: {

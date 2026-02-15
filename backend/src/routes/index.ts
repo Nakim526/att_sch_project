@@ -2,7 +2,7 @@ import { Router } from "express";
 import authRoutes from "../modules/auth/auth.route";
 import roleRoutes from "../modules/roles/role.route";
 import userRoutes from "../modules/users/user.route";
-import accessRoutes from "../modules/access/access.route";
+import accessRoutes from "../modules/has-access/has-access.route";
 import schoolRoutes from "../modules/schools/school.route";
 import teacherRoutes from "../modules/teachers/teacher.route";
 import classRoutes from "../modules/classes/class.route";
