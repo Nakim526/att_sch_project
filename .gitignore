@@ -103,6 +103,7 @@ docker-compose.override.yml
 !prisma/migrations/**/*.sql
 !src/prisma/migrations/**/*.sql
 !/src/prisma/migrations/**/*.sql
+!backend/src/prisma/migrations/**/*.sql
 
 ############################
 # LOGS
