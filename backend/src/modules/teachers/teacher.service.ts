@@ -1,69 +1,91 @@
 import e from "express";
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { CreateTeacherTypes } from "./teacher.types";
-import { createUser, createUserTransaction } from "../users/user.service";
+import { CreateTeacherTypes, UpdateTeacherTypes } from "./teacher.types";
+import userService from "../users/user.service";
 
-export async function createTeacher(data: CreateTeacherTypes) {
-  // pastikan school ada
-  console.log(data.schoolId);
+class TeacherService {
+  async createTeacher(data: CreateTeacherTypes) {
+    // pastikan school ada
+    console.log(data.schoolId);
 
-  const school = await prisma.school.findUnique({
-    where: { id: data.schoolId },
-  });
+    const school = await prisma.school.findUnique({
+      where: { id: data.schoolId },
+    });
 
-  if (!school) {
-    throw new Error("School tidak ditemukan");
-  }
-
-  return prisma.$transaction(async (tx) => {
-    let user = null;
-
-    if (data.userId) {
-      user = await tx.user.findUnique({
-        where: { id: data.userId },
-      });
+    if (!school) {
+      throw new Error("School tidak ditemukan");
     }
 
-    if (!user) {
+    return prisma.$transaction(async (tx) => {
       console.log(data);
 
-      if (!data.email) {
-        throw new Error("Email harus diisi");
-      }
-
-      const result = await createUserTransaction(tx, {
+      const result = await userService.createUserTransaction(tx, {
         name: data.name,
         email: data.email!,
-        roles: ["GURU"],
+        userId: data.userId,
+        roles: data.roles ?? ["GURU"],
         schoolId: data.schoolId,
       });
 
-      user = result.user;
-    }
+      const user = result.user;
 
-    return tx.teacher.create({
-      data: {
-        nip: data.nip,
-        name: data.name,
-        userId: user.id,
-        schoolId: data.schoolId,
+      return tx.teacher.create({
+        data: {
+          nip: data.nip,
+          name: data.name,
+          userId: user.id,
+          schoolId: data.schoolId,
+        },
+      });
+    });
+  }
+
+  async getAllTeachers(schoolId: string) {
+    return prisma.teacher.findMany({
+      where: { schoolId, isActive: true },
+      include: {
+        user: { select: { name: true, email: true, isActive: true } },
       },
     });
-  });
+  }
+
+  async getTeachersById(schoolId: string, id: string) {
+    return prisma.teacher.findUnique({
+      where: { schoolId, id, isActive: true },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async getMyTeacher(userId: string) {
+    return prisma.teacher.findUnique({
+      where: { userId, isActive: true },
+    });
+  }
+
+  async updateTeacher(schoolId: string, id: string, data: UpdateTeacherTypes) {
+    return prisma.teacher.update({
+      where: { schoolId, id },
+      data,
+    });
+  }
+
+  async deleteTeacher(schoolId: string, id: string) {
+    return prisma.$transaction(async (tx) => {
+      const teacher = await tx.teacher.findUnique({ where: { id } });
+
+      if (!teacher) {
+        throw new Error("Teacher not found");
+      }
+
+      return tx.teacher.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    });
+  }
 }
 
-export async function getAllTeachers(schoolId: string) {
-  return prisma.teacher.findMany({
-    where: { schoolId, isActive: true },
-    include: {
-      user: { select: { email: true } },
-    },
-  });
-}
-
-export async function getMyTeacher(userId: string) {
-  return prisma.teacher.findUnique({
-    where: { userId },
-  });
-}
+export default new TeacherService();

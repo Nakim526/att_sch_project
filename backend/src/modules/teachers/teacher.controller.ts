@@ -1,32 +1,37 @@
 import { Response } from "express";
-import * as service from "./teacher.service";
+import service from "./teacher.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
-export async function create(req: AuthRequest, res: Response) {
-  const { name, nip, userId, email } = req.body;
+class TeacherController {
+  async create(req: AuthRequest, res: Response) {
+    const userId = req.user!.id;
+    const { name, nip, email } = req.body;
 
-  const teacher = await service.createTeacher({
-    name,
-    nip,
-    userId,
-    email,
-    schoolId: req.user!.schoolId,
-  });
+    const teacher = await service.createTeacher({
+      name,
+      email,
+      userId,
+      nip,
+      schoolId: req.user!.schoolId,
+    });
 
-  res.status(201).json(teacher);
-}
-
-export async function list(req: AuthRequest, res: Response) {
-  const data = await service.getAllTeachers(req.user!.schoolId);
-  res.json(data);
-}
-
-export async function me(req: AuthRequest, res: Response) {
-  const teacher = await service.getMyTeacher(req.user!.id);
-
-  if (!teacher) {
-    return res.status(404).json({ message: "Teacher not found" });
+    res.status(201).json(teacher);
   }
 
-  res.json(teacher);
+  async list(req: AuthRequest, res: Response) {
+    const data = await service.getAllTeachers(req.user!.schoolId);
+    res.json(data);
+  }
+
+  async me(req: AuthRequest, res: Response) {
+    const teacher = await service.getMyTeacher(req.user!.id);
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    res.json(teacher);
+  }
 }
+
+export default new TeacherController();

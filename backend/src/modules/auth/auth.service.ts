@@ -24,7 +24,7 @@ export async function loginWithGoogle(idToken: string) {
     },
   });
 
-  if (!user) {
+  if (!user || !user.isActive) {
     throw new Error("USER_NOT_FOUND");
   }
 
