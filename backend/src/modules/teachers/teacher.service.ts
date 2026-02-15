@@ -32,12 +32,14 @@ export async function createTeacher(data: CreateTeacherTypes) {
         throw new Error("Email harus diisi");
       }
 
-      user = await createUserTransaction(tx, {
+      const result = await createUserTransaction(tx, {
         name: data.name,
         email: data.email!,
         roles: ["GURU"],
         schoolId: data.schoolId,
       });
+
+      user = result.user;
     }
 
     return tx.teacher.create({
