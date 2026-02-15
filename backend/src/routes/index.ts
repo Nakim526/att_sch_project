@@ -27,7 +27,7 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/roles", roleRoutes);
 router.use("/users", userRoutes);
-router.use("/access", accessRoutes);
+router.use("/has-access", accessRoutes);
 router.use("/schools", schoolRoutes);
 router.use("/teachers", teacherRoutes);
 router.use("/classes", classRoutes);
