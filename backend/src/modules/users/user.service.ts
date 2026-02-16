@@ -17,6 +17,7 @@ class UserService {
     const user = await tx.user.upsert({
       where: { email: data.email },
       update: {
+        name: data.name,
         isActive: true,
       },
       create: {

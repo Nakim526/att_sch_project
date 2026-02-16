@@ -5,18 +5,24 @@ import { CreateTeacherTypes, UpdateTeacherTypes } from "./teacher.types";
 import userService from "../users/user.service";
 
 class TeacherService {
-  async createTeacher(data: CreateTeacherTypes) {
-    // pastikan school ada
-    console.log(data.schoolId);
-
-    const school = await prisma.school.findUnique({
-      where: { id: data.schoolId },
+  async assign(data: CreateTeacherTypes) {
+    return prisma.teacher.upsert({
+      where: { nip: data.nip },
+      update: {
+        name: data.name,
+        userId: data.userId,
+        isActive: true,
+      },
+      create: {
+        nip: data.nip,
+        name: data.name,
+        userId: data.userId,
+        schoolId: data.schoolId,
+      },
     });
+  }
 
-    if (!school) {
-      throw new Error("School tidak ditemukan");
-    }
-
+  async createTeacher(data: CreateTeacherTypes) {
     return prisma.$transaction(async (tx) => {
       console.log(data);
 
@@ -24,19 +30,16 @@ class TeacherService {
         name: data.name,
         email: data.email!,
         userId: data.userId,
-        roles: data.roles ?? ["GURU"],
+        roles: ["GURU"],
         schoolId: data.schoolId,
       });
 
       const user = result.user;
 
-      return tx.teacher.create({
-        data: {
-          nip: data.nip,
-          name: data.name,
-          userId: user.id,
-          schoolId: data.schoolId,
-        },
+      return await this.assign({
+        ...data,
+        userId: user.id,
+        schoolId: data.schoolId,
       });
     });
   }
@@ -45,7 +48,13 @@ class TeacherService {
     return prisma.teacher.findMany({
       where: { schoolId, isActive: true },
       include: {
-        user: { select: { name: true, email: true, isActive: true } },
+        user: {
+          select: {
+            name: true,
+            email: true,
+            isActive: true,
+          },
+        },
       },
     });
   }
@@ -67,10 +76,11 @@ class TeacherService {
 
   async updateTeacher(id: string, data: UpdateTeacherTypes) {
     return prisma.teacher.update({
-      where: { id },
+      where: { userId: id },
       data: {
         isActive: true,
-        ...data,
+        name: data.name,
+        nip: data.nip,
       },
     });
   }

@@ -20,7 +20,27 @@ router.get(
   controller.list,
 );
 
+router.get(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.detail,
+);
+
+router.put(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.update,
+);
+
+router.delete(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.delete,
+);
+
 // Guru
 router.get("/me", roleMiddleware(["GURU"]), controller.me);
+
+router.put("/me", roleMiddleware(["GURU"]), controller.updateMe);
 
 export default router;

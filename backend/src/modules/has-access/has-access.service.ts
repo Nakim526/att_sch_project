@@ -1,4 +1,5 @@
 import prisma from "../../config/prisma";
+import teacherService from "../teachers/teacher.service";
 import userService from "../users/user.service";
 import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 
@@ -57,6 +58,23 @@ class HasAccessService {
         });
 
         user = result.user;
+      }
+
+      const userRoles = await tx.userRole.findMany({
+        where: { userId: user!.id },
+        select: { role: true },
+      });
+
+      for (const index in userRoles) {
+        if (userRoles[index].role.name = "GURU") {
+          await teacherService.assign({
+            name,
+            nip: undefined,
+            email,
+            userId: user!.id,
+            schoolId,
+          })
+        }
       }
 
       // 5️⃣ TERAKHIR: simpan ke AllowedEmail

@@ -7,6 +7,7 @@ class TeacherSubjectService {
   async assign(data: CreateTeacherSubjectTypes) {
     return prisma.teacherSubject.create({
       data: {
+        userId: data.userId,
         teacherId: data.teacherId,
         subjectId: data.subjectId,
         classId: data.classId,
@@ -39,8 +40,10 @@ class TeacherSubjectService {
     return prisma.teacherSubject.findMany({
       where: { teacherId },
       include: {
+        teacher: true,
         subject: true,
         class: true,
+        user: true,
       },
     });
   }

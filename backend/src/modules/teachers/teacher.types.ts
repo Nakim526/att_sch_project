@@ -1,6 +1,6 @@
 export interface CreateTeacherTypes {
   name: string;
-  nip: string;
+  nip: string | undefined;
   email: string;
   roles?: string[];
   userId: string;
