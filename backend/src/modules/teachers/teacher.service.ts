@@ -119,7 +119,7 @@ class TeacherService {
 
   async getAllTeachers(schoolId: string) {
     return await prisma.teacher.findMany({
-      where: { schoolId, isActive: true },
+      where: { schoolId },
       include: {
         user: {
           select: {
@@ -149,7 +149,7 @@ class TeacherService {
 
   async getTeacherById(id: string) {
     return await prisma.teacher.findUnique({
-      where: { id, isActive: true },
+      where: { id },
       include: {
         user: true,
       },
@@ -158,7 +158,7 @@ class TeacherService {
 
   async getMyTeacher(userId: string) {
     return await prisma.teacher.findUnique({
-      where: { userId, isActive: true },
+      where: { userId },
     });
   }
 
@@ -209,7 +209,7 @@ class TeacherService {
         await tx.teacher.update({
           where: { id: data.id },
           data: { isActive: false },
-        })
+        });
 
         return await this.createTeacherTransaction(tx, {
           ...data,
