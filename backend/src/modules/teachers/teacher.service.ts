@@ -19,7 +19,7 @@ class TeacherService {
       where: { nip },
     });
 
-    if (nipUsed && id !== nipUsed.id) {
+    if (nipUsed && nipUsed.isActive && id !== nipUsed.id) {
       throw new Error("NIP already registered");
     }
 
@@ -210,7 +210,7 @@ class TeacherService {
           where: { id: data.id },
           data: { isActive: false },
         })
-        
+
         return await this.createTeacherTransaction(tx, {
           ...data,
           userId: user.id,
