@@ -15,6 +15,14 @@ class TeacherService {
   async assign(tx: Prisma.TransactionClient, data: AssignTeacherTypes) {
     const { id, userId, name, nip, schoolId } = data;
 
+    const nipUsed = await tx.teacher.findUnique({
+      where: { nip },
+    });
+
+    if (nipUsed) {
+      throw new Error("NIP already registered");
+    }
+
     const existedByUser = await tx.teacher.findUnique({
       where: { userId },
     });
@@ -26,24 +34,16 @@ class TeacherService {
           data: { name, nip, isActive: true },
         });
       }
-      
+
       if (existedByUser.isActive && id !== existedByUser.id) {
         throw new Error("Teacher already assigned");
       }
-      
+
       await tx.teacher.update({
         where: { userId },
         data: { name, nip, isActive: true },
       });
     } else {
-      const nipUsed = await tx.teacher.findUnique({
-        where: { nip },
-      });
-
-      if (nipUsed) {
-        throw new Error("NIP already registered");
-      }
-
       await tx.teacher.create({
         data: { userId, name, nip, schoolId },
       });
