@@ -11,8 +11,14 @@ import hasAccessService from "../has-access/has-access.service";
 import { Prisma } from "@prisma/client";
 
 class TeacherService {
-  async assign(data: CreateTeacherTypes) {
-    return await prisma.teacher.upsert({
+  async assign(tx: Prisma.TransactionClient, data: CreateTeacherTypes) {
+    const existed = await tx.teacher.findUnique({ where: { userId: data.userId } });
+
+    if (existed?.isActive) {
+      throw new Error("Teacher already assigned");
+    }
+
+    return await tx.teacher.upsert({
       where: { userId: data.userId },
       update: {
         nip: data.nip,
@@ -72,7 +78,7 @@ class TeacherService {
         throw new Error("Failed to create user");
       }
 
-      return await this.assign({
+      return await this.assign(tx, {
         ...data,
         userId: user.id,
         schoolId: data.schoolId,
