@@ -19,7 +19,7 @@ class TeacherService {
       where: { nip },
     });
 
-    if (nipUsed) {
+    if (nipUsed && id !== nipUsed.id) {
       throw new Error("NIP already registered");
     }
 
@@ -28,23 +28,23 @@ class TeacherService {
     });
 
     if (existedByUser) {
-      if (id === existedByUser.id) {
+      if (id !== existedByUser.id) {
+        if (existedByUser.isActive) {
+          throw new Error("Teacher already assigned");
+        }
+
         return await tx.teacher.update({
-          where: { id },
+          where: { userId },
           data: { name, nip, isActive: true },
         });
       }
 
-      if (existedByUser.isActive && id !== existedByUser.id) {
-        throw new Error("Teacher already assigned");
-      }
-
-      await tx.teacher.update({
-        where: { userId },
+      return await tx.teacher.update({
+        where: { id },
         data: { name, nip, isActive: true },
       });
     } else {
-      await tx.teacher.create({
+      return await tx.teacher.create({
         data: { userId, name, nip, schoolId },
       });
     }
@@ -177,7 +177,7 @@ class TeacherService {
         throw new Error("Teacher not found");
       }
 
-      await this.assign(tx, {
+      return await this.assign(tx, {
         id: data.id,
         userId: teacher.userId,
         name: data.name,
