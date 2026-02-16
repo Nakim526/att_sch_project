@@ -8,10 +8,11 @@ import {
 } from "./teacher.types";
 import userService from "../users/user.service";
 import hasAccessService from "../has-access/has-access.service";
+import { Prisma } from "@prisma/client";
 
 class TeacherService {
   async assign(data: CreateTeacherTypes) {
-    return prisma.teacher.upsert({
+    return await prisma.teacher.upsert({
       where: { userId: data.userId },
       update: {
         nip: data.nip,
@@ -30,7 +31,7 @@ class TeacherService {
   async createTeacher(data: CreateTeacherTypes) {
     const { nip, name, email, schoolId } = data;
 
-    return prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       console.log(data);
 
       // 1️⃣ Cek email sudah pernah dipakai atau belum
@@ -80,7 +81,7 @@ class TeacherService {
   }
 
   async getAllTeachers(schoolId: string) {
-    return prisma.teacher.findMany({
+    return await prisma.teacher.findMany({
       where: { schoolId, isActive: true },
       include: {
         user: {
@@ -95,7 +96,7 @@ class TeacherService {
   }
 
   async getTeacherById(id: string) {
-    return prisma.teacher.findUnique({
+    return await prisma.teacher.findUnique({
       where: { id, isActive: true },
       include: {
         user: true,
@@ -104,15 +105,18 @@ class TeacherService {
   }
 
   async getMyTeacher(userId: string) {
-    return prisma.teacher.findUnique({
+    return await prisma.teacher.findUnique({
       where: { userId, isActive: true },
     });
   }
 
-  async updateOldTeacher(data: UpdateOldTeacherTypes) {
+  async updateOldTeacher(
+    tx: Prisma.TransactionClient,
+    data: UpdateOldTeacherTypes,
+  ) {
     const { userId, name } = data;
 
-    return prisma.teacher.update({
+    return await tx.teacher.update({
       where: { userId },
       data: {
         isActive: true,
@@ -122,7 +126,7 @@ class TeacherService {
   }
 
   async updateTeacher(data: UpdateTeacherTypes) {
-    return prisma.teacher.update({
+    return await prisma.teacher.update({
       where: { id: data.id },
       data: {
         isActive: true,
@@ -133,7 +137,7 @@ class TeacherService {
   }
 
   async deleteTeacher(id: string) {
-    return prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       const teacher = await tx.teacher.findUnique({ where: { id } });
 
       if (!teacher) {

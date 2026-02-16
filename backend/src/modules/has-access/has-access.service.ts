@@ -18,70 +18,68 @@ class HasAccessService {
     const { name, email, roles, schoolId } = payload;
     let user = null;
 
-    return await prisma.$transaction(async (tx) => {
-      // 1️⃣ Cek email sudah pernah dipakai atau belum
-      const existed = await tx.allowedEmail.findUnique({
-        where: { email },
+    // 1️⃣ Cek email sudah pernah dipakai atau belum
+    const existed = await tx.allowedEmail.findUnique({
+      where: { email },
+    });
+
+    if (existed) {
+      // cari user berdasarkan userId dari hasil pencarian hak akses
+      user = await tx.user.findUnique({
+        where: { id: existed.userId },
       });
 
-      if (existed) {
-        // cari user berdasarkan userId dari hasil pencarian hak akses
-        user = await tx.user.findUnique({
-          where: { id: existed.userId },
-        });
-
-        if (user?.isActive) {
-          throw new Error("Email already allowed");
-        }
-
-        const userId = user!.id;
-
-        // update status user menjadi aktif
-        await tx.user.update({
-          where: { id: userId },
-          data: { isActive: true },
-        });
-
-        // 3️⃣ Hapus semua role lama
-        await tx.userRole.deleteMany({
-          where: { userId },
-        });
-
-        // 4️⃣ Ambil roleId berdasarkan nama role
-        const roleRecords = await tx.role.findMany({
-          where: {
-            name: { in: roles },
-          },
-        });
-
-        // 5️⃣ Insert role baru
-        await tx.userRole.createMany({
-          data: roleRecords.map((role) => ({
-            userId,
-            roleId: role.id,
-          })),
-        });
-      } else {
-        const result = await userService.createUserTransaction(tx, {
-          name,
-          email,
-          roles,
-          schoolId,
-        });
-
-        user = result.user;
+      if (user?.isActive) {
+        throw new Error("Email already allowed");
       }
 
-      // 5️⃣ TERAKHIR: simpan ke AllowedEmail
-      await tx.allowedEmail.upsert({
-        where: { email },
-        update: { isActive: true, userId: user!.id },
-        create: { email, userId: user!.id },
+      const userId = user!.id;
+
+      // update status user menjadi aktif
+      await tx.user.update({
+        where: { id: userId },
+        data: { isActive: true },
       });
 
-      // 6️⃣ Return hasil (commit otomatis)
-      return user;
+      // 3️⃣ Hapus semua role lama
+      await tx.userRole.deleteMany({
+        where: { userId },
+      });
+
+      // 4️⃣ Ambil roleId berdasarkan nama role
+      const roleRecords = await tx.role.findMany({
+        where: {
+          name: { in: roles },
+        },
+      });
+
+      // 5️⃣ Insert role baru
+      await tx.userRole.createMany({
+        data: roleRecords.map((role) => ({
+          userId,
+          roleId: role.id,
+        })),
+      });
+    } else {
+      const result = await userService.createUserTransaction(tx, {
+        name,
+        email,
+        roles,
+        schoolId,
+      });
+
+      user = result.user;
+    }
+
+    // 5️⃣ TERAKHIR: simpan ke AllowedEmail
+    await tx.allowedEmail.upsert({
+      where: { email },
+      update: { isActive: true, userId: user!.id },
+      create: { email, userId: user!.id },
     });
+
+    // 6️⃣ Return hasil (commit otomatis)
+    return user;
   }
 
   async getAllHasAccess() {
@@ -147,17 +145,6 @@ class HasAccessService {
 
       const userId = allowed.userId;
 
-      const existedTeacher = await tx.teacher.findUnique({
-        where: { userId },
-      });
-
-      if (existedTeacher) {
-        await tx.teacher.update({
-          where: { userId },
-          data: { isActive: false },
-        });
-      }
-
       // 2️⃣ Update user basic info
       await tx.user.update({
         where: { id: userId },
@@ -193,19 +180,24 @@ class HasAccessService {
         select: { role: true },
       });
 
-      for (const index in userRoles) {
-        if ((userRoles[index].role.name = "GURU")) {
-          const teacher = await tx.teacher.findUnique({
-            where: { userId },
-          });
+      const hasGuru = userRoles.some((r) => r.role.name === "GURU");
 
-          if (teacher) {
-            await teacherService.updateOldTeacher({
-              userId,
-              name: String(name),
-            });
-          }
+      if (hasGuru) {
+        const teacher = await tx.teacher.findUnique({
+          where: { userId },
+        });
+
+        if (teacher) {
+          await teacherService.updateOldTeacher(tx, {
+            userId,
+            name: String(name),
+          });
         }
+      } else {
+        await tx.teacher.update({
+          where: { userId },
+          data: { isActive: false },
+        });
       }
 
       // 6️⃣ Update allowed email jika perlu
