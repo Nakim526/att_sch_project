@@ -12,7 +12,9 @@ import { Prisma } from "@prisma/client";
 
 class TeacherService {
   async assign(tx: Prisma.TransactionClient, data: CreateTeacherTypes) {
-    const existed = await tx.teacher.findUnique({ where: { userId: data.userId } });
+    const existed = await tx.teacher.findUnique({
+      where: { userId: data.userId },
+    });
 
     if (existed?.isActive) {
       throw new Error("Teacher already assigned");
@@ -101,6 +103,21 @@ class TeacherService {
     });
   }
 
+  async getAllTeachersForce(schoolId: string) {
+    return await prisma.teacher.findMany({
+      where: { schoolId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            isActive: true,
+          },
+        },
+      },
+    });
+  }
+
   async getTeacherById(id: string) {
     return await prisma.teacher.findUnique({
       where: { id, isActive: true },
@@ -132,13 +149,16 @@ class TeacherService {
   }
 
   async updateTeacher(data: UpdateTeacherTypes) {
-    return await prisma.teacher.update({
-      where: { id: data.id },
-      data: {
-        isActive: true,
-        name: data.name,
-        nip: data.nip,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const teacher = await tx.teacher.findUnique({ where: { id: data.id } });
+
+      await tx.teacher.update({
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          nip: data.nip,
+        },
+      });
     });
   }
 

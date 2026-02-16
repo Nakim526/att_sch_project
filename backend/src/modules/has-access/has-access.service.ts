@@ -107,6 +107,31 @@ class HasAccessService {
     });
   }
 
+  async getAllHasAccessForce() {
+    return prisma.allowedEmail.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        isActive: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            schoolId: true,
+            roles: {
+              select: {
+                role: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async getHasAccessById(id: string) {
     return prisma.allowedEmail.findUnique({
       where: { id, isActive: true },
