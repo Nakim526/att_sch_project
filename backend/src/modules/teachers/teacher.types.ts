@@ -15,6 +15,7 @@ export interface UpdateOldTeacherTypes {
 export interface UpdateTeacherTypes {
   id: string;
   name: string;
+  email: string;
   nip: string;
 }
 

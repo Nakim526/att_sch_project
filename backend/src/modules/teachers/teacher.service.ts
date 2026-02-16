@@ -23,13 +23,13 @@ class TeacherService {
       throw new Error("NIP already registered");
     }
 
-    const existedByUser = await tx.teacher.findUnique({
+    const teacher = await tx.teacher.findUnique({
       where: { userId },
     });
 
-    if (existedByUser) {
-      if (id !== existedByUser.id) {
-        if (existedByUser.isActive) {
+    if (teacher) {
+      if (id !== teacher.id) {
+        if (teacher.isActive) {
           throw new Error("Teacher already assigned");
         }
 
@@ -43,64 +43,78 @@ class TeacherService {
         where: { id },
         data: { name, nip, isActive: true },
       });
-    } else {
-      return await tx.teacher.create({
-        data: { userId, name, nip, schoolId },
-      });
     }
+
+    return false;
   }
 
   async createTeacher(data: CreateTeacherTypes) {
+    return await prisma.$transaction(async (tx) => {
+      return await this.createTeacherTransaction(tx, data);
+    });
+  }
+
+  async createTeacherTransaction(
+    tx: Prisma.TransactionClient,
+    data: CreateTeacherTypes,
+  ) {
     const { nip, name, email, schoolId } = data;
 
-    return await prisma.$transaction(async (tx) => {
-      console.log(data);
-
-      // 1️⃣ Cek email sudah pernah dipakai atau belum
-      const alllowed = await tx.allowedEmail.findUnique({
-        where: { email },
-      });
-
-      if (!alllowed) {
-        throw new Error("Email not allowed");
-      }
-
-      const user = await tx.user.findUnique({
-        where: { id: alllowed!.userId },
-        include: { roles: { include: { role: true } } },
-      });
-
-      const hasRole = user?.roles.some((r) => r.role.name === "GURU");
-
-      if (!hasRole) {
-        const role = await tx.role.findUnique({
-          where: { name: "GURU" },
-        });
-
-        await tx.userRole.create({
-          data: {
-            userId: user!.id,
-            roleId: role!.id,
-          },
-        });
-      }
-
-      await tx.user.update({
-        where: { id: alllowed!.userId },
-        data: { isActive: true, name },
-      });
-
-      if (!user) {
-        throw new Error("Failed to create user");
-      }
-
-      return await this.assign(tx, {
-        ...data,
-        id: null,
-        userId: user.id,
-        schoolId: data.schoolId,
-      });
+    // 1️⃣ Cek email sudah pernah dipakai atau belum
+    const alllowed = await tx.allowedEmail.findUnique({
+      where: { email },
     });
+
+    if (!alllowed) {
+      throw new Error("Email not allowed");
+    }
+
+    const user = await tx.user.findUnique({
+      where: { id: alllowed!.userId },
+      include: { roles: { include: { role: true } } },
+    });
+
+    const hasRole = user?.roles.some((r) => r.role.name === "GURU");
+
+    if (!hasRole) {
+      const role = await tx.role.findUnique({
+        where: { name: "GURU" },
+      });
+
+      await tx.userRole.create({
+        data: {
+          userId: user!.id,
+          roleId: role!.id,
+        },
+      });
+    }
+
+    await tx.user.update({
+      where: { id: alllowed!.userId },
+      data: { isActive: true, name },
+    });
+
+    if (!user) {
+      throw new Error("Failed to create user");
+    }
+
+    const existed = await this.assign(tx, {
+      ...data,
+      id: null,
+      userId: user.id,
+      schoolId: data.schoolId,
+    });
+
+    if (!existed) {
+      return await tx.teacher.create({
+        data: {
+          name,
+          nip,
+          userId: user.id,
+          schoolId,
+        },
+      });
+    }
   }
 
   async getAllTeachers(schoolId: string) {
@@ -177,17 +191,34 @@ class TeacherService {
         throw new Error("Teacher not found");
       }
 
-      console.log(data);
+      const user = await tx.user.findUnique({ where: { email: data.email } });
 
-      console.log(teacher);
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-      return await this.assign(tx, {
+      const existed = await this.assign(tx, {
         id: data.id,
-        userId: teacher.userId,
+        userId: user.id,
         name: data.name,
         nip: data.nip,
-        schoolId: teacher.schoolId,
+        schoolId: user.schoolId,
       });
+
+      if (!existed) {
+        await tx.teacher.update({
+          where: { id: data.id },
+          data: { isActive: false },
+        })
+        
+        return await this.createTeacherTransaction(tx, {
+          ...data,
+          userId: user.id,
+          schoolId: user.schoolId,
+        });
+      }
+
+      return existed;
     });
   }
 
