@@ -36,7 +36,7 @@ class TeacherController {
 
   async listForce(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await service.getAllTeachers(req.user!.schoolId);
+      const data = await service.getAllTeachersForce(req.user!.schoolId);
       res.json({ data: data });
     } catch (error) {
       next(error);

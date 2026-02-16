@@ -27,7 +27,7 @@ class HasAccessController {
 
   async readListForce(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await service.getAllHasAccess();
+      const data = await service.getAllHasAccessForce();
       res.json({ data: data });
     } catch (error) {
       next(error);
