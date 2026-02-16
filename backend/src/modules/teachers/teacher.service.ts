@@ -13,14 +13,14 @@ import { Prisma } from "@prisma/client";
 
 class TeacherService {
   async assign(tx: Prisma.TransactionClient, data: AssignTeacherTypes) {
-    const { userId, name, nip, schoolId } = data;
+    const { id, userId, name, nip, schoolId } = data;
 
     const existedByUser = await tx.teacher.findUnique({
       where: { userId },
     });
 
-    if (existedByUser) {
-      if (existedByUser.isActive) {
+    if (existedByUser && id !== null) {
+      if (existedByUser.isActive && id !== existedByUser.id) {
         throw new Error("Teacher already assigned");
       }
 
@@ -89,6 +89,7 @@ class TeacherService {
 
       return await this.assign(tx, {
         ...data,
+        id: null,
         userId: user.id,
         schoolId: data.schoolId,
       });
@@ -170,6 +171,7 @@ class TeacherService {
       }
 
       await this.assign(tx, {
+        id: data.id,
         userId: teacher.userId,
         name: data.name,
         nip: data.nip,

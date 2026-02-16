@@ -19,6 +19,7 @@ export interface UpdateTeacherTypes {
 }
 
 export interface AssignTeacherTypes {
+  id: string | null;
   userId: string;
   name: string;
   nip: string;

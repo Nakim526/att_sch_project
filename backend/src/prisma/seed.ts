@@ -1,17 +1,17 @@
 import prisma from "../config/prisma";
 
 async function main() {
-  // console.log("🌱 Dropping existing data...");
+  console.log("🌱 Dropping existing data...");
 
-  // await prisma.allowedEmail.deleteMany();
-  // await prisma.userRole.deleteMany();
-  // await prisma.user.deleteMany();
-  // await prisma.school.deleteMany();
-  // await prisma.role.deleteMany();
-  // await prisma.teacher.deleteMany();
-  // await prisma.class.deleteMany();
-  // await prisma.subject.deleteMany();
-  // await prisma.teacherSubject.deleteMany();
+  await prisma.allowedEmail.deleteMany();
+  await prisma.userRole.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.school.deleteMany();
+  await prisma.role.deleteMany();
+  await prisma.teacher.deleteMany();
+  await prisma.class.deleteMany();
+  await prisma.subject.deleteMany();
+  await prisma.teacherSubject.deleteMany();
 
   console.log("🌱 Seeding initial data...");
 
