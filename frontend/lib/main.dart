@@ -20,6 +20,15 @@ import 'package:att_school/features/admin/has-access/read/detail/provider/read_h
 import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
 import 'package:att_school/features/admin/has-access/update/data/update_has_access_service.dart';
 import 'package:att_school/features/admin/has-access/update/provider/update_has_access_provider.dart';
+import 'package:att_school/features/admin/teacher/create/data/create_teacher_service.dart';
+import 'package:att_school/features/admin/teacher/create/provider/create_teacher_provider.dart';
+import 'package:att_school/features/admin/teacher/delete/data/delete_teacher_service.dart';
+import 'package:att_school/features/admin/teacher/delete/provider/delete_teacher_provider.dart';
+import 'package:att_school/features/admin/teacher/read/data/read_teacher_service.dart';
+import 'package:att_school/features/admin/teacher/read/detail/provider/read_teacher_detail_provider.dart';
+import 'package:att_school/features/admin/teacher/read/list/provider/read_teacher_list_provider.dart';
+import 'package:att_school/features/admin/teacher/update/data/update_teacher_service.dart';
+import 'package:att_school/features/admin/teacher/update/provider/update_teacher_provider.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
 import 'package:att_school/features/auth/provider/auth_provider.dart';
 import 'package:att_school/features/school/data/school_service.dart';
@@ -77,6 +86,20 @@ void main() {
         ),
         Provider<DeleteHasAccessService>(
           create: (context) => DeleteHasAccessService(context.read<Dio>()),
+        ),
+
+        /// 🔸 Teachers
+        Provider<ReadTeacherService>(
+          create: (context) => ReadTeacherService(context.read<Dio>()),
+        ),
+        Provider<CreateTeacherService>(
+          create: (context) => CreateTeacherService(context.read<Dio>()),
+        ),
+        Provider<UpdateTeacherService>(
+          create: (context) => UpdateTeacherService(context.read<Dio>()),
+        ),
+        Provider<DeleteTeacherService>(
+          create: (context) => DeleteTeacherService(context.read<Dio>()),
         ),
 
         /// 🔹 Providers (State)
@@ -158,6 +181,43 @@ void main() {
           create: (context) {
             return DeleteHasAccessProvider(
               context.read<DeleteHasAccessService>(),
+            );
+          },
+        ),
+
+        /// 🔸 Teachers
+        ChangeNotifierProvider<ReadTeacherListProvider>(
+          create: (context) {
+            return ReadTeacherListProvider(
+              context.read<ReadTeacherService>(),
+              context.read<ReadHasAccessListProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<CreateTeacherProvider>(
+          create: (context) {
+            return CreateTeacherProvider(context.read<CreateTeacherService>());
+          },
+        ),
+        ChangeNotifierProvider<ReadTeacherDetailProvider>(
+          create: (context) {
+            return ReadTeacherDetailProvider(
+              context.read<ReadTeacherService>(),
+              context.read<SchoolProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateTeacherProvider>(
+          create: (context) {
+            return UpdateTeacherProvider(
+              context.read<UpdateTeacherService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<DeleteTeacherProvider>(
+          create: (context) {
+            return DeleteTeacherProvider(
+              context.read<DeleteTeacherService>(),
             );
           },
         ),

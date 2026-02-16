@@ -19,6 +19,8 @@ class AppSelectOneInput extends StatelessWidget {
   final bool showSearchBox;
   final BorderRadius? borderRadius;
   final Function(dynamic)? onChanged;
+  final int minLines;
+  final int maxLines;
 
   const AppSelectOneInput({
     super.key,
@@ -33,6 +35,8 @@ class AppSelectOneInput extends StatelessWidget {
     this.showSearchBox = true,
     this.borderRadius,
     this.onChanged,
+    this.minLines = 1,
+    this.maxLines = 1,
   });
 
   @override
@@ -79,6 +83,8 @@ class AppSelectOneInput extends StatelessWidget {
               cursorColor: context.onPrimary,
               decoration: AppInputStyle.text(context, hintText: 'Search...'),
               style: AppTextStyle.of(context, AppTextVariant.body),
+              minLines: minLines,
+              maxLines: maxLines,
             ),
 
             itemBuilder: (context, item, isDisabled, isSelected) {

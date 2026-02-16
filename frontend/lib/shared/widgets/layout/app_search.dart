@@ -34,7 +34,7 @@ class _AppSearchState extends State<AppSearch> {
 
   void _onChanged(String value) {
     setState(() => _controller.text = value);
-    
+
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 1), () {
       widget.onChanged?.call(value);

@@ -1,8 +1,5 @@
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
-// import 'package:att_school/features/admin/has-access/models/has_access_model.dart';
 import 'package:att_school/features/admin/has-access/read/data/read_has_access_service.dart';
-// import 'package:att_school/features/roles/data/roles_model.dart';
-// import 'package:att_school/features/user/data/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ReadHasAccessListProvider extends ChangeNotifier {
@@ -29,8 +26,7 @@ class ReadHasAccessListProvider extends ChangeNotifier {
       List<Map<String, dynamic>> hasAccess = [];
       final response = await service.readHasAccessList();
 
-      final result =
-          (response.data['data'] as List).cast<Map<String, dynamic>>();
+      final result = response.data['data'] as List;
 
       for (final item in result) {
         hasAccess.add({
@@ -58,8 +54,8 @@ class ReadHasAccessListProvider extends ChangeNotifier {
 
   void clearError() => _error = '';
 
-  void reload() => _fetch();
-  
+  Future<void> reload() => _fetch();
+
   Future<void> search(String query) async {
     await _fetch();
     _isLoading = true;

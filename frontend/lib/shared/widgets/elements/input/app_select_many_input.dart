@@ -23,6 +23,8 @@ class AppSelectManyInput extends StatelessWidget {
   final bool showSearchBox;
   final BorderRadius? borderRadius;
   final Function(dynamic)? onChanged;
+  final int minLines;
+  final int maxLines;
 
   const AppSelectManyInput({
     super.key,
@@ -37,6 +39,8 @@ class AppSelectManyInput extends StatelessWidget {
     this.showSearchBox = true,
     this.borderRadius,
     this.onChanged,
+    this.minLines = 1,
+    this.maxLines = 1,
   });
 
   List<Widget> _dropdownBuildSelectedItems(
@@ -141,6 +145,8 @@ class AppSelectManyInput extends StatelessWidget {
               cursorColor: context.onPrimary,
               decoration: AppInputStyle.text(context, hintText: 'Search...'),
               style: AppTextStyle.of(context, AppTextVariant.body),
+              minLines: minLines,
+              maxLines: maxLines,
             ),
 
             itemBuilder: (context, item, isDisabled, isSelected) {

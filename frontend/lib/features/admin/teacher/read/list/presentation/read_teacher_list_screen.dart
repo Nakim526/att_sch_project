@@ -1,7 +1,7 @@
 import 'package:att_school/core/constant/size/app_size.dart';
-import 'package:att_school/features/admin/has-access/delete/provider/delete_has_access_provider.dart';
-import 'package:att_school/features/admin/has-access/read/detail/presentation/read_has_access_detail_page.dart';
-import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
+import 'package:att_school/features/admin/teacher/delete/provider/delete_teacher_provider.dart';
+import 'package:att_school/features/admin/teacher/read/detail/presentation/read_teacher_detail_page.dart';
+import 'package:att_school/features/admin/teacher/read/list/provider/read_teacher_list_provider.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
@@ -13,14 +13,14 @@ import 'package:att_school/shared/widgets/layout/app_table_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ReadHasAccessListScreen extends StatelessWidget {
-  const ReadHasAccessListScreen({super.key});
+class ReadTeacherListScreen extends StatelessWidget {
+  const ReadTeacherListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<DeleteHasAccessProvider>();
+    final provider = context.read<DeleteTeacherProvider>();
 
-    return Consumer<ReadHasAccessListProvider>(
+    return Consumer<ReadTeacherListProvider>(
       builder: (context, list, _) {
         // 🔥 SIDE-EFFECT: dialog
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,21 +35,22 @@ class ReadHasAccessListScreen extends StatelessWidget {
         return Stack(
           children: [
             AppScreen(
-              appBar: AppBar(title: const Text('Read HasAccess List')),
+              appBar: AppBar(title: const Text('Read Teacher List')),
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSize.medium,
                   children: [
-                    AppText("HasAccess List", variant: AppTextVariant.h2),
+                    AppText("Teacher List", variant: AppTextVariant.h2),
                     AppButton(
-                      "Create HasAccess",
+                      "Create Teacher",
                       onPressed: () async {
                         await Navigator.pushNamed(
                           context,
-                          '/has-access/create',
+                          '/teachers/create',
                         );
-                        await list.reload();
+
+                        list.reload();
                       },
                       variant: AppButtonVariant.primary,
                     ),
@@ -57,26 +58,26 @@ class ReadHasAccessListScreen extends StatelessWidget {
                     AppTableList(
                       columns: {
                         'Name': 'name',
+                        'NIP': 'nip',
                         'Email': 'email',
                         'Status': 'isActive',
-                        'Role': 'role',
                       },
                       customData: {
                         'isActive': (value) {
                           return value ? 'Aktif' : 'Tidak Aktif';
                         },
                       },
-                      data: list.hasAccess,
+                      data: list.teachers,
                       cellLink: ['name'],
                       onDetail: (id) async {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => ReadHasAccessDetailPage(id),
+                            builder: (_) => ReadTeacherDetailPage(id),
                           ),
                         );
 
-                        await list.reload();
+                        list.reload();
                       },
                       onRemove: (detail) {
                         AppDialog.confirm(
@@ -84,12 +85,12 @@ class ReadHasAccessListScreen extends StatelessWidget {
                           title: 'Delete Data',
                           message: "Are you sure to delete ${detail['name']}?",
                           onConfirm: () async {
-                            final result = await provider.deleteHasAccess(
+                            final result = await provider.deleteTeacher(
                               detail['id'],
                             );
 
                             if (result.success) {
-                              return await list.reload();
+                              return list.reload();
                             }
 
                             if (context.mounted) {

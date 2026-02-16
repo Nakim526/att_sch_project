@@ -48,7 +48,9 @@ class DashboardAdmin extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/teachers');
+              },
               maxWidth: AppSizeScreen.card(context),
               children: [
                 Icon(

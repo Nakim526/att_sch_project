@@ -15,6 +15,7 @@ class AppInputStyle {
     Widget? suffixIcon,
     bool isError = false,
     int minLines = 1,
+    int maxLines = 1,
   }) {
     final radius = borderRadius ?? AppBorderRadius.xSmall;
 
@@ -87,7 +88,7 @@ class AppInputStyle {
 
   static const BoxConstraints _singleLineConstraints = BoxConstraints(
     minHeight: AppSize.fieldHeight,
-    maxHeight: AppSize.fieldHeight,
+    maxHeight: double.infinity,
   );
 
   static const BoxConstraints _iconConstraints = BoxConstraints(

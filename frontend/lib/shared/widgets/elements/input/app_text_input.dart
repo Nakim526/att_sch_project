@@ -16,7 +16,7 @@ class AppTextInput extends StatelessWidget {
   final Widget? prefix;
   final Widget? suffixIcon;
   final int minLines;
-  final int? maxLines;
+  final int maxLines;
   final bool alignLabelWithHint;
   final void Function(String)? onChanged;
 
@@ -33,7 +33,7 @@ class AppTextInput extends StatelessWidget {
     this.prefix,
     this.suffixIcon,
     this.minLines = 1,
-    this.maxLines,
+    this.maxLines = 1,
     this.alignLabelWithHint = false,
     this.onChanged,
   });
@@ -50,6 +50,7 @@ class AppTextInput extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          style: AppTextStyle.of(context, AppTextVariant.body),
           decoration: AppInputStyle.text(
             context,
             hintText: hintText,

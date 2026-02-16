@@ -137,6 +137,8 @@ coverage/
 *.DS_Store
 
 # Keep Flutter Services
-!frontend/lib/features/**/data/
-!frontend/lib/features/**/**/data/
-!frontend/lib/features/**/**/**/data/
+!frontend/lib/**/**/data/
+!frontend/lib/**/**/**/data/
+!frontend/lib/**/**/**/**/data/
+!frontend/lib/**/**/**/**/**/data/
+!frontend/lib/**/**/**/**/**/**/data/

@@ -1,9 +1,8 @@
-import 'package:att_school/core/constant/item/app_items.dart';
 import 'package:att_school/core/constant/size/app_size.dart';
-import 'package:att_school/features/admin/has-access/create/provider/create_has_acces_provider.dart';
-import 'package:att_school/features/admin/has-access/has_access_form_screen.dart';
-import 'package:att_school/features/admin/has-access/models/has_access_model.dart';
-import 'package:att_school/features/roles/data/roles_model.dart';
+import 'package:att_school/features/admin/teacher/create/provider/create_teacher_provider.dart';
+import 'package:att_school/features/admin/teacher/models/teacher_model.dart';
+import 'package:att_school/features/admin/teacher/read/list/provider/read_teacher_list_provider.dart';
+import 'package:att_school/features/admin/teacher/teacher_form_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
@@ -15,86 +14,96 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CreateHasAccessScreen extends StatefulWidget {
-  const CreateHasAccessScreen({super.key});
+class CreateTeacherScreen extends StatefulWidget {
+  const CreateTeacherScreen({super.key});
 
   @override
-  State<CreateHasAccessScreen> createState() => _CreateHasAccessScreenState();
+  State<CreateTeacherScreen> createState() => _CreateTeacherScreenState();
 }
 
-class _CreateHasAccessScreenState extends State<CreateHasAccessScreen> {
+class _CreateTeacherScreenState extends State<CreateTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
   final _dropdownKey = GlobalKey<DropdownSearchState<Map<String, String>>>();
+  final _nipController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _roles = AppItems.roles;
-  List<Map<String, String>>? _selectedRoles;
+  List<String> _emails = [];
+  String? _selectedEmail;
+  bool _errorNip = false;
   bool _errorName = false;
   bool _errorEmail = false;
-  bool _errorRoles = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      if (mounted) {
+        final list = context.read<ReadTeacherListProvider>();
+        await list.fetchAllEmails();
+
+        setState(() => _emails = list.emails);
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _nipController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  void _onChangedNip(_) {
+    if (_errorNip) setState(() => _errorNip = false);
   }
 
   void _onChangedName(_) {
     if (_errorName) setState(() => _errorName = false);
   }
 
-  void _onChangedEmail(_) {
-    if (_errorEmail) setState(() => _errorEmail = false);
-  }
-
-  void _onChangedRoles(List<Map<String, String>>? value) {
+  void _onChangedEmail(String? value) {
     setState(() {
-      _selectedRoles = value;
-      _errorRoles = false;
+      _selectedEmail = value;
+      _errorEmail = false;
     });
   }
 
   bool _validate() {
     setState(() {
+      _errorNip = _nipController.text.isEmpty;
       _errorName = _nameController.text.isEmpty;
-      _errorEmail = _emailController.text.isEmpty;
-      _errorRoles = _selectedRoles == null || _selectedRoles!.isEmpty;
+      _errorEmail = _selectedEmail == null || _selectedEmail!.isEmpty;
     });
 
-    return !(_errorName || _errorEmail || _errorRoles);
+    return !(_errorNip || _errorName || _errorEmail);
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CreateHasAccessProvider>();
+    final provider = context.watch<CreateTeacherProvider>();
 
     return Stack(
       children: [
         AppScreen(
-          appBar: AppBar(title: const Text('Create Class')),
+          appBar: AppBar(title: const Text('Create Teacher')),
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSize.medium,
               children: [
-                AppText("Create Class", variant: AppTextVariant.h2),
+                AppText("Create Teacher", variant: AppTextVariant.h2),
                 AppButton(
                   "Save",
                   onPressed: () async {
                     if (!_validate()) return;
 
-                    final List<RolesModel> roles = [];
-
-                    for (final selected in _selectedRoles!) {
-                      roles.add(RolesModel(role: selected['name']!));
-                    }
-
-                    final result = await provider.createHasAccess(
-                      HasAccessModel(
+                    final result = await provider.createTeacher(
+                      TeacherModel(
+                        nip: _nipController.text,
                         name: _nameController.text,
-                        email: _emailController.text,
-                        roles: roles,
+                        email: _selectedEmail!,
                       ),
                     );
 
@@ -120,19 +129,18 @@ class _CreateHasAccessScreenState extends State<CreateHasAccessScreen> {
                   },
                   variant: AppButtonVariant.primary,
                 ),
-                HasAccessFormScreen(
+                TeacherFormScreen(
                   formKey: _formKey,
                   dropdownKey: _dropdownKey,
+                  nipController: _nipController,
                   nameController: _nameController,
-                  emailController: _emailController,
+                  emails: _emails,
+                  errorNip: _errorNip,
                   errorName: _errorName,
                   errorEmail: _errorEmail,
-                  errorRoles: _errorRoles,
-                  roles: _roles,
-                  selectedRoles: _selectedRoles,
+                  onChangedNip: _onChangedNip,
                   onChangedName: _onChangedName,
-                  onChangedEmail: _onChangedEmail,
-                  onChangedRoles: (value) => _onChangedRoles(value),
+                  onChangedEmail: (value) => _onChangedEmail(value),
                 ),
               ],
             ),
