@@ -147,6 +147,17 @@ class HasAccessService {
 
       const userId = allowed.userId;
 
+      const existedTeacher = await tx.teacher.findUnique({
+        where: { userId },
+      });
+
+      if (existedTeacher) {
+        await tx.teacher.update({
+          where: { userId },
+          data: { isActive: false },
+        });
+      }
+
       // 2️⃣ Update user basic info
       await tx.user.update({
         where: { id: userId },
