@@ -2,6 +2,7 @@ import e from "express";
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import {
+  AssignTeacherTypes,
   CreateTeacherTypes,
   UpdateOldTeacherTypes,
   UpdateTeacherTypes,
@@ -11,9 +12,9 @@ import hasAccessService from "../has-access/has-access.service";
 import { Prisma } from "@prisma/client";
 
 class TeacherService {
-  async assign(tx: Prisma.TransactionClient, data: CreateTeacherTypes) {
+  async assign(tx: Prisma.TransactionClient, data: AssignTeacherTypes) {
     const { userId, name, nip, schoolId } = data;
-    
+
     const existedByUser = await tx.teacher.findUnique({
       where: { userId },
     });
@@ -145,6 +146,12 @@ class TeacherService {
   ) {
     const { userId, name } = data;
 
+    const teacher = await tx.teacher.findUnique({ where: { userId } });
+
+    if (!teacher) {
+      throw new Error("Teacher not found");
+    }
+
     return await tx.teacher.update({
       where: { userId },
       data: {
@@ -158,12 +165,15 @@ class TeacherService {
     return await prisma.$transaction(async (tx) => {
       const teacher = await tx.teacher.findUnique({ where: { id: data.id } });
 
-      await tx.teacher.update({
-        where: { id: data.id },
-        data: {
-          name: data.name,
-          nip: data.nip,
-        },
+      if (!teacher) {
+        throw new Error("Teacher not found");
+      }
+
+      await this.assign(tx, {
+        userId: teacher.userId,
+        name: data.name,
+        nip: data.nip,
+        schoolId: teacher.schoolId,
       });
     });
   }

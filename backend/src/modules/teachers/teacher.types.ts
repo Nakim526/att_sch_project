@@ -17,3 +17,10 @@ export interface UpdateTeacherTypes {
   name: string;
   nip: string;
 }
+
+export interface AssignTeacherTypes {
+  userId: string;
+  name: string;
+  nip: string;
+  schoolId: string;
+}
