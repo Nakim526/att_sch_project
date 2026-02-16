@@ -1,16 +1,21 @@
 import e from "express";
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { CreateTeacherTypes, UpdateOldTeacherTypes, UpdateTeacherTypes } from "./teacher.types";
+import {
+  CreateTeacherTypes,
+  UpdateOldTeacherTypes,
+  UpdateTeacherTypes,
+} from "./teacher.types";
 import userService from "../users/user.service";
+import hasAccessService from "../has-access/has-access.service";
 
 class TeacherService {
   async assign(data: CreateTeacherTypes) {
     return prisma.teacher.upsert({
-      where: { nip: data.nip },
+      where: { userId: data.userId },
       update: {
+        nip: data.nip,
         name: data.name,
-        userId: data.userId,
         isActive: true,
       },
       create: {
@@ -23,18 +28,48 @@ class TeacherService {
   }
 
   async createTeacher(data: CreateTeacherTypes) {
+    const { nip, name, email, schoolId } = data;
+
     return prisma.$transaction(async (tx) => {
       console.log(data);
 
-      const result = await userService.createUserTransaction(tx, {
-        name: data.name,
-        email: data.email!,
-        userId: data.userId,
-        roles: ["GURU"],
-        schoolId: data.schoolId,
+      // 1️⃣ Cek email sudah pernah dipakai atau belum
+      const alllowed = await tx.allowedEmail.findUnique({
+        where: { email },
       });
 
-      const user = result.user;
+      if (!alllowed) {
+        throw new Error("Email not allowed");
+      }
+
+      const user = await tx.user.findUnique({
+        where: { id: alllowed!.userId },
+        include: { roles: { include: { role: true } } },
+      });
+
+      const hasRole = user?.roles.some((r) => r.role.name === "GURU");
+
+      if (!hasRole) {
+        const role = await tx.role.findUnique({
+          where: { name: "GURU" },
+        });
+
+        await tx.userRole.create({
+          data: {
+            userId: user!.id,
+            roleId: role!.id,
+          },
+        });
+      }
+
+      await tx.user.update({
+        where: { id: alllowed!.userId },
+        data: { isActive: true, name },
+      });
+
+      if (!user) {
+        throw new Error("Failed to create user");
+      }
 
       return await this.assign({
         ...data,

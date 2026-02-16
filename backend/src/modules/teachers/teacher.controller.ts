@@ -9,10 +9,10 @@ class TeacherController {
       const { name, nip, email } = req.body;
 
       const teacher = await service.createTeacher({
+        nip,
         name,
         email,
         userId,
-        nip,
         schoolId: req.user!.schoolId,
       });
 

@@ -1,11 +1,21 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
 import teacherService from "../teachers/teacher.service";
 import userService from "../users/user.service";
 import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 
 class HasAccessService {
-  async createHasAccess(schoolId: string, payload: CreateHasAccessTypes) {
-    const { name, email, roles } = payload;
+  async createHasAccess(payload: CreateHasAccessTypes) {
+    return await prisma.$transaction(async (tx) => {
+      await this.createHasAccessTransaction(tx, payload);
+    });
+  }
+
+  async createHasAccessTransaction(
+    tx: Prisma.TransactionClient,
+    payload: CreateHasAccessTypes,
+  ) {
+    const { name, email, roles, schoolId } = payload;
     let user = null;
 
     return await prisma.$transaction(async (tx) => {
@@ -15,6 +25,7 @@ class HasAccessService {
       });
 
       if (existed) {
+        // cari user berdasarkan userId dari hasil pencarian hak akses
         user = await tx.user.findUnique({
           where: { id: existed.userId },
         });
@@ -25,6 +36,7 @@ class HasAccessService {
 
         const userId = user!.id;
 
+        // update status user menjadi aktif
         await tx.user.update({
           where: { id: userId },
           data: { isActive: true },

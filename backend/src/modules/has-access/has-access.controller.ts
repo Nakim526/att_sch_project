@@ -6,7 +6,7 @@ class HasAccessController {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const schoolId = req.user!.schoolId;
-      const data = await service.createHasAccess(schoolId, req.body);
+      const data = await service.createHasAccess({ schoolId, ...req.body });
       res.status(201).json({
         message: "Data berhasil ditambahkan",
         data: data,
