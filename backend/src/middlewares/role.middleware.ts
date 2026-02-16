@@ -8,23 +8,9 @@ export function roleMiddleware(roles: string[]) {
     const hasAccess = roles.some((r) => userRoles.includes(r));
 
     if (!hasAccess) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: "Akses Ditolak" });
     }
 
     next();
-
-    // if (!req.user) {
-    //   return res.status(401).json({ message: "Unauthorized" });
-    // }
-
-    // const hasAccess = req.user.roles.some((role) =>
-    //   allowedRoles.includes(role)
-    // );
-
-    // if (!hasAccess) {
-    //   return res.status(403).json({ message: "Forbidden" });
-    // }
-
-    // next();
   };
 }

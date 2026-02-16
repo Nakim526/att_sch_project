@@ -2,6 +2,7 @@ import 'package:att_school/features/admin/class/read/data/read_class_service.dar
 import 'package:att_school/features/admin/class/read/detail/presentation/read_class_detail_screen.dart';
 import 'package:att_school/features/admin/class/read/detail/provider/read_class_detail_provider.dart';
 import 'package:att_school/features/school/provider/school_provider.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,9 +15,24 @@ class ReadClassDetailPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) {
         return ReadClassDetailProvider(
-          context.read<ReadClassService>(),
-          context.read<SchoolProvider>(),
-        )..fetchById(id);
+            context.read<ReadClassService>(),
+            context.read<SchoolProvider>(),
+          )
+          ..fetchById(id).then((result) {
+            if (!result.success && context.mounted) {
+              String error = result.message.toString();
+              if (error ==
+                  "type 'Null' is not a subtype of type 'Map<String, dynamic>'") {
+                error = "Data not found";
+              }
+
+              return AppDialog.show(
+                context,
+                title: "Error",
+                message: result.message,
+              );
+            }
+          });
       },
       child: const ReadClassDetailScreen(),
     );

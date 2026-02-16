@@ -13,9 +13,13 @@ class DashboardAdmin extends StatelessWidget {
     return AppScreen(
       appBar: AppBar(title: const Text('Dashboard Admin')),
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.725, // atur tinggi card
           children: [
             AppTile(
               onTap: () {
@@ -29,54 +33,19 @@ class DashboardAdmin extends StatelessWidget {
             ),
             AppTile(
               onTap: () {
-                Navigator.pushNamed(context, '/has-access');
+                Navigator.pushNamed(context, '/subjects');
               },
               maxWidth: AppSizeScreen.card(context),
               children: [
-                Icon(Icons.security, size: AppSizeScreen.iconCard(context)),
+                Icon(Icons.subject, size: AppSizeScreen.iconCard(context)),
                 AppText(
-                  "Hak Akses",
+                  "Mata Pelajaran",
                   variant: AppTextVariant.title,
                   maxLines: 2,
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            AppTile(
-              onTap: () {
-                Navigator.pushNamed(context, '/teachers');
-              },
-              maxWidth: AppSizeScreen.card(context),
-              children: [
-                Icon(
-                  Icons.person_add_alt_1,
-                  size: AppSizeScreen.iconCard(context),
-                ),
-                AppText("Guru", variant: AppTextVariant.title, maxLines: 2),
-              ],
-            ),
-            AppTile(
-              onTap: () {},
-              maxWidth: AppSizeScreen.card(context),
-              children: [
-                Icon(
-                  Icons.person_add_alt_1,
-                  size: AppSizeScreen.iconCard(context),
-                ),
-                AppText("Siswa", variant: AppTextVariant.title, maxLines: 2),
-              ],
-            ),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
             AppTile(
               onTap: () {},
               maxWidth: AppSizeScreen.card(context),
@@ -98,6 +67,33 @@ class DashboardAdmin extends StatelessWidget {
                   "Absen Siswa",
                   variant: AppTextVariant.title,
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+              ],
+            ),
+            AppTile(
+              onTap: () {
+                Navigator.pushNamed(context, '/teachers');
+              },
+              maxWidth: AppSizeScreen.card(context),
+              children: [
+                Icon(
+                  Icons.person_add_alt_1,
+                  size: AppSizeScreen.iconCard(context),
+                ),
+                AppText("Guru", variant: AppTextVariant.title, maxLines: 2),
+              ],
+            ),
+            AppTile(
+              onTap: () {
+                Navigator.pushNamed(context, '/has-access');
+              },
+              maxWidth: AppSizeScreen.card(context),
+              children: [
+                Icon(Icons.security, size: AppSizeScreen.iconCard(context)),
+                AppText(
+                  "Hak Akses",
+                  variant: AppTextVariant.title,
                   maxLines: 2,
                 ),
               ],

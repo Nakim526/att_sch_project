@@ -24,9 +24,10 @@ class UpdateClassProvider extends ChangeNotifier {
         payload: payload.toJson(),
       );
 
+      final message = response.data['message'].toString();
       final data = response.data['data'];
 
-      return BackendMessageHelper(true, message: data['id']);
+      return BackendMessageHelper(true, message: message, data: data);
     } catch (e) {
       debugPrint(e.toString());
       return BackendMessageHelper(false, message: e.toString());

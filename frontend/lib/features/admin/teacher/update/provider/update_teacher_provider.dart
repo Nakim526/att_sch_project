@@ -24,9 +24,10 @@ class UpdateTeacherProvider extends ChangeNotifier {
         payload: payload.toJson(),
       );
 
+      final message = response.data['message'].toString();
       final data = response.data['data'];
 
-      return BackendMessageHelper(true, message: data['id']);
+      return BackendMessageHelper(true, message: message, data: data);
     } on DioException catch (e) {
       if (e.response?.statusCode == null) {
         _error = e.message.toString();

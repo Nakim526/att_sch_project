@@ -82,22 +82,22 @@ class _CreateClassScreenState extends State<CreateClassScreen> {
                     );
 
                     if (context.mounted) {
-                      if (result.success) {
-                        final id = result.message['id'];
-                        Navigator.pushReplacement(
+                      await AppDialog.show(
+                        context,
+                        title: result.success ? 'Success' : 'Error',
+                        message: result.message,
+                      );
+
+                      if (result.success && context.mounted) {
+                        final id = result.data['id'];
+
+                        await Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ReadClassDetailPage(id),
                           ),
                         );
-                        return;
                       }
-
-                      AppDialog.show(
-                        context,
-                        title: 'Error',
-                        message: result.message,
-                      );
                     }
                   },
                   variant: AppButtonVariant.primary,

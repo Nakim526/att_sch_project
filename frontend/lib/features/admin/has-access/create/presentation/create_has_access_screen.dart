@@ -3,6 +3,7 @@ import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/has-access/create/provider/create_has_acces_provider.dart';
 import 'package:att_school/features/admin/has-access/has_access_form_screen.dart';
 import 'package:att_school/features/admin/has-access/models/has_access_model.dart';
+import 'package:att_school/features/admin/has-access/read/detail/presentation/read_has_access_detail_page.dart';
 import 'package:att_school/features/roles/data/roles_model.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
@@ -99,23 +100,22 @@ class _CreateHasAccessScreenState extends State<CreateHasAccessScreen> {
                     );
 
                     if (context.mounted) {
-                      if (result.success) {
-                        Navigator.pop(context);
-                        //   final id = result.message['id'];
-                        //   Navigator.pushReplacement(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) => ReadClassDetailPage(id),
-                        //     ),
-                        //   );
-                        return;
-                      }
-
-                      AppDialog.show(
+                      await AppDialog.show(
                         context,
-                        title: 'Error',
+                        title: result.success ? 'Success' : 'Error',
                         message: result.message,
                       );
+
+                      if (context.mounted && result.success) {
+                        final id = result.data['id'];
+
+                        await Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReadHasAccessDetailPage(id),
+                          ),
+                        );
+                      }
                     }
                   },
                   variant: AppButtonVariant.primary,

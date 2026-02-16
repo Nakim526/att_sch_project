@@ -31,7 +31,9 @@ class ReadHasAccessDetailProvider extends ChangeNotifier {
 
       _hasAccess = HasAccessModel.fromJson(response.data['data']);
 
-      return BackendMessageHelper(true, message: _hasAccess);
+      final message = response.data['message'].toString();
+
+      return BackendMessageHelper(true, message: message, data: _hasAccess);
     } on DioException catch (e) {
       _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
       debugPrint(_error);

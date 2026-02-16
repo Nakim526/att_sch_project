@@ -6,13 +6,13 @@ class AppColor {
   /* =======================
    * LIGHT THEME COLORS
    * ======================= */
-  static const Color lightPrimaryBg = Color(0xFFF8FAFC);
-  static const Color lightSecondaryBg = Color(0xFFF1F5F9);
+  static const Color lightPrimaryBg = Color(0xFFF2F6FF);
+  static const Color lightSecondaryBg = Color(0xFFE2EBFF);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightOutline = Color(0xFFCBD5E1);
+  static const Color lightOutline = Color(0xFFD6E0F0);
 
   static const Color lightBorder = Color(0xFFE2E8F0);
-  static const Color lightDivider = Color(0xFFCBD5E1);
+  static const Color lightDivider = Color(0xFFE5E7EB);
 
   static const Color lightTextPrimary = Color(0xFF0F172A);
   static const Color lightTextSecondary = Color(0xFF334155);

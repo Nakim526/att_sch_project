@@ -24,4 +24,6 @@ class AppString {
   static const String teacherUrl = '$baseUrl/teachers';
 
   static const String classUrl = '$baseUrl/classes';
+
+  static const String subjectUrl = '$baseUrl/subjects';
 }

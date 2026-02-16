@@ -113,7 +113,7 @@ class _AppTableListState extends State<AppTableList> {
                   else
                     Expanded(
                       child: AppText(
-                        value.toString(),
+                        value != null ? value.toString() : '',
                         variant: AppTextVariant.body,
                         textAlign: key == 'grade' ? TextAlign.center : null,
                       ),

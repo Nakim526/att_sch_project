@@ -2,6 +2,7 @@ import 'package:att_school/features/admin/has-access/read/data/read_has_access_s
 import 'package:att_school/features/admin/has-access/read/detail/presentation/read_has_access_detail_screen.dart';
 import 'package:att_school/features/admin/has-access/read/detail/provider/read_has_access_detail_provider.dart';
 import 'package:att_school/features/school/provider/school_provider.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,9 +15,24 @@ class ReadHasAccessDetailPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) {
         return ReadHasAccessDetailProvider(
-          context.read<ReadHasAccessService>(),
-          context.read<SchoolProvider>(),
-        )..fetchById(id);
+            context.read<ReadHasAccessService>(),
+            context.read<SchoolProvider>(),
+          )
+          ..fetchById(id).then((result) {
+            if (!result.success && context.mounted) {
+              String error = result.message.toString();
+              if (error ==
+                  "type 'Null' is not a subtype of type 'Map<String, dynamic>'") {
+                error = "Data not found";
+              }
+
+              return AppDialog.show(
+                context,
+                title: "Error",
+                message: result.message,
+              );
+            }
+          });
       },
       child: const ReadHasAccessDetailScreen(),
     );

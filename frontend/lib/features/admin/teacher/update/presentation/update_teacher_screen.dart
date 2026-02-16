@@ -121,15 +121,15 @@ class _UpdateTeacherScreenState extends State<UpdateTeacherScreen> {
                     );
 
                     if (context.mounted) {
-                      if (result.success) {
-                        return Navigator.pop(context);
-                      }
-
-                      AppDialog.show(
+                      await AppDialog.show(
                         context,
-                        title: 'Error',
+                        title: result.success ? 'Success' : 'Error',
                         message: result.message,
                       );
+
+                      if (result.success && context.mounted) {
+                        return Navigator.pop(context);
+                      }
                     }
                   },
                   variant: AppButtonVariant.primary,

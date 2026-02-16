@@ -20,6 +20,15 @@ import 'package:att_school/features/admin/has-access/read/detail/provider/read_h
 import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
 import 'package:att_school/features/admin/has-access/update/data/update_has_access_service.dart';
 import 'package:att_school/features/admin/has-access/update/provider/update_has_access_provider.dart';
+import 'package:att_school/features/admin/subject/create/data/create_subject_service.dart';
+import 'package:att_school/features/admin/subject/create/provider/create_subject_provider.dart';
+import 'package:att_school/features/admin/subject/delete/data/delete_subject_service.dart';
+import 'package:att_school/features/admin/subject/delete/provider/delete_subject_provider.dart';
+import 'package:att_school/features/admin/subject/read/data/read_subject_service.dart';
+import 'package:att_school/features/admin/subject/read/detail/provider/read_subject_detail_provider.dart';
+import 'package:att_school/features/admin/subject/read/list/provider/read_subject_list_provider.dart';
+import 'package:att_school/features/admin/subject/update/data/update_subject_service.dart';
+import 'package:att_school/features/admin/subject/update/provider/update_subject_provider.dart';
 import 'package:att_school/features/admin/teacher/create/data/create_teacher_service.dart';
 import 'package:att_school/features/admin/teacher/create/provider/create_teacher_provider.dart';
 import 'package:att_school/features/admin/teacher/delete/data/delete_teacher_service.dart';
@@ -74,12 +83,26 @@ void main() {
           create: (context) => DeleteClassService(context.read<Dio>()),
         ),
 
-        /// 🔸 Has Access
-        Provider<ReadHasAccessService>(
-          create: (context) => ReadHasAccessService(context.read<Dio>()),
+        /// 🔸 Subjects
+        Provider<ReadSubjectService>(
+          create: (context) => ReadSubjectService(context.read<Dio>()),
         ),
+        Provider<CreateSubjectService>(
+          create: (context) => CreateSubjectService(context.read<Dio>()),
+        ),
+        Provider<UpdateSubjectService>(
+          create: (context) => UpdateSubjectService(context.read<Dio>()),
+        ),
+        Provider<DeleteSubjectService>(
+          create: (context) => DeleteSubjectService(context.read<Dio>()),
+        ),
+
+        /// 🔸 Has Access
         Provider<CreateHasAccessService>(
           create: (context) => CreateHasAccessService(context.read<Dio>()),
+        ),
+        Provider<ReadHasAccessService>(
+          create: (context) => ReadHasAccessService(context.read<Dio>()),
         ),
         Provider<UpdateHasAccessService>(
           create: (context) => UpdateHasAccessService(context.read<Dio>()),
@@ -89,11 +112,11 @@ void main() {
         ),
 
         /// 🔸 Teachers
-        Provider<ReadTeacherService>(
-          create: (context) => ReadTeacherService(context.read<Dio>()),
-        ),
         Provider<CreateTeacherService>(
           create: (context) => CreateTeacherService(context.read<Dio>()),
+        ),
+        Provider<ReadTeacherService>(
+          create: (context) => ReadTeacherService(context.read<Dio>()),
         ),
         Provider<UpdateTeacherService>(
           create: (context) => UpdateTeacherService(context.read<Dio>()),
@@ -144,6 +167,36 @@ void main() {
         ChangeNotifierProvider<DeleteClassProvider>(
           create: (context) {
             return DeleteClassProvider(context.read<DeleteClassService>());
+          },
+        ),
+
+        /// 🔸 Subjects
+        ChangeNotifierProvider<ReadSubjectListProvider>(
+          create: (context) {
+            return ReadSubjectListProvider(context.read<ReadSubjectService>());
+          },
+        ),
+        ChangeNotifierProvider<CreateSubjectProvider>(
+          create: (context) {
+            return CreateSubjectProvider(context.read<CreateSubjectService>());
+          },
+        ),
+        ChangeNotifierProvider<ReadSubjectDetailProvider>(
+          create: (context) {
+            return ReadSubjectDetailProvider(
+              context.read<ReadSubjectService>(),
+              context.read<SchoolProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateSubjectProvider>(
+          create: (context) {
+            return UpdateSubjectProvider(context.read<UpdateSubjectService>());
+          },
+        ),
+        ChangeNotifierProvider<DeleteSubjectProvider>(
+          create: (context) {
+            return DeleteSubjectProvider(context.read<DeleteSubjectService>());
           },
         ),
 

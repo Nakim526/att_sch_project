@@ -24,7 +24,7 @@ class AppTile extends StatelessWidget {
     final isDark = context.brightness == Brightness.dark;
 
     return Card(
-      color: context.primaryContainer,
+      color: context.sectionContainer,
       elevation: AppSize.small,
       clipBehavior: Clip.antiAlias,
       shadowColor:
@@ -49,6 +49,7 @@ class AppTile extends StatelessWidget {
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: children,
             ),

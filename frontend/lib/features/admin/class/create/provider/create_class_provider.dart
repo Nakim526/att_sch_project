@@ -19,7 +19,10 @@ class CreateClassProvider extends ChangeNotifier {
     try {
       final response = await service.createClass(payload.toJson());
 
-      return BackendMessageHelper(true, message: response.data['data']);
+      final message = response.data['message'].toString();
+      final data = response.data['data'];
+
+      return BackendMessageHelper(true, message: message, data: data);
     } catch (e) {
       _error = e.toString();
       debugPrint(_error);

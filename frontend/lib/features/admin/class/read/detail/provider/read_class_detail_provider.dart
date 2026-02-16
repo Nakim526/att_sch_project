@@ -1,3 +1,4 @@
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/class/models/class_model.dart';
 import 'package:att_school/features/admin/class/read/data/read_class_service.dart';
 import 'package:att_school/features/school/provider/school_provider.dart';
@@ -20,7 +21,7 @@ class ReadClassDetailProvider extends ChangeNotifier {
 
   String get error => _error;
 
-  Future<void> fetchById(String id) async {
+  Future<BackendMessageHelper> fetchById(String id) async {
     _id = id;
     _error = '';
     _class = null;
@@ -38,12 +39,20 @@ class ReadClassDetailProvider extends ChangeNotifier {
 
         _class = ClassModel.fromJson(data);
       }
+
+      final message = response.data['message'].toString();
+
+      return BackendMessageHelper(true, message: message, data: _class);
     } on DioException catch (e) {
       debugPrint(e.toString());
       _error = "${e.response?.statusCode} - ${e.response?.statusMessage}";
+
+      return BackendMessageHelper(false, message: _error);
     } catch (e) {
       debugPrint(e.toString());
       _error = e.toString();
+
+      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,6 +1,7 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/teacher/create/provider/create_teacher_provider.dart';
 import 'package:att_school/features/admin/teacher/models/teacher_model.dart';
+import 'package:att_school/features/admin/teacher/read/detail/presentation/read_teacher_detail_page.dart';
 import 'package:att_school/features/admin/teacher/read/list/provider/read_teacher_list_provider.dart';
 import 'package:att_school/features/admin/teacher/teacher_form_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -108,23 +109,21 @@ class _CreateTeacherScreenState extends State<CreateTeacherScreen> {
                     );
 
                     if (context.mounted) {
-                      if (result.success) {
-                        Navigator.pop(context);
-                        //   final id = result.message['id'];
-                        //   Navigator.pushReplacement(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) => ReadClassDetailPage(id),
-                        //     ),
-                        //   );
-                        return;
-                      }
-
-                      AppDialog.show(
+                      await AppDialog.show(
                         context,
-                        title: 'Error',
+                        title: result.success ? 'Success' : 'Error',
                         message: result.message,
                       );
+
+                      if (result.success && context.mounted) {
+                        final id = result.data['id'];
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ReadTeacherDetailPage(id),
+                          ),
+                        );
+                      }
                     }
                   },
                   variant: AppButtonVariant.primary,

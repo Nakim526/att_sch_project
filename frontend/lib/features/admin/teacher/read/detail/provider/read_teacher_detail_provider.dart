@@ -38,7 +38,9 @@ class ReadTeacherDetailProvider extends ChangeNotifier {
         _teacher = TeacherModel.fromJson(data);
       }
 
-      return BackendMessageHelper(true, message: _teacher);
+      final message = response.data['message'].toString();
+
+      return BackendMessageHelper(true, message: message, data: _teacher);
     } on DioException catch (e) {
       _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
       debugPrint(_error);

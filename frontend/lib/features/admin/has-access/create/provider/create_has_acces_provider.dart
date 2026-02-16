@@ -18,13 +18,12 @@ class CreateHasAccessProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint(payload.toJson().toString());
       final response = await service.createHasAccess(payload.toJson());
 
-      return BackendMessageHelper(
-        true,
-        message: response.data['message'],
-      );
+      final message = response.data['message'].toString();
+      final data = response.data['data'];
+
+      return BackendMessageHelper(true, message: message, data: data);
     } on DioException catch (e) {
       if (e.response?.statusCode == null) {
         throw e.message.toString();

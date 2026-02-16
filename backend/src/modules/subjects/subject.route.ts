@@ -1,7 +1,7 @@
 // src/modules/subject/subject.route.ts
 
 import { Router } from "express";
-import subjectController from "./subject.controller";
+import controller from "./subject.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { roleMiddleware } from "../../middlewares/role.middleware";
 
@@ -10,25 +10,20 @@ const router = Router();
 /**
  * Subject hanya boleh dikelola oleh:
  * - ADMIN
+ * - OPERATOR
  * - KEPSEK
  */
 router.use(authMiddleware);
-router.use(roleMiddleware(["ADMIN", "KEPSEK"]));
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 
-router.post("/", (req, res, next) => subjectController.create(req, res, next));
+router.post("/", (req, res, next) => controller.create(req, res, next));
 
-router.get("/", (req, res, next) => subjectController.findAll(req, res, next));
+router.get("/", (req, res, next) => controller.findAll(req, res, next));
 
-router.get("/:id", (req, res, next) =>
-  subjectController.findOne(req, res, next),
-);
+router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
 
-router.put("/:id", (req, res, next) =>
-  subjectController.update(req, res, next),
-);
+router.put("/:id", (req, res, next) => controller.update(req, res, next));
 
-router.delete("/:id", (req, res, next) =>
-  subjectController.delete(req, res, next),
-);
+router.delete("/:id", (req, res, next) => controller.delete(req, res, next));
 
 export default router;
