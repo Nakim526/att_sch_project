@@ -219,7 +219,7 @@ class HasAccessService {
           });
         }
       } else {
-        await tx.teacher.update({
+        await tx.teacher.updateMany({
           where: { userId },
           data: { isActive: false },
         });
@@ -251,7 +251,7 @@ class HasAccessService {
         data: { isActive: false },
       });
 
-      await tx.teacher.update({
+      await tx.teacher.updateMany({
         where: { userId: allowed.userId },
         data: { isActive: false },
       });
