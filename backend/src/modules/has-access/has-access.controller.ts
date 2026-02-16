@@ -38,7 +38,8 @@ class HasAccessController {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };
-      const data = await service.updateHasAccess(id, req.body);
+      const schoolId = req.user!.schoolId;
+      const data = await service.updateHasAccess(id, schoolId, req.body);
       res.json({
         message: "Data berhasil diperbarui",
         data: data,

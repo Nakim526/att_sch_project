@@ -66,14 +66,14 @@ class HasAccessService {
       });
 
       for (const index in userRoles) {
-        if (userRoles[index].role.name = "GURU") {
+        if ((userRoles[index].role.name = "GURU")) {
           await teacherService.assign({
             name,
             nip: undefined,
             email,
             userId: user!.id,
             schoolId,
-          })
+          });
         }
       }
 
@@ -133,7 +133,7 @@ class HasAccessService {
       },
     });
   }
-  async updateHasAccess(id: string, payload: UpdateHasAccessTypes) {
+  async updateHasAccess(id: string, schoolId: string, payload: UpdateHasAccessTypes) {
     const { name, email, roles } = payload;
 
     return prisma.$transaction(async (tx) => {
@@ -178,6 +178,23 @@ class HasAccessService {
         })),
       });
 
+      const userRoles = await tx.userRole.findMany({
+        where: { userId },
+        select: { role: true },
+      });
+
+      for (const index in userRoles) {
+        if ((userRoles[index].role.name = "GURU")) {
+          await teacherService.assign({
+            nip: undefined,
+            name: String(name),
+            email: String(email),
+            userId,
+            schoolId
+          });
+        }
+      }
+
       // 6️⃣ Update allowed email jika perlu
       await tx.allowedEmail.update({
         where: { id },
@@ -203,6 +220,11 @@ class HasAccessService {
         where: { id: allowed.userId },
         data: { isActive: false },
       });
+
+      await tx.teacher.update({
+        where: { userId: allowed.userId },
+        data: { isActive: false },
+      })
 
       // Nonaktifkan allowed email
       await tx.allowedEmail.update({
