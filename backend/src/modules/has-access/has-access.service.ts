@@ -60,23 +60,6 @@ class HasAccessService {
         user = result.user;
       }
 
-      const userRoles = await tx.userRole.findMany({
-        where: { userId: user!.id },
-        select: { role: true },
-      });
-
-      for (const index in userRoles) {
-        if ((userRoles[index].role.name = "GURU")) {
-          await teacherService.assign({
-            name,
-            nip: undefined,
-            email,
-            userId: user!.id,
-            schoolId,
-          });
-        }
-      }
-
       // 5️⃣ TERAKHIR: simpan ke AllowedEmail
       await tx.allowedEmail.upsert({
         where: { email },
@@ -133,7 +116,11 @@ class HasAccessService {
       },
     });
   }
-  async updateHasAccess(id: string, schoolId: string, payload: UpdateHasAccessTypes) {
+  async updateHasAccess(
+    id: string,
+    schoolId: string,
+    payload: UpdateHasAccessTypes,
+  ) {
     const { name, email, roles } = payload;
 
     return prisma.$transaction(async (tx) => {
@@ -185,13 +172,16 @@ class HasAccessService {
 
       for (const index in userRoles) {
         if ((userRoles[index].role.name = "GURU")) {
-          await teacherService.assign({
-            nip: undefined,
-            name: String(name),
-            email: String(email),
-            userId,
-            schoolId
+          const teacher = await tx.teacher.findUnique({
+            where: { userId },
           });
+
+          if (teacher) {
+            await teacherService.updateOldTeacher({
+              userId,
+              name: String(name),
+            });
+          }
         }
       }
 
@@ -224,7 +214,7 @@ class HasAccessService {
       await tx.teacher.update({
         where: { userId: allowed.userId },
         data: { isActive: false },
-      })
+      });
 
       // Nonaktifkan allowed email
       await tx.allowedEmail.update({

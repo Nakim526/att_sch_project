@@ -1,7 +1,7 @@
 import e from "express";
 import prisma from "../../config/prisma";
 import { AuthRequest } from "../../middlewares/auth.middleware";
-import { CreateTeacherTypes, UpdateTeacherTypes } from "./teacher.types";
+import { CreateTeacherTypes, UpdateOldTeacherTypes, UpdateTeacherTypes } from "./teacher.types";
 import userService from "../users/user.service";
 
 class TeacherService {
@@ -74,9 +74,21 @@ class TeacherService {
     });
   }
 
-  async updateTeacher(id: string, data: UpdateTeacherTypes) {
+  async updateOldTeacher(data: UpdateOldTeacherTypes) {
+    const { userId, name } = data;
+
     return prisma.teacher.update({
-      where: { userId: id },
+      where: { userId },
+      data: {
+        isActive: true,
+        name: name,
+      },
+    });
+  }
+
+  async updateTeacher(data: UpdateTeacherTypes) {
+    return prisma.teacher.update({
+      where: { id: data.id },
       data: {
         isActive: true,
         name: data.name,

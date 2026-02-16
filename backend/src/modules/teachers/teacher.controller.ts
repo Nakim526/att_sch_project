@@ -61,7 +61,7 @@ class TeacherController {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };
-      const data = await service.updateTeacher(id, req.body);
+      const data = await service.updateTeacher({ id, ...req.body });
 
       res.json({
         message: "Data berhasil diperbarui",
@@ -75,7 +75,7 @@ class TeacherController {
   async updateMe(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const id = req.user!.id;
-      const data = await service.updateTeacher(id, req.body);
+      const data = await service.updateTeacher({ id, ...req.body });
 
       res.json({
         message: "Data berhasil diperbarui",
