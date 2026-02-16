@@ -19,11 +19,18 @@ class TeacherService {
       where: { userId },
     });
 
-    if (existedByUser && id !== null) {
+    if (existedByUser) {
+      if (id === existedByUser.id) {
+        return await tx.teacher.update({
+          where: { id },
+          data: { name, nip, isActive: true },
+        });
+      }
+      
       if (existedByUser.isActive && id !== existedByUser.id) {
         throw new Error("Teacher already assigned");
       }
-
+      
       await tx.teacher.update({
         where: { userId },
         data: { name, nip, isActive: true },
