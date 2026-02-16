@@ -132,7 +132,7 @@ class HasAccessService {
 
   async getHasAccessById(id: string) {
     return prisma.allowedEmail.findUnique({
-      where: { id, isActive: true },
+      where: { id },
       select: {
         id: true,
         isActive: true,

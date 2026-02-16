@@ -19,17 +19,17 @@ class TeacherService {
       where: { nip },
     });
 
-    if (nipUsed && nipUsed.isActive && id !== nipUsed.id) {
+    if (nipUsed && id !== nipUsed.id) {
       throw new Error("NIP already registered");
     }
 
-    const teacher = await tx.teacher.findUnique({
+    const existedTeacher = await tx.teacher.findUnique({
       where: { userId },
     });
 
-    if (teacher) {
-      if (id !== teacher.id) {
-        if (teacher.isActive) {
+    if (existedTeacher) {
+      if (id !== existedTeacher.id) {
+        if (existedTeacher.isActive) {
           throw new Error("Teacher already assigned");
         }
 
