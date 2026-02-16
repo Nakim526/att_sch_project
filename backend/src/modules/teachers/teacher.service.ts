@@ -177,6 +177,10 @@ class TeacherService {
         throw new Error("Teacher not found");
       }
 
+      console.log(data);
+
+      console.log(teacher);
+
       return await this.assign(tx, {
         id: data.id,
         userId: teacher.userId,
