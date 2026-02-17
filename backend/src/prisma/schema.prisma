@@ -112,6 +112,7 @@ model User {
   // Audit trail - Siapa yang input absensi
   createdStudentAttendances StudentAttendance[] @relation("CreatedBy")
 
+  @@unique([schoolId, email])
   @@index([schoolId])
   @@index([email])
   @@index([googleId])
