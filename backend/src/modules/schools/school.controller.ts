@@ -20,6 +20,8 @@ export async function list(req: AuthRequest, res: Response) {
 }
 
 export async function me(req: AuthRequest, res: Response) {
+  console.log(req.user);
+  
   const school = await service.getMySchool(req.user!.schoolId);
 
   if (!school) {
