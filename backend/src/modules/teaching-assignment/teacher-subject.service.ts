@@ -5,18 +5,18 @@ import { CreateTeacherSubjectTypes } from "./teacher-subject.types";
 
 class TeacherSubjectService {
   async assign(data: CreateTeacherSubjectTypes) {
-    return prisma.teacherSubject.create({
+    return prisma.teachingAssignment.create({
       data: {
-        userId: data.userId,
         teacherId: data.teacherId,
         subjectId: data.subjectId,
         classId: data.classId,
+        semesterId: data.semesterId,
       },
     });
   }
 
   async findAllBySchool(schoolId: string) {
-    return prisma.teacherSubject.findMany({
+    return prisma.teachingAssignment.findMany({
       where: {
         class: {
           schoolId,
@@ -26,30 +26,28 @@ class TeacherSubjectService {
         teacher: {
           select: { id: true, name: true, user: { select: { email: true } } },
         },
-        subject: {
-          select: { id: true, name: true },
-        },
-        class: {
-          select: { id: true, name: true, grade: true },
-        },
+        subject: true,
+        class: true,
+        semester: true,
       },
     });
   }
 
   async findByTeacher(teacherId: string) {
-    return prisma.teacherSubject.findMany({
+    return prisma.teachingAssignment.findMany({
       where: { teacherId },
       include: {
         teacher: true,
         subject: true,
         class: true,
-        user: true,
+        schedules: true,
+        attendances: true,
       },
     });
   }
 
   async delete(id: string) {
-    return prisma.teacherSubject.delete({
+    return prisma.teachingAssignment.delete({
       where: { id },
     });
   }

@@ -7,7 +7,7 @@ import schoolRoutes from "../modules/schools/school.route";
 import teacherRoutes from "../modules/teachers/teacher.route";
 import classRoutes from "../modules/classes/class.route";
 import subjectRoutes from "../modules/subjects/subject.route";
-import teacherSubjectRoutes from "../modules/teachers-subjects/teacher-subject.route";
+import teacherSubjectRoutes from "../modules/teaching-assignment/teacher-subject.route";
 import studentRoutes from "../modules/students/student.route";
 import studentAttendanceRoute from "../modules/attendances/students/student-attendance.route";
 import { minioClient, MINIO_BUCKET } from "../config/minio";

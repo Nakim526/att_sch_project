@@ -75,7 +75,7 @@ class HasAccessService {
     await tx.allowedEmail.upsert({
       where: { email },
       update: { isActive: true, userId: user!.id },
-      create: { email, userId: user!.id },
+      create: { email, userId: user!.id, schoolId },
     });
 
     // 6️⃣ Return hasil (commit otomatis)
@@ -133,20 +133,7 @@ class HasAccessService {
   async getHasAccessById(id: string) {
     return prisma.allowedEmail.findUnique({
       where: { id },
-      select: {
-        id: true,
-        isActive: true,
-        createdAt: true,
-        user: {
-          include: {
-            roles: {
-              select: {
-                role: true,
-              },
-            },
-          },
-        },
-      },
+      include: { role: true },
     });
   }
   async updateHasAccess(

@@ -9,7 +9,8 @@ class ClassService {
       data: {
         schoolId,
         name: data.name,
-        grade: data.grade,
+        gradeLevel: data.grade,
+        academicYearId: data.academicYearId,
       },
     });
   }
@@ -17,7 +18,7 @@ class ClassService {
   async findAllBySchool(schoolId: string) {
     return prisma.class.findMany({
       where: { schoolId },
-      orderBy: [{ grade: "asc" }, { name: "asc" }],
+      orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
     });
   }
 

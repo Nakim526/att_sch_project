@@ -5,4 +5,5 @@ export interface CreateTeacherSubjectTypes {
   teacherId: string;
   subjectId: string;
   classId: string;
+  semesterId: string;
 }

@@ -7,48 +7,122 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum AttendanceStatus {
-  HADIR
-  IZIN
-  SAKIT
-  ALFA
+// =======================
+// ENUMS
+// =======================
+
+enum RoleName {
+  ADMIN // Super Admin - Full Access
+  OPERATOR // Super Admin - Full Access  
+  KEPSEK // Super Admin - Full Access + Bisa sebagai Guru
+  GURU // Terbatas - Absen siswa & diri sendiri + Brankas pribadi
 }
 
-model School {
-  id        String   @id @default(uuid())
-  name      String
-  address   String?
-  createdAt DateTime @default(now())
+enum AttendanceStatus {
+  PRESENT // Hadir
+  SICK // Sakit
+  PERMISSION // Izin
+  ABSENT // Alpa/Tanpa Keterangan
+  LATE // Terlambat
+}
 
-  users    User[]
-  classes  Class[]
-  subjects Subject[]
-  students Student[]
-  Teacher  Teacher[]
+enum TeacherAttendanceStatus {
+  PRESENT // Hadir
+  SICK // Sakit
+  PERMISSION // Izin
+  ABSENT // Alpa
+  LATE // Terlambat
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ClassTeacherRole {
+  HOMEROOM // Wali Kelas
+  ASSISTANT // Guru Pendamping
+}
+
+enum SemesterType {
+  ODD // Ganjil
+  EVEN // Genap
+}
+
+enum Gender {
+  MALE // Laki-laki
+  FEMALE // Perempuan
+}
+
+// =======================
+// SCHOOL & AUTH
+// =======================
+
+model School {
+  id      String  @id @default(uuid())
+  name    String  @unique
+  address String?
+  phone   String?
+  email   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  academicYears AcademicYear[]
+  classes       Class[]
+  subjects      Subject[]
+  students      Student[]
+  teachers      Teacher[]
+  allowedEmails AllowedEmail[]
+
+  @@index([name])
+}
+
+// User Account (Login dengan Google OAuth)
+model User {
+  id       String  @id @default(uuid())
+  schoolId String
+  name     String
+  email    String  @unique // Email Google
+  avatar   String? // Photo URL dari Google
+
+  googleId String? @unique // Google OAuth ID untuk validasi
+
+  isActive Boolean @default(true)
+
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Multi-role support
+  roles         UserRole[]
+  allowedEmails AllowedEmail[]
+
+  // Jika user adalah GURU/KEPSEK yang mengajar
+  teacherProfile Teacher?
+
+  // Audit trail - Siapa yang input absensi
+  createdStudentAttendances StudentAttendance[] @relation("CreatedBy")
+
+  @@index([schoolId])
+  @@index([email])
+  @@index([googleId])
 }
 
 model Role {
-  id   String @id @default(uuid())
-  name String @unique
+  id   String   @id @default(uuid())
+  name RoleName @unique
 
-  users UserRole[]
-}
-
-model User {
-  id        String   @id @default(uuid())
-  schoolId  String
-  name      String
-  email     String   @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  school          School              @relation(fields: [schoolId], references: [id])
-  roles           UserRole[]
-  teacherSubjects TeacherSubject[]
-  studentAttend   StudentAttendance[]
-  teacherAttend   TeacherAttendance[]
-  Teacher         Teacher?
-  AllowedEmail    AllowedEmail[]
+  userRoles    UserRole[]
+  AllowedEmail AllowedEmail[]
 }
 
 model UserRole {
@@ -56,129 +130,370 @@ model UserRole {
   userId String
   roleId String
 
-  user User @relation(fields: [userId], references: [id])
-  role Role @relation(fields: [roleId], references: [id])
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roleId])
+  @@index([userId])
+}
+
+// Whitelist Email - Hanya email yang terdaftar yang bisa login
+model AllowedEmail {
+  id       String  @id @default(uuid())
+  schoolId String
+  email    String  @unique
+  roleId   String?
+  userId   String
+
+  isActive Boolean   @default(true) // Sudah digunakan untuk registrasi
+  usedAt   DateTime? // Kapan pertama kali login
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  role   Role?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, email])
+  @@index([schoolId])
+  @@index([email])
+}
+
+// =======================
+// TEACHER PROFILE
+// =======================
+
+model Teacher {
+  id       String @id @default(uuid())
+  schoolId String
+  userId   String @unique // 1 User = 1 Teacher Profile
+
+  nip    String  @unique // Nomor Induk Pegawai
+  name   String // Bisa beda dengan User.name (untuk formalitas)
+  gender Gender?
+
+  phone   String?
+  address String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Tugas mengajar
+  classAssignments    ClassTeacherAssignment[] // Wali Kelas
+  teachingAssignments TeachingAssignment[] // Jadwal Mengajar
+
+  // Absensi diri sendiri
+  attendances TeacherAttendance[]
+
+  // Brankas File Pribadi (MinIO)
+  vaultFiles TeacherVaultFile[]
+
+  @@unique([schoolId, nip])
+  @@index([schoolId])
+  @@index([userId])
+}
+
+// Brankas File Pribadi Guru (Stored in MinIO)
+model TeacherVaultFile {
+  id        String @id @default(uuid())
+  teacherId String
+
+  // Metadata file
+  fileName     String // Nama file asli: "RPP_Matematika_Kelas_X.pdf"
+  fileKey      String // MinIO object key: "vault/teacher-123/2025/rpp-matematika.pdf"
+  fileUrl      String // MinIO URL (presigned URL untuk download)
+  fileMimeType String // "application/pdf", "image/jpeg", etc
+  fileSize     Int // Ukuran dalam bytes
+
+  // Metadata tambahan
+  title       String? // Judul file (opsional, untuk pencarian)
+  description String? // Deskripsi file
+  category    String? // "RPP", "Silabus", "Materi", "Dokumen Pribadi", etc
+
+  // Privacy control
+  isPrivate Boolean @default(true) // Default: hanya guru ybs yang bisa akses
+
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId])
+  @@index([category])
+}
+
+// =======================
+// ACADEMIC STRUCTURE
+// =======================
+
+model AcademicYear {
+  id       String @id @default(uuid())
+  schoolId String
+  name     String // "2024/2025"
+
+  startDate DateTime
+  endDate   DateTime
+
+  isActive Boolean @default(false) // Hanya 1 yang aktif per school
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  semesters Semester[]
+  classes   Class[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId, isActive])
+}
+
+model Semester {
+  id             String       @id @default(uuid())
+  academicYearId String
+  type           SemesterType // ODD (Ganjil) / EVEN (Genap)
+
+  startDate DateTime
+  endDate   DateTime
+
+  isActive Boolean @default(false) // Hanya 1 yang aktif per academic year
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  teachingAssignments TeachingAssignment[]
+  studentEnrollments  StudentEnrollment[]
+
+  @@unique([academicYearId, type])
+  @@index([academicYearId, isActive])
 }
 
 model Class {
-  id       String @id @default(uuid())
-  schoolId String
-  name     String
-  grade    Int
+  id             String @id @default(uuid())
+  schoolId       String
+  academicYearId String
 
-  school             School              @relation(fields: [schoolId], references: [id])
-  students           Student[]
-  teacherSubjects    TeacherSubject[]
-  studentAttendances StudentAttendance[]
+  name       String // "X-IPA-1", "XI-IPS-2"
+  gradeLevel Int // 10, 11, 12
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+
+  enrollments         StudentEnrollment[]
+  teachingAssignments TeachingAssignment[]
+  classTeachers       ClassTeacherAssignment[]
+
+  @@unique([schoolId, academicYearId, name])
+  @@index([schoolId])
+  @@index([academicYearId])
 }
 
 model Subject {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   schoolId String
-  name     String
+  name     String // "Matematika", "Bahasa Indonesia"
+  code     String? // "MTK", "BIND"
 
-  school             School              @relation(fields: [schoolId], references: [id])
-  teacherSubjects    TeacherSubject[]
-  studentAttendances StudentAttendance[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  teachings TeachingAssignment[]
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
 }
 
 model Student {
   id       String  @id @default(uuid())
   schoolId String
-  classId  String
-  nis      String
+  nis      String  @unique // Nomor Induk Siswa
+  nisn     String? // Nomor Induk Siswa Nasional
   name     String
+  gender   Gender?
+
+  phone   String? // Nomor HP siswa/orang tua
+  address String?
+
   isActive Boolean @default(true)
 
-  school School @relation(fields: [schoolId], references: [id])
-  class  Class  @relation(fields: [classId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  enrollments StudentEnrollment[]
   attendances StudentAttendance[]
 
   @@unique([schoolId, nis])
+  @@index([schoolId, isActive])
+  @@index([name])
 }
 
-model Teacher {
-  id       String  @id @default(uuid())
-  nip      String? @unique
-  name     String
-  userId   String  @unique
-  schoolId String
+// =======================
+// ASSIGNMENTS & SCHEDULES
+// =======================
+
+// Siswa masuk kelas mana di semester ini
+model StudentEnrollment {
+  id         String @id @default(uuid())
+  studentId  String
+  classId    String
+  semesterId String
+
   isActive Boolean @default(true)
 
-  user   User   @relation(fields: [userId], references: [id])
-  school School @relation(fields: [schoolId], references: [id])
+  enrolledAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  TeacherSubject    TeacherSubject[]
-  StudentAttendance StudentAttendance[]
-  TeacherAttendance TeacherAttendance[]
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class    Class    @relation(fields: [classId], references: [id], onDelete: Restrict)
+  semester Semester @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, semesterId])
+  @@index([classId])
+  @@index([semesterId])
 }
 
-model TeacherSubject {
-  id        String  @id @default(uuid())
-  userId    String?
+// Guru mengajar mapel apa di kelas mana pada semester ini
+model TeachingAssignment {
+  id         String @id @default(uuid())
+  teacherId  String
+  subjectId  String
+  classId    String
+  semesterId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacher  Teacher  @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  subject  Subject  @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  class    Class    @relation(fields: [classId], references: [id], onDelete: Restrict)
+  semester Semester @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+
+  schedules   ClassSchedule[]
+  attendances StudentAttendance[]
+
+  @@unique([teacherId, subjectId, classId, semesterId])
+  @@index([teacherId])
+  @@index([classId])
+  @@index([semesterId])
+}
+
+// Wali Kelas Assignment
+model ClassTeacherAssignment {
+  id        String           @id @default(uuid())
   teacherId String
-  subjectId String
   classId   String
+  role      ClassTeacherRole @default(HOMEROOM)
 
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-  subject Subject @relation(fields: [subjectId], references: [id])
-  class   Class   @relation(fields: [classId], references: [id])
-  user    User?   @relation(fields: [userId], references: [id])
+  assignedAt DateTime @default(now())
 
-  @@unique([teacherId, subjectId, classId])
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+  @@index([classId])
 }
 
+// Jadwal Pelajaran
+model ClassSchedule {
+  id                   String    @id @default(uuid())
+  teachingAssignmentId String
+  dayOfWeek            DayOfWeek
+  startTime            String // "07:00"
+  endTime              String // "08:30"
+
+  room String? // Ruang kelas (opsional)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teachingAssignment TeachingAssignment @relation(fields: [teachingAssignmentId], references: [id], onDelete: Cascade)
+
+  studentAttendances StudentAttendance[]
+
+  @@unique([teachingAssignmentId, dayOfWeek, startTime])
+  @@index([teachingAssignmentId])
+  @@index([dayOfWeek])
+}
+
+// =======================
+// ATTENDANCE (TRANSACTION)
+// =======================
+
+// Absensi Siswa per Mapel
 model StudentAttendance {
-  id        String  @id @default(uuid())
-  userId    String?
-  studentId String
-  teacherId String
-  subjectId String
-  classId   String
+  id                   String  @id @default(uuid())
+  studentId            String
+  teachingAssignmentId String
+  scheduleId           String? // Nullable - bisa absen di luar jadwal rutin
+  createdById          String // User yang menginput (bisa Guru Mapel/Piket/Admin)
 
-  attendanceDate DateTime
-  status         AttendanceStatus
-  createdAt      DateTime         @default(now())
+  date   DateTime         @db.Date
+  status AttendanceStatus
 
-  student Student @relation(fields: [studentId], references: [id])
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-  subject Subject @relation(fields: [subjectId], references: [id])
-  class   Class   @relation(fields: [classId], references: [id])
-  user    User?   @relation(fields: [userId], references: [id])
+  note String? // Catatan tambahan (alasan izin, dll)
 
-  @@unique([studentId, subjectId, attendanceDate])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student            Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teachingAssignment TeachingAssignment @relation(fields: [teachingAssignmentId], references: [id], onDelete: Cascade)
+  schedule           ClassSchedule?     @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  createdBy          User               @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, teachingAssignmentId, date])
+  @@index([studentId, date])
+  @@index([teachingAssignmentId, date])
+  @@index([date])
+  @@index([status])
 }
 
+// Absensi Guru (Check In/Out)
 model TeacherAttendance {
-  id             String   @id @default(uuid())
-  userId         String?
-  teacherId      String
-  attendanceDate DateTime
-  checkInTime    DateTime
+  id        String @id @default(uuid())
+  teacherId String
 
-  latitude  Float
-  longitude Float
-  photoUrl  String
+  date DateTime @db.Date
+
+  // Check In
+  checkInTime  DateTime?
+  checkInLat   Float? // Latitude
+  checkInLng   Float? // Longitude
+  checkInPhoto String? // MinIO URL untuk foto selfie check-in
+
+  // Check Out
+  checkOutTime  DateTime?
+  checkOutLat   Float?
+  checkOutLng   Float?
+  checkOutPhoto String? // MinIO URL untuk foto selfie check-out
+
+  status TeacherAttendanceStatus
+  isLate Boolean                 @default(false) // Otomatis true jika check-in > jam masuk
+
+  note String? // Catatan (alasan terlambat, izin, dll)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  teacher Teacher @relation(fields: [teacherId], references: [id])
-  user    User?   @relation(fields: [userId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
-  @@unique([teacherId, attendanceDate])
-}
-
-model AllowedEmail {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  userId    String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  @@unique([teacherId, date])
+  @@index([teacherId, date])
+  @@index([date, status])
 }
