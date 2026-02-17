@@ -11,25 +11,25 @@ async function main() {
 
   const adminRole = await prisma.role.upsert({
     where: { name: RoleName.ADMIN },
-    update: {},
+    update: { name: RoleName.ADMIN },
     create: { name: RoleName.ADMIN },
   });
 
   const operatorRole = await prisma.role.upsert({
     where: { name: RoleName.OPERATOR },
-    update: {},
+    update: { name: RoleName.OPERATOR },
     create: { name: RoleName.OPERATOR },
   });
 
   const kepsekRole = await prisma.role.upsert({
     where: { name: RoleName.KEPSEK },
-    update: {},
+    update: { name: RoleName.KEPSEK },
     create: { name: RoleName.KEPSEK },
   });
 
   const guruRole = await prisma.role.upsert({
     where: { name: RoleName.GURU },
-    update: {},
+    update: { name: RoleName.GURU },
     create: { name: RoleName.GURU },
   });
 
@@ -42,7 +42,12 @@ async function main() {
 
   const school = await prisma.school.upsert({
     where: { name: "SMA Negeri 1 Makassar" },
-    update: {},
+    update: {
+      name: "SMA Negeri 1 Makassar",
+      address: "Jl. Adhyaksa No.2, Panakkukang, Makassar",
+      phone: "0411-440065",
+      email: "info@sman1makassar.sch.id",
+    },
     create: {
       name: "SMA Negeri 1 Makassar",
       address: "Jl. Adhyaksa No.2, Panakkukang, Makassar",
@@ -200,10 +205,12 @@ async function main() {
 
   for (const emailData of allowedEmails) {
     const user = await prisma.user.upsert({
-      where: {
-        schoolId_email: { schoolId: school.id, email: emailData.email },
+      where: { email: emailData.email },
+      update: {
+        schoolId: school.id,
+        name: emailData.description,
+        email: emailData.email,
       },
-      update: {},
       create: {
         schoolId: school.id,
         name: emailData.description,
@@ -218,7 +225,10 @@ async function main() {
           roleId: emailData.roleId,
         },
       },
-      update: {},
+      update: {
+        userId: user.id,
+        roleId: emailData.roleId,
+      },
       create: {
         userId: user.id,
         roleId: emailData.roleId,
@@ -232,7 +242,12 @@ async function main() {
           email: emailData.email,
         },
       },
-      update: {},
+      update: {
+        schoolId: school.id,
+        email: emailData.email,
+        roleId: emailData.roleId,
+        userId: user.id,
+      },
       create: {
         schoolId: school.id,
         email: emailData.email,
@@ -257,7 +272,13 @@ async function main() {
         name: "2024/2025",
       },
     },
-    update: {},
+    update: {
+      schoolId: school.id,
+      name: "2024/2025",
+      startDate: new Date("2024-07-15"),
+      endDate: new Date("2025-06-30"),
+      isActive: true,
+    },
     create: {
       schoolId: school.id,
       name: "2024/2025",
@@ -274,7 +295,13 @@ async function main() {
         type: "ODD",
       },
     },
-    update: {},
+    update: {
+      academicYearId: academicYear.id,
+      type: "ODD",
+      startDate: new Date("2024-07-15"),
+      endDate: new Date("2024-12-31"),
+      isActive: false,
+    },
     create: {
       academicYearId: academicYear.id,
       type: "ODD",
@@ -291,7 +318,13 @@ async function main() {
         type: "EVEN",
       },
     },
-    update: {},
+    update: {
+      academicYearId: academicYear.id,
+      type: "EVEN",
+      startDate: new Date("2025-01-01"),
+      endDate: new Date("2025-06-30"),
+      isActive: true,
+    },
     create: {
       academicYearId: academicYear.id,
       type: "EVEN",
@@ -334,7 +367,11 @@ async function main() {
           name: subject.name,
         },
       },
-      update: {},
+      update: {
+        schoolId: school.id,
+        name: subject.name,
+        code: subject.code,
+      },
       create: {
         schoolId: school.id,
         name: subject.name,
@@ -385,7 +422,12 @@ async function main() {
           name: classData.name,
         },
       },
-      update: {},
+      update: {
+        schoolId: school.id,
+        academicYearId: academicYear.id,
+        name: classData.name,
+        gradeLevel: classData.gradeLevel,
+      },
       create: {
         schoolId: school.id,
         academicYearId: academicYear.id,
@@ -400,12 +442,15 @@ async function main() {
   const adminEmail = allowedEmails.find(
     (e) => e.roleId === adminRole.id,
   )?.email!;
+
   const operatorEmail = allowedEmails.find(
     (e) => e.roleId === operatorRole.id,
   )?.email!;
+
   const kepsekEmail = allowedEmails.find(
     (e) => e.roleId === kepsekRole.id,
   )?.email!;
+
   const guruEmail = allowedEmails.find((e) => e.roleId === guruRole.id)?.email!;
 
   // =========================================
@@ -437,7 +482,7 @@ async function main() {
   console.log(`   KEPSEK:   ${kepsekEmail}`);
   console.log(`   GURU:     ${guruEmail}`);
 
-  console.log(`School ID: ${school.id}`);
+  console.log(`\nSchool ID: ${school.id}`);
   console.log("\n🎉 Seeding completed successfully!");
 }
 
