@@ -16,7 +16,7 @@ class TeacherAttendanceController {
       const teacherId = req.user!.id;
       const schoolId = req.user!.schoolId;
       const file = req.file!;
-      const { latitude, longitude } = req.body;
+      const { latitude, longitude, status } = req.body;
 
       const result = await service.checkIn({
         teacherId,
@@ -24,6 +24,7 @@ class TeacherAttendanceController {
         photo: file,
         latitude: latitude,
         longitude: longitude,
+        status,
       });
 
       res.status(201).json({
