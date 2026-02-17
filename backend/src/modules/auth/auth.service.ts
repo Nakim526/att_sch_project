@@ -6,6 +6,8 @@ export async function loginWithGoogle(idToken: string) {
   // 1️⃣ verify token ke Google
   const googleUser = await verifyGoogleToken(idToken);
 
+  console.log("googleUser", googleUser);
+
   // 2️⃣ allow-list
   const allowed = await prisma.allowedEmail.findUnique({
     where: { email: googleUser.email },
