@@ -4,7 +4,11 @@ import { AttendanceStatus } from '@prisma/client';
 
 export interface StudentAttendanceItemTypes {
   studentId: string;
+  teachingAssignmentId: string;
+  scheduleId?: string;
+  createdById: string;
   status: AttendanceStatus;
+  note?: string;
 }
 
 export interface CreateStudentAttendanceTypes {

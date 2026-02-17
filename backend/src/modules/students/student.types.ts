@@ -1,13 +1,21 @@
 // src/modules/student/student.dto.ts
 
+import { Gender } from "@prisma/client";
+
 export interface CreateStudentTypes {
   name: string;
   nis: string;
-  classId: string;
+  nisn?: string;
+  gender?: Gender;
+  phone?: string;
+  address?: string;
 }
 
 export interface UpdateStudentTypes {
   name?: string;
   nis?: string;
-  classId?: string;
+  nisn?: string;
+  gender?: Gender;
+  phone?: string;
+  address?: string;
 }

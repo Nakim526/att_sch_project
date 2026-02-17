@@ -16,7 +16,7 @@ class StudentAttendanceService {
     /**
      * 1️⃣ Validasi guru mengajar subject & class
      */
-    const teaching = await prisma.teacherSubject.findFirst({
+    const teaching = await prisma.teachingAssignment.findFirst({
       where: {
         teacherId,
         classId,
@@ -31,10 +31,9 @@ class StudentAttendanceService {
     /**
      * 2️⃣ Ambil seluruh siswa dalam kelas
      */
-    const students = await prisma.student.findMany({
+    const students = await prisma.studentEnrollment.findMany({
       where: {
         classId,
-        schoolId,
         isActive: true,
       },
       select: { id: true },
@@ -58,24 +57,23 @@ class StudentAttendanceService {
       attendances.map((item) =>
         prisma.studentAttendance.upsert({
           where: {
-            studentId_subjectId_attendanceDate: {
+            studentId_teachingAssignmentId_date: {
               studentId: item.studentId,
-              subjectId,
-              attendanceDate: date,
+              teachingAssignmentId: teaching.id,
+              date: date,
             },
           },
           update: {
             status: item.status,
-            teacherId,
-            classId,
+            teachingAssignmentId: teaching.id,
           },
           create: {
             studentId: item.studentId,
-            teacherId,
-            subjectId,
-            classId,
-            attendanceDate: date,
+            teachingAssignmentId: teaching.id,
+            scheduleId: null,
+            date: date,
             status: item.status,
+            createdById: teacherId,
           },
         }),
       ),
@@ -83,15 +81,15 @@ class StudentAttendanceService {
   }
 
   async findByClassAndSubject(
-    classId: string,
-    subjectId: string,
+    teachingAssignmentId: string,
+    scheduleId: string,
     date: string,
   ) {
     return prisma.studentAttendance.findMany({
       where: {
-        classId,
-        subjectId,
-        attendanceDate: new Date(date),
+        date: new Date(date),
+        scheduleId,
+        teachingAssignmentId,
       },
       include: {
         student: {

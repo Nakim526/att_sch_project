@@ -48,7 +48,7 @@ class TeacherAttendanceService {
    * =========================
    */
   async checkIn(types: TeacherCheckInTypes) {
-    const { teacherId, schoolId, photo, latitude, longitude } = types;
+    const { teacherId, status, photo, latitude, longitude } = types;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -57,7 +57,7 @@ class TeacherAttendanceService {
     const exists = await prisma.teacherAttendance.findFirst({
       where: {
         teacherId,
-        attendanceDate: today,
+        date: today,
       },
     });
 
@@ -70,11 +70,12 @@ class TeacherAttendanceService {
     return prisma.teacherAttendance.create({
       data: {
         teacherId,
-        attendanceDate: today,
+        date: today,
         checkInTime: new Date(),
-        latitude,
-        longitude,
-        photoUrl,
+        checkInLat: latitude,
+        checkInLng: longitude,
+        checkInPhoto: photoUrl,
+        status,
       },
     });
   }
@@ -90,11 +91,9 @@ class TeacherAttendanceService {
     return prisma.teacherAttendance.findMany({
       where: {
         teacherId,
-        attendanceDate: date ? new Date(date) : undefined,
+        date: date ? new Date(date) : undefined,
       },
-      orderBy: {
-        attendanceDate: "desc",
-      },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -117,7 +116,7 @@ class TeacherAttendanceService {
     return prisma.teacherAttendance.findMany({
       where: {
         teacherId: teacherId || undefined,
-        attendanceDate: date
+        date: date
           ? new Date(date)
           : startDate && endDate
             ? {
@@ -143,9 +142,7 @@ class TeacherAttendanceService {
           },
         },
       },
-      orderBy: {
-        attendanceDate: "desc",
-      },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -163,33 +160,25 @@ class TeacherAttendanceService {
 
     return prisma.teacherAttendance.findMany({
       where: {
-        attendanceDate:
+        date:
           startDate && endDate
             ? {
                 gte: new Date(startDate),
                 lte: new Date(endDate),
               }
             : undefined,
-        teacher: {
-          schoolId,
-        },
+        teacher: { schoolId },
       },
       include: {
         teacher: {
           select: {
             name: true,
             nip: true,
-            user: {
-              select: {
-                email: true,
-              },
-            },
+            user: { select: { email: true } },
           },
         },
       },
-      orderBy: {
-        attendanceDate: "asc",
-      },
+      orderBy: { date: "asc" },
     });
   }
 }

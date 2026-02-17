@@ -10,7 +10,10 @@ class StudentService {
         name: data.name,
         nis: data.nis,
         schoolId,
-        classId: data.classId,
+        nisn: data.nisn,
+        gender: data.gender,
+        phone: data.phone,
+        address: data.address,
       },
     });
   }
@@ -18,23 +21,19 @@ class StudentService {
   async findAllBySchool(schoolId: string) {
     return prisma.student.findMany({
       where: { schoolId },
-      include: {
-        class: {
-          select: { id: true, name: true, grade: true },
-        },
-      },
+      select: { enrollments: true },
     });
   }
 
   async findAllByClass(classId: string) {
-    return prisma.student.findMany({
+    return prisma.studentEnrollment.findMany({
       where: { classId },
-      orderBy: { name: "asc" },
+      orderBy: { student: { name: "asc" } },
     });
   }
 
   async findOneByClass(classId: string, id: string) {
-    return prisma.student.findUnique({
+    return prisma.studentEnrollment.findUnique({
       where: { id, classId },
     });
   }
