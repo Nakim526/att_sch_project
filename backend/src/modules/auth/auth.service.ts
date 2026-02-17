@@ -32,13 +32,13 @@ export async function loginWithGoogle(idToken: string) {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const roles = parseEnum(RoleName, user.roles, "roles");
+  console.log("user", user);
 
   // 4️⃣ JWT payload
   const payload = {
     id: user.id,
     email: user.email,
-    roles: roles,
+    roles: user.roles.map((r) => r.role.name),
     schoolId: user.schoolId,
   };
 
