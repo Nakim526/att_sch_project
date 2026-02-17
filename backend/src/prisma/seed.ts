@@ -434,6 +434,9 @@ async function main() {
   console.log(`   OPERATOR: ${operatorEmail}`);
   console.log(`   KEPSEK:   ${kepsekEmail}`);
   console.log(`   GURU:     ${guruEmail}`);
+
+  console.log(`School ID: ${school.id}`);
+  console.log("\n🎉 Seeding completed successfully!");
 }
 
 main()
