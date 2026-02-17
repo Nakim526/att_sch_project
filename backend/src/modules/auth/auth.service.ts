@@ -1,5 +1,7 @@
+import { RoleName } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { signToken } from "../../utils/jwt";
+import { parseEnum } from "../../utils/parser";
 import { verifyGoogleToken } from "./google.service";
 
 export async function loginWithGoogle(idToken: string) {
@@ -30,11 +32,13 @@ export async function loginWithGoogle(idToken: string) {
     throw new Error("USER_NOT_FOUND");
   }
 
+  const roles = parseEnum(RoleName, user.roles, "roles");
+
   // 4️⃣ JWT payload
   const payload = {
     id: user.id,
     email: user.email,
-    roles: user.roles.map((r) => r.role.name),
+    roles: roles,
     schoolId: user.schoolId,
   };
 
