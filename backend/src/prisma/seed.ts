@@ -209,6 +209,20 @@ async function main() {
       },
     });
 
+    await prisma.userRole.upsert({
+      where: {
+        userId_roleId: {
+          userId: user.id,
+          roleId: emailData.roleId,
+        },
+      },
+      update: {},
+      create: {
+        userId: user.id,
+        roleId: emailData.roleId,
+      },
+    });
+
     await prisma.allowedEmail.upsert({
       where: {
         schoolId_email: {

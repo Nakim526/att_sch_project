@@ -6,7 +6,7 @@ export function parseEnum<T extends Record<string, string>>(
   const enumValues = Object.values(enumObj);
 
   if (!enumValues.includes(value as string)) {
-    throw new Error(`Invalid ${field}. Allowed: ${enumValues.join(", ")}`);
+    throw new Error(`Invalid ${field}. Allowed: ${enumValues.join(", ")}, got: ${value}`);
   }
 
   return value as T[keyof T];
@@ -26,7 +26,7 @@ export function parseEnumArray<T extends Record<string, string>>(
   for (const v of values) {
     if (!enumValues.includes(v)) {
       throw new Error(
-        `Invalid ${field} value: ${v}. Allowed: ${enumValues.join(", ")}`,
+        `Invalid ${field} value: ${v}. Allowed: ${enumValues.join(", ")}, got: ${v}`,
       );
     }
   }
