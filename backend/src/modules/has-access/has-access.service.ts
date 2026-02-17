@@ -133,7 +133,11 @@ class HasAccessService {
   async getHasAccessById(id: string) {
     return prisma.allowedEmail.findUnique({
       where: { id },
-      include: { user: true, role: true },
+      include: {
+        user: {
+          include: { roles: { select: { role: true } } },
+        },
+      },
     });
   }
   async updateHasAccess(
