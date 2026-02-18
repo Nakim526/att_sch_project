@@ -7,7 +7,7 @@ import { CreateHasAccessTypes, UpdateHasAccessTypes } from "./has-access.types";
 class HasAccessService {
   async createHasAccess(payload: CreateHasAccessTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.createHasAccessTransaction(tx, payload);
+      return await this.createHasAccessTransaction(tx, payload);
     });
   }
 
