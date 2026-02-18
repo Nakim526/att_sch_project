@@ -91,7 +91,7 @@ class AppInputStyle {
 
   static const BoxConstraints _singleLineConstraints = BoxConstraints(
     minHeight: AppSize.zero,
-    maxHeight: AppSize.fieldHeight,
+    maxHeight: double.infinity,
   );
 
   static const BoxConstraints _iconConstraints = BoxConstraints(

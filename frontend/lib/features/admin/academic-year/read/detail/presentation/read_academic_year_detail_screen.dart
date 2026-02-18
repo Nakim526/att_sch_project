@@ -1,4 +1,5 @@
 import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/utils/formatter/date_formatter.dart';
 import 'package:att_school/features/admin/academic-year/read/detail/provider/read_academic_year_detail_provider.dart';
 import 'package:att_school/features/admin/academic-year/update/presentation/update_academic_year_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -11,7 +12,6 @@ import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ReadAcademicYearDetailScreen extends StatelessWidget {
@@ -63,13 +63,11 @@ class ReadAcademicYearDetailScreen extends StatelessWidget {
                     children: [
                       AppField(
                         'Tanggal Mulai',
-                        value: DateFormat(
-                          'dd MMM yyyy',
-                        ).format(detail.startDate),
+                        value: DateFormatter.toView(detail.startDate),
                       ),
                       AppField(
                         'Tanggal Berakhir',
-                        value: DateFormat('dd MMM yyyy').format(detail.endDate),
+                        value: DateFormatter.toView(detail.endDate),
                       ),
                       AppField('Tahun Akademik', value: detail.name),
                       AppField('Sekolah', value: detail.school!),

@@ -29,6 +29,13 @@ import 'package:att_school/features/admin/has-access/read/detail/provider/read_h
 import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
 import 'package:att_school/features/admin/has-access/update/data/update_has_access_service.dart';
 import 'package:att_school/features/admin/has-access/update/provider/update_has_access_provider.dart';
+import 'package:att_school/features/admin/semester/create/data/create_semester_service.dart';
+import 'package:att_school/features/admin/semester/create/provider/create_semester_provider.dart';
+import 'package:att_school/features/admin/semester/read/data/read_semester_service.dart';
+import 'package:att_school/features/admin/semester/read/detail/provider/read_semester_detail_provider.dart';
+import 'package:att_school/features/admin/semester/read/list/provider/read_semester_list_provider.dart';
+import 'package:att_school/features/admin/semester/update/data/update_semester_service.dart';
+import 'package:att_school/features/admin/semester/update/provider/update_semester_provider.dart';
 import 'package:att_school/features/admin/subject/create/data/create_subject_service.dart';
 import 'package:att_school/features/admin/subject/create/provider/create_subject_provider.dart';
 import 'package:att_school/features/admin/subject/delete/data/delete_subject_service.dart';
@@ -147,6 +154,20 @@ void main() {
         Provider<DeleteAcademicYearService>(
           create: (context) => DeleteAcademicYearService(context.read<Dio>()),
         ),
+
+        /// 🔸 Semesters
+        Provider<CreateSemesterService>(
+          create: (context) => CreateSemesterService(context.read<Dio>()),
+        ),
+        Provider<ReadSemesterService>(
+          create: (context) => ReadSemesterService(context.read<Dio>()),
+        ),
+        Provider<UpdateSemesterService>(
+          create: (context) => UpdateSemesterService(context.read<Dio>()),
+        ),
+        // Provider<DeleteSemesterService>(
+        //   create: (context) => DeleteSemesterService(context.read<Dio>()),
+        // ),
 
         /// 🔹 Providers (State)
         /// 🔸 Auth
@@ -285,28 +306,28 @@ void main() {
         ),
         ChangeNotifierProvider<UpdateTeacherProvider>(
           create: (context) {
-            return UpdateTeacherProvider(
-              context.read<UpdateTeacherService>(),
-            );
+            return UpdateTeacherProvider(context.read<UpdateTeacherService>());
           },
         ),
         ChangeNotifierProvider<DeleteTeacherProvider>(
           create: (context) {
-            return DeleteTeacherProvider(
-              context.read<DeleteTeacherService>(),
-            );
+            return DeleteTeacherProvider(context.read<DeleteTeacherService>());
           },
         ),
 
         /// 🔸 AcademicYears
         ChangeNotifierProvider<ReadAcademicYearListProvider>(
           create: (context) {
-            return ReadAcademicYearListProvider(context.read<ReadAcademicYearService>());
+            return ReadAcademicYearListProvider(
+              context.read<ReadAcademicYearService>(),
+            );
           },
         ),
         ChangeNotifierProvider<CreateAcademicYearProvider>(
           create: (context) {
-            return CreateAcademicYearProvider(context.read<CreateAcademicYearService>());
+            return CreateAcademicYearProvider(
+              context.read<CreateAcademicYearService>(),
+            );
           },
         ),
         ChangeNotifierProvider<ReadAcademicYearDetailProvider>(
@@ -319,15 +340,56 @@ void main() {
         ),
         ChangeNotifierProvider<UpdateAcademicYearProvider>(
           create: (context) {
-            return UpdateAcademicYearProvider(context.read<UpdateAcademicYearService>());
+            return UpdateAcademicYearProvider(
+              context.read<UpdateAcademicYearService>(),
+            );
           },
         ),
         ChangeNotifierProvider<DeleteAcademicYearProvider>(
           create: (context) {
-            return DeleteAcademicYearProvider(context.read<DeleteAcademicYearService>());
+            return DeleteAcademicYearProvider(
+              context.read<DeleteAcademicYearService>(),
+            );
           },
         ),
 
+        /// 🔸 Semesters
+        ChangeNotifierProvider<ReadSemesterListProvider>(
+          create: (context) {
+            return ReadSemesterListProvider(
+              context.read<ReadSemesterService>(),
+              context.read<ReadAcademicYearListProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<CreateSemesterProvider>(
+          create: (context) {
+            return CreateSemesterProvider(
+              context.read<CreateSemesterService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<ReadSemesterDetailProvider>(
+          create: (context) {
+            return ReadSemesterDetailProvider(
+              context.read<ReadSemesterService>(),
+              context.read<SchoolProvider>(),
+              context.read<ReadAcademicYearDetailProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateSemesterProvider>(
+          create: (context) {
+            return UpdateSemesterProvider(
+              context.read<UpdateSemesterService>(),
+            );
+          },
+        ),
+        // ChangeNotifierProvider<DeleteSemesterProvider>(
+        //   create: (context) {
+        //     return DeleteSemesterProvider(context.read<DeleteSemesterService>());
+        //   },
+        // ),
         ChangeNotifierProvider(create: (_) => ThemeController()),
       ],
       child: const MainApp(),

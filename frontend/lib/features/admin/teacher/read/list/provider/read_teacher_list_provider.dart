@@ -20,9 +20,9 @@ class ReadTeacherListProvider extends ChangeNotifier {
 
   String get error => _error;
 
-  List<String> get emails => _emails;
-
   bool get isLoading => _isLoading;
+
+  List<String> get emails => _emails;
 
   Future<BackendMessageHelper> fetchAllEmails() async {
     _isLoading = true;

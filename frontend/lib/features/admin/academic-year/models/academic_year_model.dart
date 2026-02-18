@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:att_school/core/utils/formatter/date_formatter.dart';
 
 class AcademicYearModel {
   final String? id;
@@ -17,11 +17,10 @@ class AcademicYearModel {
     required this.endDate,
   });
 
-  static AcademicYearModel? fromJson(Map<String, dynamic> json) {
+  factory AcademicYearModel.fromJson(Map<String, dynamic> json) {
     return AcademicYearModel(
       id: json['id'],
       name: json['name'],
-      schoolId: json['schoolId'],
       school: json['school'],
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
@@ -31,8 +30,8 @@ class AcademicYearModel {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'startDate': startDate.toUtc().toIso8601String(),
-      'endDate': endDate.toUtc().toIso8601String(),
+      'startDate': DateFormatter.toJson(startDate),
+      'endDate': DateFormatter.toJson(endDate),
     };
   }
 
@@ -42,8 +41,8 @@ class AcademicYearModel {
       'name': name,
       'schoolId': schoolId,
       'school': school,
-      'startDate': DateFormat('dd MMM yyyy').format(startDate),
-      'endDate': DateFormat('dd MMM yyyy').format(endDate),
+      'startDate': DateFormatter.toView(startDate),
+      'endDate': DateFormatter.toView(endDate),
     };
   }
 }

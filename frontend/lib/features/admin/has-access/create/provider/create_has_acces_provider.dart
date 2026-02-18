@@ -23,6 +23,8 @@ class CreateHasAccessProvider extends ChangeNotifier {
       final message = response.data['message'].toString();
       final data = response.data['data'];
 
+      debugPrint(data.toString());
+
       return BackendMessageHelper(true, message: message, data: data);
     } on DioException catch (e) {
       if (e.response?.statusCode == null) {

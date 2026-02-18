@@ -32,11 +32,10 @@ class ReadClassDetailProvider extends ChangeNotifier {
     try {
       Map<String, dynamic> data = {};
       final response = await service.readClassDetail(id);
-      final school = await provider.getSchoolName();
+      final school = await provider.getName();
 
       data = response.data['data'];
       data['school'] = school;
-
 
       _class = ClassModel.fromJson(data);
 

@@ -30,7 +30,7 @@ class ReadAcademicYearListProvider extends ChangeNotifier {
 
       for (final item in response.data['data']) {
         final data = AcademicYearModel.fromJson(item);
-        result.add(data!.toMap());
+        result.add(data.toMap());
       }
 
       _academicYears = result;

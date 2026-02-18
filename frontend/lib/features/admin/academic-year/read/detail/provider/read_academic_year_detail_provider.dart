@@ -22,6 +22,12 @@ class ReadAcademicYearDetailProvider extends ChangeNotifier {
 
   String get error => _error;
 
+  Future<String> getName(String id) async {
+    debugPrint(id);
+    await fetchById(id);
+    return _academicYear?.name ?? '';
+  }
+
   Future<BackendMessageHelper> fetchById(String id) async {
     _id = id;
     _error = '';
@@ -32,7 +38,7 @@ class ReadAcademicYearDetailProvider extends ChangeNotifier {
     try {
       Map<String, dynamic> data = {};
       final response = await service.readAcademicYearDetail(id);
-      final school = await provider.getSchoolName();
+      final school = await provider.getName();
 
       data = response.data['data'];
       data['school'] = school;

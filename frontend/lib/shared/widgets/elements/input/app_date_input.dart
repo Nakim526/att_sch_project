@@ -17,13 +17,13 @@
 // }
 
 import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/utils/formatter/date_formatter.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_input_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AppDateInput extends StatefulWidget {
   final TextEditingController controller;
@@ -71,7 +71,7 @@ class _AppDateInputState extends State<AppDateInput> {
 
     if (widget.initialValue.isEmpty) return;
 
-    _initialDate = DateFormat('dd/MM/yyyy').parse(widget.initialValue);
+    _initialDate = DateFormatter.fromController(widget.initialValue);
   }
 
   Future<void> _selectDate() async {
@@ -80,12 +80,12 @@ class _AppDateInputState extends State<AppDateInput> {
     final result = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? _initialDate ?? now,
-      firstDate: DateTime(_initialDate?.year ?? now.year),
+      firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
     if (result != null) {
-      final selectedDate = DateFormat('dd/MM/yyyy').format(result);
+      final selectedDate = DateFormatter.toController(result);
 
       setState(() {
         widget.onChanged?.call(selectedDate);

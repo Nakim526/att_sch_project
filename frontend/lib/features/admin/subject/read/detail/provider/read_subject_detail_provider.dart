@@ -32,7 +32,7 @@ class ReadSubjectDetailProvider extends ChangeNotifier {
     try {
       Map<String, dynamic> data = {};
       final response = await service.readSubjectDetail(id);
-      final school = await provider.getSchoolName();
+      final school = await provider.getName();
 
       data = response.data['data'];
       data['school'] = school;

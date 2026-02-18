@@ -58,6 +58,7 @@ class ReadSubjectDetailScreen extends StatelessWidget {
                   AppSection(
                     spacing: AppSize.xSmall,
                     children: [
+                      AppField('Kode', value: detail.code),
                       AppField('Mata Pelajaran', value: detail.name),
                       AppField('Sekolah', value: detail.school!),
                     ],

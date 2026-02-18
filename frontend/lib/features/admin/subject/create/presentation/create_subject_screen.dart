@@ -1,103 +1,28 @@
-import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/subject/create/provider/create_subject_provider.dart';
-import 'package:att_school/features/admin/subject/models/subject_model.dart';
-import 'package:att_school/features/admin/subject/read/detail/presentation/read_subject_detail_page.dart';
 import 'package:att_school/features/admin/subject/subject_form_screen.dart';
-import 'package:att_school/shared/styles/app_button_style.dart';
-import 'package:att_school/shared/styles/app_text_style.dart';
-import 'package:att_school/shared/widgets/elements/app_text.dart';
-import 'package:att_school/shared/widgets/elements/button/app_button.dart';
-import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_loading.dart';
-import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CreateSubjectScreen extends StatefulWidget {
+class CreateSubjectScreen extends StatelessWidget {
   const CreateSubjectScreen({super.key});
 
   @override
-  State<CreateSubjectScreen> createState() => _CreateSubjectScreenState();
-}
-
-class _CreateSubjectScreenState extends State<CreateSubjectScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  bool _errorName = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _onChangedName(_) {
-    if (_errorName) setState(() => _errorName = false);
-  }
-
-  bool _validate() {
-    setState(() {
-      _errorName = _nameController.text.isEmpty;
-    });
-
-    return !(_errorName);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<CreateSubjectProvider>(context);
-
-    return Stack(
-      children: [
-        AppScreen(
-          appBar: AppBar(title: const Text('Create Subject')),
+    return Consumer<CreateSubjectProvider>(
+      builder: (context, provider, _) {
+        return Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSize.medium,
-              children: [
-                AppText("Create Subject", variant: AppTextVariant.h2),
-                AppButton(
-                  "Save",
-                  onPressed: () async {
-                    if (!_validate()) return;
-
-                    final result = await provider.createSubject(
-                      SubjectModel(name: _nameController.text),
-                    );
-
-                    if (context.mounted) {
-                      await AppDialog.show(
-                        context,
-                        title: result.status ? 'Success' : 'Error',
-                        message: result.message,
-                      );
-
-                      if (result.status && context.mounted) {
-                        final id = result.data['id'];
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ReadSubjectDetailPage(id),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  variant: AppButtonVariant.primary,
-                ),
-                SubjectFormScreen(
-                  formKey: _formKey,
-                  nameController: _nameController,
-                  errorName: _errorName,
-                  onChangedName: _onChangedName,
-                ),
-              ],
+            SubjectFormScreen(
+              'Create Subject',
+              onSubmit: (payload) async {
+                return await provider.createSubject(payload);
+              },
             ),
+            if (provider.isLoading) AppLoading(),
           ],
-        ),
-        if (provider.isLoading) AppLoading(),
-      ],
+        );
+      },
     );
   }
 }

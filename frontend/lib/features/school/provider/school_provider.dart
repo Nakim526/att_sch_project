@@ -6,7 +6,7 @@ class SchoolProvider extends ChangeNotifier {
 
   SchoolProvider(this.service);
 
-  Future<String> getSchoolName() async {
+  Future<String> getName() async {
     final response = await service.getCurrent();
 
     return response.data['name'];

@@ -19,5 +19,5 @@ class RolesModel {
     return roles.map((e) => e.role as String).toList();
   }
 
-  Map<String, String> toJson() => {'id': role!.toLowerCase(), 'name': role!};
+  Map<String, String> toMap() => {'id': role!.toLowerCase(), 'name': role!};
 }

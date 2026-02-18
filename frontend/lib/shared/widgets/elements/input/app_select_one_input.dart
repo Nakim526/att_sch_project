@@ -1,5 +1,6 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
+import 'package:att_school/core/utils/extensions/string_extension.dart';
 import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:att_school/shared/styles/app_input_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
@@ -32,12 +33,19 @@ class AppSelectOneInput extends StatelessWidget {
     this.suffixProps,
     this.decoration,
     this.constraints,
-    this.showSearchBox = true,
+    this.showSearchBox = false,
     this.borderRadius,
     this.onChanged,
     this.minLines = 1,
     this.maxLines = 1,
   });
+
+  String _toString(dynamic item) {
+    if (item == null) return '';
+    if (item is Map) return item['name'];
+    if (item.toString().isEmail) return item.toString();
+    return item.toString().capitalizeEachWord();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +59,7 @@ class AppSelectOneInput extends StatelessWidget {
           items: (f, cs) => items ?? [null],
           selectedItem: initialValue,
           compareFn: (item1, item2) => item1 == item2,
+          itemAsString: (item) => _toString(item),
 
           decoratorProps: DropDownDecoratorProps(
             decoration: AppInputStyle.dropdown(
@@ -89,11 +98,8 @@ class AppSelectOneInput extends StatelessWidget {
 
             itemBuilder: (context, item, isDisabled, isSelected) {
               return Padding(
-                padding: AppSpacing.button,
-                child: AppText(
-                  item == null ? '' : item.toString(),
-                  variant: AppTextVariant.body,
-                ),
+                padding: AppSpacing.normal,
+                child: AppText(_toString(item), variant: AppTextVariant.body),
               );
             },
 
