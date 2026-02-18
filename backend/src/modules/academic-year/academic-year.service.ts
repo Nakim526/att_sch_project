@@ -5,7 +5,7 @@ import { CreateAcademicYearTypes, UpdateAcademicYearTypes } from "./academic-yea
 
 class AcademicYearService {
   async create(schoolId: string, data: CreateAcademicYearTypes) {
-    return prisma.academicYear.create({
+    return await prisma.academicYear.create({
       data: {
         schoolId,
         name: data.name,
@@ -16,27 +16,27 @@ class AcademicYearService {
   }
 
   async findAllBySchool(schoolId: string) {
-    return prisma.academicYear.findMany({
+    return await prisma.academicYear.findMany({
       where: { schoolId },
       orderBy: { name: "asc" },
     });
   }
 
   async findById(id: string) {
-    return prisma.academicYear.findUnique({
+    return await prisma.academicYear.findUnique({
       where: { id },
     });
   }
 
   async update(id: string, data: UpdateAcademicYearTypes) {
-    return prisma.academicYear.update({
+    return await prisma.academicYear.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: string) {
-    return prisma.academicYear.delete({
+    return await prisma.academicYear.delete({
       where: { id },
     });
   }

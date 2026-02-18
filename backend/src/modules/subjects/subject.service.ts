@@ -5,7 +5,7 @@ import { CreateSubjectTypes, UpdateSubjectTypes } from "./subject.types";
 
 class SubjectService {
   async create(schoolId: string, data: CreateSubjectTypes) {
-    return prisma.subject.create({
+    return await prisma.subject.create({
       data: {
         schoolId,
         name: data.name,
@@ -15,27 +15,27 @@ class SubjectService {
   }
 
   async findAllBySchool(schoolId: string) {
-    return prisma.subject.findMany({
+    return await prisma.subject.findMany({
       where: { schoolId },
       orderBy: { name: "asc" },
     });
   }
 
   async findById(id: string) {
-    return prisma.subject.findUnique({
+    return await prisma.subject.findUnique({
       where: { id },
     });
   }
 
   async update(id: string, data: UpdateSubjectTypes) {
-    return prisma.subject.update({
+    return await prisma.subject.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: string) {
-    return prisma.subject.delete({
+    return await prisma.subject.delete({
       where: { id },
     });
   }

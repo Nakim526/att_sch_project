@@ -83,7 +83,7 @@ class HasAccessService {
   }
 
   async getAllHasAccess() {
-    return prisma.allowedEmail.findMany({
+    return await prisma.allowedEmail.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -107,7 +107,7 @@ class HasAccessService {
   }
 
   async getAllHasAccessForce() {
-    return prisma.allowedEmail.findMany({
+    return await prisma.allowedEmail.findMany({
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -131,7 +131,7 @@ class HasAccessService {
   }
 
   async getHasAccessById(id: string) {
-    return prisma.allowedEmail.findUnique({
+    return await prisma.allowedEmail.findUnique({
       where: { id },
       include: {
         user: {
@@ -147,7 +147,7 @@ class HasAccessService {
   ) {
     const { name, email, roles } = payload;
 
-    return prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       // 1️⃣ Ambil allowed email dulu
       const allowed = await tx.allowedEmail.findUnique({
         where: { id },
@@ -225,7 +225,7 @@ class HasAccessService {
   }
 
   async deleteHasAccess(id: string) {
-    return prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       const allowed = await tx.allowedEmail.findUnique({
         where: { id },
       });

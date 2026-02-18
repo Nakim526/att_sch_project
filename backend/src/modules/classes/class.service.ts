@@ -5,7 +5,7 @@ import { CreateClassTypes, UpdateClassTypes } from "./class.types";
 
 class ClassService {
   async create(schoolId: string, data: CreateClassTypes) {
-    return prisma.class.create({
+    return await prisma.class.create({
       data: {
         schoolId,
         name: data.name,
@@ -16,27 +16,27 @@ class ClassService {
   }
 
   async findAllBySchool(schoolId: string) {
-    return prisma.class.findMany({
+    return await prisma.class.findMany({
       where: { schoolId },
       orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
     });
   }
 
   async findById(id: string) {
-    return prisma.class.findUnique({
+    return await prisma.class.findUnique({
       where: { id },
     });
   }
 
   async update(id: string, data: UpdateClassTypes) {
-    return prisma.class.update({
+    return await prisma.class.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: string) {
-    return prisma.class.delete({
+    return await prisma.class.delete({
       where: { id },
     });
   }
