@@ -19,7 +19,7 @@ class TeacherModel {
     return TeacherModel(
       id: json['id'],
       nip: json['nip'],
-      name: json['user']['name'],
+      name: json['name'],
       email: json['user']['email'],
       isActive: json['isActive'],
       school: json['school'],

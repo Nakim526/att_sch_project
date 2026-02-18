@@ -88,7 +88,7 @@ class ReadHasAccessListScreen extends StatelessWidget {
                               detail['id'],
                             );
 
-                            if (result.success) {
+                            if (result.status) {
                               return await list.reload();
                             }
 

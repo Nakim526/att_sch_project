@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class DeleteHasAccessProvider extends ChangeNotifier {
   final DeleteHasAccessService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   DeleteHasAccessProvider(this.service);
 
@@ -28,12 +28,8 @@ class DeleteHasAccessProvider extends ChangeNotifier {
         _error = e.message.toString();
       } else {
         _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
-        debugPrint(_error);
       }
-
-      return BackendMessageHelper(false, message: _error);
-    } catch (e) {
-      _error = e.toString();
+      
       debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);

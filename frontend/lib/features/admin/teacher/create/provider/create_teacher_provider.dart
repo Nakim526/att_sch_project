@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class CreateTeacherProvider extends ChangeNotifier {
   final CreateTeacherService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   CreateTeacherProvider(this.service);
 
@@ -27,14 +27,11 @@ class CreateTeacherProvider extends ChangeNotifier {
       return BackendMessageHelper(true, message: message, data: data);
     } on DioException catch (e) {
       if (e.response?.statusCode == null) {
-        throw e.message.toString();
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
       }
-      _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
-      debugPrint(_error);
-
-      return BackendMessageHelper(false, message: _error);
-    } catch (e) {
-      _error = e.toString();
+      
       debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);

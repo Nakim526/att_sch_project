@@ -7,13 +7,11 @@ import 'package:flutter/material.dart';
 class UpdateHasAccessProvider extends ChangeNotifier {
   final UpdateHasAccessService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   UpdateHasAccessProvider(this.service);
 
   bool get isLoading => _isLoading;
-
-  String? get error => _error;
 
   Future<BackendMessageHelper> updateHasAccess(HasAccessModel payload) async {
     _isLoading = true;
@@ -33,16 +31,13 @@ class UpdateHasAccessProvider extends ChangeNotifier {
     } on DioException catch (e) {
       if (e.response?.statusCode == null) {
         _error = e.message.toString();
-        throw e.message.toString();
       } else {
         _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
-        debugPrint(_error);
       }
+      
+      debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);
-    } catch (e) {
-      debugPrint(e.toString());
-      return BackendMessageHelper(false, message: e.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

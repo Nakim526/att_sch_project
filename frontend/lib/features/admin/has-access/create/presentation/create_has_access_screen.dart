@@ -102,11 +102,11 @@ class _CreateHasAccessScreenState extends State<CreateHasAccessScreen> {
                     if (context.mounted) {
                       await AppDialog.show(
                         context,
-                        title: result.success ? 'Success' : 'Error',
+                        title: result.status ? 'Success' : 'Error',
                         message: result.message,
                       );
 
-                      if (context.mounted && result.success) {
+                      if (context.mounted && result.status) {
                         final id = result.data['id'];
 
                         await Navigator.pushReplacement(

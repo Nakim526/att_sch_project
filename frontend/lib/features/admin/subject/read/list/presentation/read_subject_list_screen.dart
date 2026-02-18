@@ -53,7 +53,7 @@ class ReadSubjectListScreen extends StatelessWidget {
                     ),
                     AppSearch(onChanged: list.search),
                     AppTableList(
-                      columns: {'Subject': 'name', '': ''},
+                      columns: {'ID': 'code', 'Subject': 'name'},
                       data: list.subjects,
                       cellLink: ['name'],
                       onDetail: (id) async {
@@ -76,7 +76,7 @@ class ReadSubjectListScreen extends StatelessWidget {
                               detail['id'],
                             );
 
-                            if (result.success) {
+                            if (result.status) {
                               return list.reload();
                             }
 

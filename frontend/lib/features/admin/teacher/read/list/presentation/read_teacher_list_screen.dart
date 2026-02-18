@@ -45,12 +45,9 @@ class ReadTeacherListScreen extends StatelessWidget {
                     AppButton(
                       "Create Teacher",
                       onPressed: () async {
-                        await Navigator.pushNamed(
-                          context,
-                          '/teachers/create',
-                        );
+                        await Navigator.pushNamed(context, '/teachers/create');
 
-                        list.reload();
+                        await list.reload();
                       },
                       variant: AppButtonVariant.primary,
                     ),
@@ -77,7 +74,7 @@ class ReadTeacherListScreen extends StatelessWidget {
                           ),
                         );
 
-                        list.reload();
+                        await list.reload();
                       },
                       onRemove: (detail) {
                         AppDialog.confirm(
@@ -89,8 +86,8 @@ class ReadTeacherListScreen extends StatelessWidget {
                               detail['id'],
                             );
 
-                            if (result.success) {
-                              return list.reload();
+                            if (result.status) {
+                              return await list.reload();
                             }
 
                             if (context.mounted) {

@@ -3,8 +3,10 @@ import 'package:att_school/features/admin/has-access/read/detail/provider/read_h
 import 'package:att_school/features/admin/has-access/update/presentation/update_has_acccess_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_field.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
@@ -19,6 +21,16 @@ class ReadHasAccessDetailScreen extends StatelessWidget {
     return Consumer<ReadHasAccessDetailProvider>(
       builder: (context, provider, _) {
         final detail = provider.hasAccess;
+
+        // 🔥 SIDE-EFFECT: dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (provider.error.isNotEmpty) {
+            AppDialog.show(context, title: 'Error', message: provider.error);
+
+            // penting: reset error
+            provider.clearError();
+          }
+        });
 
         return Stack(
           children: [
@@ -38,7 +50,7 @@ class ReadHasAccessDetailScreen extends StatelessWidget {
                       ),
                     );
 
-                    provider.reload();
+                    await provider.reload();
                   },
                   variant: AppButtonVariant.primary,
                 ),
@@ -46,77 +58,11 @@ class ReadHasAccessDetailScreen extends StatelessWidget {
                   AppSection(
                     spacing: AppSize.xSmall,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Nama",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              detail.name,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Email",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              detail.email,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Email",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (detail.roles!.length > 1)
-                                  ...detail.roles!.map(
-                                    (e) => AppText(
-                                      "- ${e.role!}",
-                                      variant: AppTextVariant.body,
-                                    ),
-                                  )
-                                else
-                                  AppText(
-                                    detail.roles!.first.role!,
-                                    variant: AppTextVariant.body,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      AppField('Nama', value: detail.name),
+                      AppField('Email', value: detail.email),
+                      AppField(
+                        'Hak Akses',
+                        values: detail.roles!.map((e) => e.role!).toList(),
                       ),
                     ],
                   ),

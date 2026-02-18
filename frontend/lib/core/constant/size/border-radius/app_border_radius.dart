@@ -38,4 +38,20 @@ class AppBorderRadius {
   static BorderRadius horizontal(double radius) {
     return BorderRadius.horizontal(left: Radius.circular(radius));
   }
+
+  static BorderRadius top(double radius) {
+    return BorderRadius.vertical(top: Radius.circular(radius));
+  }
+
+  static BorderRadius bottom(double radius) {
+    return BorderRadius.vertical(bottom: Radius.circular(radius));
+  }
+
+  static BorderRadius left(double radius) {
+    return BorderRadius.horizontal(left: Radius.circular(radius));
+  }
+
+  static BorderRadius right(double radius) {
+    return BorderRadius.horizontal(right: Radius.circular(radius));
+  }
 }

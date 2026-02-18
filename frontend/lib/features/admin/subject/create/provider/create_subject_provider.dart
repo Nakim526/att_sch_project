@@ -1,12 +1,13 @@
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/subject/create/data/create_subject_service.dart';
 import 'package:att_school/features/admin/subject/models/subject_model.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class CreateSubjectProvider extends ChangeNotifier {
   final CreateSubjectService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   CreateSubjectProvider(this.service);
 
@@ -23,8 +24,13 @@ class CreateSubjectProvider extends ChangeNotifier {
       final data = response.data['data'];
 
       return BackendMessageHelper(true, message: message, data: data);
-    } catch (e) {
-      _error = e.toString();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == null) {
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
+      }
+      
       debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);

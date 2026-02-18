@@ -92,11 +92,11 @@ class _UpdateSubjectScreenState extends State<UpdateSubjectScreen> {
                     if (context.mounted) {
                       await AppDialog.show(
                         context,
-                        title: result.success ? 'Success' : 'Error',
+                        title: result.status ? 'Success' : 'Error',
                         message: result.message,
                       );
 
-                      if (result.success && context.mounted) {
+                      if (result.status && context.mounted) {
                         return Navigator.pop(context);
                       }
                     }

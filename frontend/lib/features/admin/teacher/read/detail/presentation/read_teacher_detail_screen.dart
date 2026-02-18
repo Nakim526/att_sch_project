@@ -3,8 +3,10 @@ import 'package:att_school/features/admin/teacher/read/detail/provider/read_teac
 import 'package:att_school/features/admin/teacher/update/presentation/update_teacher_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_field.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
@@ -19,6 +21,16 @@ class ReadTeacherDetailScreen extends StatelessWidget {
     return Consumer<ReadTeacherDetailProvider>(
       builder: (context, provider, _) {
         final detail = provider.teacher;
+
+        // 🔥 SIDE-EFFECT: dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (provider.error.isNotEmpty) {
+            AppDialog.show(context, title: 'Error', message: provider.error);
+
+            // penting: reset error
+            provider.clearError();
+          }
+        });
 
         return Stack(
           children: [
@@ -46,93 +58,10 @@ class ReadTeacherDetailScreen extends StatelessWidget {
                   AppSection(
                     spacing: AppSize.xSmall,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText("NIP", variant: AppTextVariant.body),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText(
-                                  detail.nip,
-                                  variant: AppTextVariant.body,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Nama",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              detail.name,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Email",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              detail.email,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Sekolah",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                AppText(
-                                  detail.school!,
-                                  variant: AppTextVariant.body,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      AppField('NIP', value: detail.nip),
+                      AppField('Nama', value: detail.name),
+                      AppField('Email', value: detail.email),
+                      AppField('Sekolah', value: detail.school!),
                     ],
                   ),
               ],

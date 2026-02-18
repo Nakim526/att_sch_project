@@ -1,3 +1,4 @@
+import 'package:att_school/core/utils/formatter/backend_formatter.dart';
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/teacher/models/teacher_model.dart';
 import 'package:att_school/features/admin/teacher/read/data/read_teacher_service.dart';
@@ -10,18 +11,20 @@ class ReadTeacherDetailProvider extends ChangeNotifier {
   final SchoolProvider provider;
   TeacherModel? _teacher;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
   String? _id;
 
   ReadTeacherDetailProvider(this.service, this.provider);
 
   bool get isLoading => _isLoading;
 
+  String get error => _error;
+
   TeacherModel? get teacher => _teacher;
 
   Future<BackendMessageHelper> fetchById(String id) async {
     _id = id;
-    _error = null;
+    _error = '';
     _teacher = null;
     _isLoading = true;
     notifyListeners();
@@ -31,23 +34,22 @@ class ReadTeacherDetailProvider extends ChangeNotifier {
       final response = await service.readTeacherDetail(id);
       final school = await provider.getSchoolName();
 
-      if (response.data != null) {
-        data = response.data['data'];
-        data['school'] = school;
+      data = response.data['data'];
+      data['school'] = school;
 
-        _teacher = TeacherModel.fromJson(data);
+      _teacher = TeacherModel.fromJson(data);
+
+      return BackendMessageHelper(true, data: _teacher);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != null) {
+        String message = e.response?.data['message'];
+        message = BackendFormatter.isNotFound(message);
+
+        _error = "${e.response?.statusCode} - $message";
+      } else {
+        _error = e.message.toString();
       }
 
-      final message = response.data['message'].toString();
-
-      return BackendMessageHelper(true, message: message, data: _teacher);
-    } on DioException catch (e) {
-      _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
-      debugPrint(_error);
-
-      return BackendMessageHelper(false, message: _error);
-    } catch (e) {
-      _error = e.toString();
       debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);
@@ -56,6 +58,8 @@ class ReadTeacherDetailProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearError() => _error = '';
 
   Future<void> reload() => fetchById(_id!);
 }

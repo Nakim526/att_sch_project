@@ -2,6 +2,15 @@ import 'package:att_school/app/app.dart';
 import 'package:att_school/core/constant/theme/theme_controller.dart';
 import 'package:att_school/core/network/dio_client.dart';
 import 'package:att_school/core/network/dio_interceptors.dart';
+import 'package:att_school/features/admin/academic-year/create/data/create_academic_year_service.dart';
+import 'package:att_school/features/admin/academic-year/create/provider/create_academic_year_provider.dart';
+import 'package:att_school/features/admin/academic-year/delete/data/delete_academic_year_service.dart';
+import 'package:att_school/features/admin/academic-year/delete/provider/delete_academic_year_provider.dart';
+import 'package:att_school/features/admin/academic-year/read/data/read_academic_year_service.dart';
+import 'package:att_school/features/admin/academic-year/read/detail/provider/read_academic_year_detail_provider.dart';
+import 'package:att_school/features/admin/academic-year/read/list/provider/read_academic_year_list_provider.dart';
+import 'package:att_school/features/admin/academic-year/update/data/update_academic_year_service.dart';
+import 'package:att_school/features/admin/academic-year/update/provider/update_academic_year_provider.dart';
 import 'package:att_school/features/admin/class/create/data/create_class_service.dart';
 import 'package:att_school/features/admin/class/create/provider/create_class_provider.dart';
 import 'package:att_school/features/admin/class/delete/data/delete_class_service.dart';
@@ -84,11 +93,11 @@ void main() {
         ),
 
         /// 🔸 Subjects
-        Provider<ReadSubjectService>(
-          create: (context) => ReadSubjectService(context.read<Dio>()),
-        ),
         Provider<CreateSubjectService>(
           create: (context) => CreateSubjectService(context.read<Dio>()),
+        ),
+        Provider<ReadSubjectService>(
+          create: (context) => ReadSubjectService(context.read<Dio>()),
         ),
         Provider<UpdateSubjectService>(
           create: (context) => UpdateSubjectService(context.read<Dio>()),
@@ -123,6 +132,20 @@ void main() {
         ),
         Provider<DeleteTeacherService>(
           create: (context) => DeleteTeacherService(context.read<Dio>()),
+        ),
+
+        /// 🔸 AcademicYears
+        Provider<CreateAcademicYearService>(
+          create: (context) => CreateAcademicYearService(context.read<Dio>()),
+        ),
+        Provider<ReadAcademicYearService>(
+          create: (context) => ReadAcademicYearService(context.read<Dio>()),
+        ),
+        Provider<UpdateAcademicYearService>(
+          create: (context) => UpdateAcademicYearService(context.read<Dio>()),
+        ),
+        Provider<DeleteAcademicYearService>(
+          create: (context) => DeleteAcademicYearService(context.read<Dio>()),
         ),
 
         /// 🔹 Providers (State)
@@ -272,6 +295,36 @@ void main() {
             return DeleteTeacherProvider(
               context.read<DeleteTeacherService>(),
             );
+          },
+        ),
+
+        /// 🔸 AcademicYears
+        ChangeNotifierProvider<ReadAcademicYearListProvider>(
+          create: (context) {
+            return ReadAcademicYearListProvider(context.read<ReadAcademicYearService>());
+          },
+        ),
+        ChangeNotifierProvider<CreateAcademicYearProvider>(
+          create: (context) {
+            return CreateAcademicYearProvider(context.read<CreateAcademicYearService>());
+          },
+        ),
+        ChangeNotifierProvider<ReadAcademicYearDetailProvider>(
+          create: (context) {
+            return ReadAcademicYearDetailProvider(
+              context.read<ReadAcademicYearService>(),
+              context.read<SchoolProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateAcademicYearProvider>(
+          create: (context) {
+            return UpdateAcademicYearProvider(context.read<UpdateAcademicYearService>());
+          },
+        ),
+        ChangeNotifierProvider<DeleteAcademicYearProvider>(
+          create: (context) {
+            return DeleteAcademicYearProvider(context.read<DeleteAcademicYearService>());
           },
         ),
 

@@ -1,12 +1,14 @@
+import 'package:att_school/core/utils/formatter/backend_formatter.dart';
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/auth/data/auth_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   AuthProvider(this.service);
 
@@ -19,20 +21,21 @@ class AuthProvider extends ChangeNotifier {
     try {
       final response = await service.login();
 
-      if (response.data != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(
-          'roles',
-          response.data['user']['roles'].toString(),
-        );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('roles', response.data['user']['roles'].toString());
 
-        return BackendMessageHelper(true);
+      return BackendMessageHelper(true);
+    } on DioException catch (e) {
+      if (e.response?.statusCode != null) {
+        String message = e.response?.data['message'];
+        message = BackendFormatter.isNotFound(message);
+
+        _error = "${e.response?.statusCode} - $message";
+      } else {
+        _error = e.message.toString();
       }
 
-      return BackendMessageHelper(false);
-    } catch (e) {
-      _error = e.toString();
-      debugPrint(e.toString());
+      debugPrint(_error);
 
       return BackendMessageHelper(false, message: _error);
     } finally {
@@ -41,8 +44,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logout() {
-    service.logout();
+  Future<void> logout() async {
+    await service.logout();
     notifyListeners();
   }
 }

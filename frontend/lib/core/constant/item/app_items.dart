@@ -1,5 +1,5 @@
 class AppItems {
-  AppItems._();
+  const AppItems._();
 
   static const List grades = [null, 1, 2, 3, 4, 5, 6];
 

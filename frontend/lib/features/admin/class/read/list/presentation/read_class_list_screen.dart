@@ -46,13 +46,13 @@ class ReadClassListScreen extends StatelessWidget {
                       "Create Class",
                       onPressed: () async {
                         await Navigator.pushNamed(context, '/classes/create');
-                        list.reload();
+                        await list.reload();
                       },
                       variant: AppButtonVariant.primary,
                     ),
                     AppSearch(onChanged: list.search),
                     AppTableList(
-                      columns: {'Grade': 'grade', 'Name': 'name'},
+                      columns: {'Grade': 'gradeLevel', 'Name': 'name'},
                       data: list.classes,
                       cellLink: ['name'],
                       onDetail: (id) async {
@@ -63,7 +63,7 @@ class ReadClassListScreen extends StatelessWidget {
                           ),
                         );
 
-                        list.reload();
+                        await list.reload();
                       },
                       onRemove: (detail) {
                         AppDialog.confirm(
@@ -75,8 +75,8 @@ class ReadClassListScreen extends StatelessWidget {
                               detail['id'],
                             );
 
-                            if (result.success) {
-                              return list.reload();
+                            if (result.status) {
+                              return await list.reload();
                             }
 
                             if (context.mounted) {

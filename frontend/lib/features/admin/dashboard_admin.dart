@@ -73,6 +73,21 @@ class DashboardAdmin extends StatelessWidget {
             ),
             AppTile(
               onTap: () {
+                Navigator.pushNamed(context, '/academic-years');
+              },
+              maxWidth: AppSizeScreen.card(context),
+              children: [
+                Icon(Icons.book, size: AppSizeScreen.iconCard(context)),
+                AppText(
+                  "Tahun Akademik",
+                  variant: AppTextVariant.title,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+            AppTile(
+              onTap: () {
                 Navigator.pushNamed(context, '/teachers');
               },
               maxWidth: AppSizeScreen.card(context),

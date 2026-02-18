@@ -21,14 +21,14 @@ class AppScreen extends StatelessWidget {
     return Scaffold(
       appBar: appBar,
       body: ListView(
-        padding: AppSpacing.large,
+        padding: AppSpacing.medium,
         children: [
           SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: mainAxisAlignment,
               crossAxisAlignment: crossAxisAlignment,
-              spacing: AppSize.xLarge,
+              spacing: AppSize.large,
               children: children,
             ),
           ),

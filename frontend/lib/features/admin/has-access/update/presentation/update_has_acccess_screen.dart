@@ -126,11 +126,11 @@ class _UpdateHasAccessScreenState extends State<UpdateHasAccessScreen> {
                     if (context.mounted) {
                       await AppDialog.show(
                         context,
-                        title: result.success ? 'Success' : 'Error',
+                        title: result.status ? 'Success' : 'Error',
                         message: result.message,
                       );
 
-                      if (context.mounted && result.success) {
+                      if (context.mounted && result.status) {
                         return Navigator.pop(context);
                       }
                     }

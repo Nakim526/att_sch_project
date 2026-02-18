@@ -1,3 +1,5 @@
+import 'package:att_school/features/admin/academic-year/create/presentation/create_academic_year_screen.dart';
+import 'package:att_school/features/admin/academic-year/read/list/presentation/read_academic_year_list_screen.dart';
 import 'package:att_school/features/admin/class/create/presentation/create_class_screen.dart';
 import 'package:att_school/features/admin/class/read/list/presentation/read_class_list_screen.dart';
 import 'package:att_school/features/admin/has-access/create/presentation/create_has_access_screen.dart';
@@ -15,12 +17,14 @@ class AppRoutes {
     return <String, WidgetBuilder>{
       '/login': (context) => const AuthLoginScreen(),
       '/dashboard': (context) => const DashboardScreen(),
-      '/classes': (context) => const ReadClassListScreen(),
-      '/classes/create': (context) => const CreateClassScreen(),
       '/has-access': (context) => const ReadHasAccessListScreen(),
       '/has-access/create': (context) => const CreateHasAccessScreen(),
       '/teachers': (context) => const ReadTeacherListScreen(),
       '/teachers/create': (context) => const CreateTeacherScreen(),
+      '/academic-years': (context) => const ReadAcademicYearListScreen(),
+      '/academic-years/create': (context) => const CreateAcademicYearScreen(),
+      '/classes': (context) => const ReadClassListScreen(),
+      '/classes/create': (context) => const CreateClassScreen(),
       '/subjects': (context) => const ReadSubjectListScreen(),
       '/subjects/create': (context) => const CreateSubjectScreen(),
     };

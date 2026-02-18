@@ -1,18 +1,17 @@
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/class/models/class_model.dart';
 import 'package:att_school/features/admin/class/update/data/update_class_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class UpdateClassProvider extends ChangeNotifier {
   final UpdateClassService service;
   bool _isLoading = false;
-  String? _error;
+  String _error = '';
 
   UpdateClassProvider(this.service);
 
   bool get isLoading => _isLoading;
-
-  String? get error => _error;
 
   Future<BackendMessageHelper> updateClass(ClassModel? payload) async {
     _isLoading = true;
@@ -28,9 +27,16 @@ class UpdateClassProvider extends ChangeNotifier {
       final data = response.data['data'];
 
       return BackendMessageHelper(true, message: message, data: data);
-    } catch (e) {
-      debugPrint(e.toString());
-      return BackendMessageHelper(false, message: e.toString());
+    } on DioException catch (e) {
+      if (e.response?.statusCode == null) {
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
+      }
+      
+      debugPrint(_error);
+
+      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();

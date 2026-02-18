@@ -3,8 +3,10 @@ import 'package:att_school/features/admin/subject/read/detail/provider/read_subj
 import 'package:att_school/features/admin/subject/update/presentation/update_subject_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_field.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
@@ -18,6 +20,18 @@ class ReadSubjectDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ReadSubjectDetailProvider>(
       builder: (context, provider, _) {
+        final detail = provider.subject;
+
+        // 🔥 SIDE-EFFECT: dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (provider.error.isNotEmpty) {
+            AppDialog.show(context, title: 'Error', message: provider.error);
+
+            // penting: reset error
+            provider.clearError();
+          }
+        });
+
         return Stack(
           children: [
             AppScreen(
@@ -31,63 +45,26 @@ class ReadSubjectDetailScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return UpdateSubjectScreen(provider.subject?.id! ?? '');
+                          return UpdateSubjectScreen(detail?.id! ?? '');
                         },
                       ),
                     );
 
-                    provider.reload();
+                    await provider.reload();
                   },
                   variant: AppButtonVariant.primary,
                 ),
-                if (provider.subject != null)
+                if (detail != null)
                   AppSection(
                     spacing: AppSize.xSmall,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: AppText(
-                              "Mata Pelajaran",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              provider.subject!.name,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: AppText(
-                              "Sekolah",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              provider.subject!.school!,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
+                      AppField('Mata Pelajaran', value: detail.name),
+                      AppField('Sekolah', value: detail.school!),
                     ],
                   ),
               ],
             ),
-            if (provider.isLoading || provider.subject == null) AppLoading(),
+            if (provider.isLoading || detail == null) AppLoading(),
           ],
         );
       },

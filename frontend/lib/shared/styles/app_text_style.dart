@@ -14,6 +14,7 @@ enum AppTextVariant {
   button,
   caption,
   overline,
+  hint,
   link,
   error,
 }
@@ -37,6 +38,7 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
   AppTextVariant.caption: _TextStyleConfig(AppSize.normal, FontWeight.normal),
   AppTextVariant.overline: _TextStyleConfig(AppSize.small, FontWeight.normal),
+  AppTextVariant.hint: _TextStyleConfig(AppSize.base, FontWeight.normal),
   AppTextVariant.link: _TextStyleConfig(AppSize.base, FontWeight.w500),
   AppTextVariant.error: _TextStyleConfig(AppSize.normal, FontWeight.normal),
 };
@@ -72,6 +74,9 @@ class AppTextStyle {
 
       case AppTextVariant.link:
         return context.primary;
+
+      case AppTextVariant.hint:
+        return context.onSurface.withValues(alpha: 0.4);
 
       case AppTextVariant.button:
         return context.onPrimaryContainer;

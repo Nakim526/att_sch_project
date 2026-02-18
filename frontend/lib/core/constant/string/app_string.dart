@@ -19,6 +19,8 @@ class AppString {
 
   static const String schoolUrl = '$baseUrl/schools';
 
+  static const String academicYearUrl = '$baseUrl/academic-years';
+
   static const String hasAccessUrl = '$baseUrl/has-access';
 
   static const String teacherUrl = '$baseUrl/teachers';

@@ -3,8 +3,10 @@ import 'package:att_school/features/admin/class/read/detail/provider/read_class_
 import 'package:att_school/features/admin/class/update/presentation/update_class_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_field.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
 import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:att_school/shared/widgets/layout/app_section.dart';
@@ -18,7 +20,18 @@ class ReadClassDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ReadClassDetailProvider>(
       builder: (context, provider, _) {
-        final class_ = "${provider.class_?.grade} - ${provider.class_?.name}";
+        final detail = provider.class_;
+        final class_ = "${detail?.grade} - ${detail?.name}";
+
+        // 🔥 SIDE-EFFECT: dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (provider.error.isNotEmpty) {
+            AppDialog.show(context, title: 'Error', message: provider.error);
+
+            // penting: reset error
+            provider.clearError();
+          }
+        });
 
         return Stack(
           children: [
@@ -42,54 +55,17 @@ class ReadClassDetailScreen extends StatelessWidget {
                   },
                   variant: AppButtonVariant.primary,
                 ),
-                if (provider.class_ != null)
+                if (detail != null)
                   AppSection(
                     spacing: AppSize.xSmall,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Kelas",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              class_,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: AppText(
-                              "Sekolah",
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                          AppText(" : ", variant: AppTextVariant.body),
-                          Expanded(
-                            flex: 3,
-                            child: AppText(
-                              provider.class_!.school!,
-                              variant: AppTextVariant.body,
-                            ),
-                          ),
-                        ],
-                      ),
+                      AppField('Kelas', value: class_),
+                      AppField('Sekolah', value: detail.school!),
                     ],
                   ),
               ],
             ),
-            if (provider.isLoading || provider.class_ == null) AppLoading(),
+            if (provider.isLoading || detail == null) AppLoading(),
           ],
         );
       },

@@ -27,24 +27,22 @@ class ReadClassListProvider extends ChangeNotifier {
       final response = await service.readClassList();
       _classes = (response.data['data'] as List).cast<Map<String, dynamic>>();
     } on DioException catch (e) {
-      _error = "${e.response?.statusCode} - ${e.response?.statusMessage}";
-
       if (e.response?.statusCode == null) {
-        debugPrint(e.message);
-        _error = "${e.message}";
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
       }
-    } catch (e) {
-      debugPrint(e.toString());
-      _error = e.toString();
+      
+      debugPrint(_error);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  void reload() => _fetch();
-
   void clearError() => _error = '';
+
+  Future<void> reload() => _fetch();
 
   Future<void> search(String query) async {
     await _fetch();

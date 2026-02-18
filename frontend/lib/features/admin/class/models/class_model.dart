@@ -14,12 +14,12 @@ class ClassModel {
   });
 
   static ClassModel? fromJson(Map<String, dynamic> json) {
-    if (json['name'] == null || json['grade'] == null) return null;
+    if (json['name'] == null || json['gradeLevel'] == null) return null;
 
     return ClassModel(
       id: json['id'],
       name: json['name'],
-      grade: json['grade'],
+      grade: json['gradeLevel'],
       schoolId: json['schoolId'],
       school: json['school'],
     );
@@ -28,7 +28,7 @@ class ClassModel {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'grade': grade,
+      'gradeLevel': grade,
     };
   }
 

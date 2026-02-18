@@ -1,6 +1,7 @@
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/features/admin/has-access/read/list/provider/read_has_access_list_provider.dart';
 import 'package:att_school/features/admin/teacher/read/data/read_teacher_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class ReadTeacherListProvider extends ChangeNotifier {
@@ -17,11 +18,11 @@ class ReadTeacherListProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> get teachers => _teachers;
 
+  String get error => _error;
+
   List<String> get emails => _emails;
 
   bool get isLoading => _isLoading;
-
-  String get error => _error;
 
   Future<BackendMessageHelper> fetchAllEmails() async {
     _isLoading = true;
@@ -36,16 +37,23 @@ class ReadTeacherListProvider extends ChangeNotifier {
       }
 
       return BackendMessageHelper(true);
-    } catch (e) {
-      debugPrint(e.toString());
-      return BackendMessageHelper(false, message: e.toString());
+    } on DioException catch (e) {
+      if (e.response?.statusCode == null) {
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
+      }
+
+      debugPrint(_error);
+
+      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<BackendMessageHelper> _fetch() async {
+  Future<void> _fetch() async {
     _isLoading = true;
     notifyListeners();
 
@@ -59,20 +67,21 @@ class ReadTeacherListProvider extends ChangeNotifier {
         teachers.add({
           'id': item['id'],
           'nip': item['nip'],
-          'name': item['user']['name'],
+          'name': item['name'],
           'email': item['user']['email'],
           'isActive': item['isActive'] as bool,
         });
       }
 
       _teachers = teachers;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == null) {
+        _error = e.message.toString();
+      } else {
+        _error = "${e.response?.statusCode} - ${e.response?.data['message']}";
+      }
 
-      return BackendMessageHelper(true);
-    } catch (e) {
-      _error = e.toString();
       debugPrint(_error);
-
-      return BackendMessageHelper(false, message: _error);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -81,7 +90,7 @@ class ReadTeacherListProvider extends ChangeNotifier {
 
   void clearError() => _error = '';
 
-  void reload() => _fetch();
+  Future<void> reload() => _fetch();
 
   Future<void> search(String query) async {
     await _fetch();

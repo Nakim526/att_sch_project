@@ -39,7 +39,7 @@ class AuthLoginScreen extends StatelessWidget {
                   onPressed: () async {
                     final result = await provider.login();
                     if (context.mounted) {
-                      if (result.success) {
+                      if (result.status) {
                         Navigator.pushNamed(context, '/dashboard');
                         return;
                       }

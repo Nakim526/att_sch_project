@@ -18,6 +18,11 @@ abstract class AppSpacing {
     vertical: AppSize.small,
   );
 
+  static const EdgeInsets field = EdgeInsets.symmetric(
+    horizontal: AppSize.normal,
+    vertical: AppSize.medium,
+  );
+
   static EdgeInsets horizontal(double value) {
     return EdgeInsets.symmetric(horizontal: value);
   }

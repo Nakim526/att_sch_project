@@ -1,7 +1,7 @@
 class BackendMessageHelper {
-  final bool success;
+  final bool status;
   final String? message;
   final dynamic data;
 
-  BackendMessageHelper(this.success, {this.message, this.data});
+  BackendMessageHelper(this.status, {this.message, this.data});
 }

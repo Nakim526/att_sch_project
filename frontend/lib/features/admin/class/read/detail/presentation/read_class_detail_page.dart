@@ -19,13 +19,7 @@ class ReadClassDetailPage extends StatelessWidget {
             context.read<SchoolProvider>(),
           )
           ..fetchById(id).then((result) {
-            if (!result.success && context.mounted) {
-              String error = result.message.toString();
-              if (error ==
-                  "type 'Null' is not a subtype of type 'Map<String, dynamic>'") {
-                error = "Data not found";
-              }
-
+            if (!result.status && context.mounted) {
               return AppDialog.show(
                 context,
                 title: "Error",
