@@ -6,7 +6,7 @@ import { CreateSemesterTypes, UpdateSemesterTypes } from "./semester.types";
 
 class SemesterService {
   async create(data: CreateSemesterTypes) {
-    return prisma.semester.create({
+    return await prisma.semester.create({
       data: {
         academicYearId: data.academicYearId,
         type: data.type,
@@ -17,14 +17,14 @@ class SemesterService {
   }
 
   async findAllBySchool() {
-    return prisma.semester.findMany({
+    return await prisma.semester.findMany({
       orderBy: { startDate: "asc" },
       include: { academicYear: true },
     });
   }
 
   async findAllByType(type: SemesterType) {
-    return prisma.semester.findMany({
+    return await prisma.semester.findMany({
       where: { type: type },
       orderBy: { startDate: "asc" },
       include: { academicYear: true },
@@ -32,21 +32,21 @@ class SemesterService {
   }
 
   async findById(id: string) {
-    return prisma.semester.findUnique({
+    return await prisma.semester.findUnique({
       where: { id },
       include: { academicYear: true },
     });
   }
 
   async update(id: string, data: UpdateSemesterTypes) {
-    return prisma.semester.update({
+    return await prisma.semester.update({
       where: { id },
       data,
     });
   }
 
   async delete(id: string) {
-    return prisma.semester.delete({
+    return await prisma.semester.delete({
       where: { id },
     });
   }
