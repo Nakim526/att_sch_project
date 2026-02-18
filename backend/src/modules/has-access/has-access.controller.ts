@@ -11,6 +11,7 @@ class HasAccessController {
         message: "Data berhasil ditambahkan",
         data: data,
       });
+      console.log(data);
     } catch (error) {
       next(error);
     }
