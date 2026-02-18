@@ -19,6 +19,7 @@ class SemesterService {
   async findAllBySchool() {
     return prisma.semester.findMany({
       orderBy: { startDate: "asc" },
+      include: { academicYear: true },
     });
   }
 
@@ -26,12 +27,14 @@ class SemesterService {
     return prisma.semester.findMany({
       where: { type: type },
       orderBy: { startDate: "asc" },
+      include: { academicYear: true },
     });
   }
 
   async findById(id: string) {
     return prisma.semester.findUnique({
       where: { id },
+      include: { academicYear: true },
     });
   }
 
