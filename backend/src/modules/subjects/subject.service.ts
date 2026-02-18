@@ -9,6 +9,7 @@ class SubjectService {
       data: {
         schoolId,
         name: data.name,
+        code: data.code,
       },
     });
   }
