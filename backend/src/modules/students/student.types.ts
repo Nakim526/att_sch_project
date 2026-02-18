@@ -9,6 +9,8 @@ export interface CreateStudentTypes {
   gender?: Gender;
   phone?: string;
   address?: string;
+  classId: string;
+  semesterId: string;
 }
 
 export interface UpdateStudentTypes {

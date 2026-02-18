@@ -18,7 +18,6 @@ class SemesterService {
 
   async findAllBySchool() {
     return prisma.semester.findMany({
-      where: { isActive: true },
       orderBy: { startDate: "asc" },
     });
   }

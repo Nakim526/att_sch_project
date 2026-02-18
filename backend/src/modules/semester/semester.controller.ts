@@ -8,7 +8,9 @@ import { SemesterType } from "@prisma/client";
 class AcademicYearController {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const result = await service.create(req.body);
 
       res.status(201).json({
@@ -22,7 +24,9 @@ class AcademicYearController {
 
   async findAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const result = await service.findAllBySchool();
 
       res.json({ data: result });
@@ -33,7 +37,9 @@ class AcademicYearController {
 
   async findType(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { type } = req.params as { type: SemesterType };
 
       const result = await service.findAllByType(type);
@@ -46,7 +52,9 @@ class AcademicYearController {
 
   async findOne(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { id } = req.params as { id: string };
 
       const result = await service.findById(id);
@@ -65,7 +73,9 @@ class AcademicYearController {
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { id } = req.params as { id: string };
 
       const result = await service.update(id, req.body);
@@ -81,7 +91,9 @@ class AcademicYearController {
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      console.log("REQUEST: ", req);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+      
       const { id } = req.params as { id: string };
 
       await service.delete(id);

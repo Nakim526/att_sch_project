@@ -7,7 +7,7 @@ export interface CreateAcademicYearTypes {
 }
 
 export interface UpdateAcademicYearTypes {
-  name?: string;
-  startDate?: Date;
-  endDate?: Date;
+  name: string;
+  startDate: Date;
+  endDate: Date;
 }
