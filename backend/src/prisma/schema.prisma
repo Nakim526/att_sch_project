@@ -50,8 +50,8 @@ enum ClassTeacherRole {
 }
 
 enum SemesterType {
-  ODD // Ganjil
-  EVEN // Genap
+  GANJIL // Ganjil
+  GENAP // Genap
 }
 
 enum Gender {

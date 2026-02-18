@@ -1,4 +1,4 @@
-import { RoleName } from "@prisma/client";
+import { RoleName, SemesterType } from "@prisma/client";
 import prisma from "../config/prisma";
 
 async function main() {
@@ -314,19 +314,19 @@ async function main() {
     where: {
       academicYearId_type: {
         academicYearId: academicYear.id,
-        type: "ODD",
+        type: SemesterType.GANJIL,
       },
     },
     update: {
       academicYearId: academicYear.id,
-      type: "ODD",
+      type: SemesterType.GANJIL,
       startDate: new Date("2024-07-15"),
       endDate: new Date("2024-12-31"),
       isActive: false,
     },
     create: {
       academicYearId: academicYear.id,
-      type: "ODD",
+      type: SemesterType.GANJIL,
       startDate: new Date("2024-07-15"),
       endDate: new Date("2024-12-31"),
       isActive: false,
@@ -337,19 +337,19 @@ async function main() {
     where: {
       academicYearId_type: {
         academicYearId: academicYear.id,
-        type: "EVEN",
+        type: SemesterType.GENAP,
       },
     },
     update: {
       academicYearId: academicYear.id,
-      type: "EVEN",
+      type: SemesterType.GENAP,
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-06-30"),
       isActive: true,
     },
     create: {
       academicYearId: academicYear.id,
-      type: "EVEN",
+      type: SemesterType.GENAP,
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-06-30"),
       isActive: true,

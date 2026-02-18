@@ -14,7 +14,7 @@ CREATE TYPE "DayOfWeek" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', '
 CREATE TYPE "ClassTeacherRole" AS ENUM ('HOMEROOM', 'ASSISTANT');
 
 -- CreateEnum
-CREATE TYPE "SemesterType" AS ENUM ('ODD', 'EVEN');
+CREATE TYPE "SemesterType" AS ENUM ('GANJIL', 'GENAP');
 
 -- CreateEnum
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE');
@@ -86,7 +86,7 @@ CREATE TABLE "Teacher" (
     "id" TEXT NOT NULL,
     "schoolId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "nip" TEXT,
+    "nip" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "gender" "Gender",
     "phone" TEXT,
@@ -322,6 +322,9 @@ CREATE UNIQUE INDEX "AllowedEmail_schoolId_email_key" ON "AllowedEmail"("schoolI
 CREATE UNIQUE INDEX "Teacher_userId_key" ON "Teacher"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Teacher_nip_key" ON "Teacher"("nip");
+
+-- CreateIndex
 CREATE INDEX "Teacher_schoolId_idx" ON "Teacher"("schoolId");
 
 -- CreateIndex
@@ -362,6 +365,9 @@ CREATE INDEX "Subject_schoolId_idx" ON "Subject"("schoolId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Subject_schoolId_name_key" ON "Subject"("schoolId", "name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Student_nis_key" ON "Student"("nis");
 
 -- CreateIndex
 CREATE INDEX "Student_schoolId_isActive_idx" ON "Student"("schoolId", "isActive");
