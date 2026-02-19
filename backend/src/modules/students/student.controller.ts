@@ -7,6 +7,8 @@ import studentService from "./student.service";
 class StudentController {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const schoolId = req.user!.schoolId;
       const result = await studentService.create(schoolId, req.body);
 
@@ -21,6 +23,8 @@ class StudentController {
 
   async findAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const schoolId = req.user!.schoolId;
       const result = await studentService.findAllBySchool(schoolId);
 
@@ -30,8 +34,23 @@ class StudentController {
     }
   }
 
+  async findOne(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(req.body);
+
+      const { id } = req.params as { id: string };
+      const result = await studentService.findOneById(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findAllByClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const { classId } = req.params as { classId: string };
       const result = await studentService.findAllByClass(classId);
 
@@ -43,7 +62,9 @@ class StudentController {
 
   async findOneByClass(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { classId, id } = req.params as { classId: string, id: string };
+      console.log(req.body);
+
+      const { classId, id } = req.params as { classId: string; id: string };
       const result = await studentService.findOneByClass(classId, id);
 
       res.json({ data: result });
@@ -54,6 +75,8 @@ class StudentController {
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const { id } = req.params as { id: string };
       const result = await studentService.update(id, req.body);
 
@@ -66,10 +89,27 @@ class StudentController {
     }
   }
 
+  async softDelete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(req.body);
+
+      const { id } = req.params as { id: string };
+      await studentService.softDelete(id);
+
+      res.json({
+        message: "Siswa berhasil dihapus",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
+
       const { id } = req.params as { id: string };
-      await studentService.delete(id);
+      await studentService.hardDelete(id);
 
       res.json({
         message: "Siswa berhasil dihapus",

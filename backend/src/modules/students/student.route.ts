@@ -20,6 +20,12 @@ router.get("/", roleMiddleware(["ADMIN", "KEPSEK"]), (req, res, next) =>
 );
 
 router.get(
+  "/:id",
+  roleMiddleware(["ADMIN", "KEPSEK", "GURU"]),
+  (req, res, next) => controller.findOne(req, res, next),
+);
+
+router.get(
   "/class/:classId",
   roleMiddleware(["ADMIN", "KEPSEK", "GURU"]),
   (req, res, next) => controller.findAllByClass(req, res, next),

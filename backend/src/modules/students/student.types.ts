@@ -20,4 +20,6 @@ export interface UpdateStudentTypes {
   gender?: Gender;
   phone?: string;
   address?: string;
+  classId?: string;
+  semesterId?: string;
 }
