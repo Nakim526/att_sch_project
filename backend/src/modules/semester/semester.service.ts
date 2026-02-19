@@ -9,7 +9,7 @@ class SemesterService {
     return await prisma.semester.create({
       data: {
         academicYearId: data.academicYearId,
-        type: data.type,
+        name: data.type,
         startDate: data.startDate,
         endDate: data.endDate,
       },
@@ -25,7 +25,7 @@ class SemesterService {
 
   async findAllByType(type: SemesterType) {
     return await prisma.semester.findMany({
-      where: { type: type },
+      where: { name: type },
       orderBy: { startDate: "asc" },
       include: { academicYear: true },
     });

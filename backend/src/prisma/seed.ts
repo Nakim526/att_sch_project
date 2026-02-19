@@ -312,21 +312,21 @@ async function main() {
 
   const semesterGanjil = await prisma.semester.upsert({
     where: {
-      academicYearId_type: {
+      academicYearId_name: {
         academicYearId: academicYear.id,
-        type: SemesterType.GANJIL,
+        name: SemesterType.GANJIL,
       },
     },
     update: {
       academicYearId: academicYear.id,
-      type: SemesterType.GANJIL,
+      name: SemesterType.GANJIL,
       startDate: new Date("2024-07-15"),
       endDate: new Date("2024-12-31"),
       isActive: false,
     },
     create: {
       academicYearId: academicYear.id,
-      type: SemesterType.GANJIL,
+      name: SemesterType.GANJIL,
       startDate: new Date("2024-07-15"),
       endDate: new Date("2024-12-31"),
       isActive: false,
@@ -335,21 +335,21 @@ async function main() {
 
   const semesterGenap = await prisma.semester.upsert({
     where: {
-      academicYearId_type: {
+      academicYearId_name: {
         academicYearId: academicYear.id,
-        type: SemesterType.GENAP,
+        name: SemesterType.GENAP,
       },
     },
     update: {
       academicYearId: academicYear.id,
-      type: SemesterType.GENAP,
+      name: SemesterType.GENAP,
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-06-30"),
       isActive: true,
     },
     create: {
       academicYearId: academicYear.id,
-      type: SemesterType.GENAP,
+      name: SemesterType.GENAP,
       startDate: new Date("2025-01-01"),
       endDate: new Date("2025-06-30"),
       isActive: true,

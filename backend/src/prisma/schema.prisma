@@ -259,7 +259,7 @@ model AcademicYear {
 model Semester {
   id             String       @id @default(uuid())
   academicYearId String
-  type           SemesterType // ODD (Ganjil) / EVEN (Genap)
+  name           SemesterType // ODD (Ganjil) / EVEN (Genap)
 
   startDate DateTime
   endDate   DateTime
@@ -274,7 +274,7 @@ model Semester {
   teachingAssignments TeachingAssignment[]
   studentEnrollments  StudentEnrollment[]
 
-  @@unique([academicYearId, type])
+  @@unique([academicYearId, name])
   @@index([academicYearId, isActive])
 }
 
