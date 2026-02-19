@@ -41,8 +41,12 @@ router.put("/:id", roleMiddleware(["ADMIN", "KEPSEK"]), (req, res, next) =>
   controller.update(req, res, next),
 );
 
-router.delete("/:id", roleMiddleware(["ADMIN", "KEPSEK"]), (req, res, next) =>
-  controller.delete(req, res, next),
+router.put("/:id", roleMiddleware(["ADMIN", "KEPSEK"]), (req, res, next) =>
+  controller.softDelete(req, res, next),
+);
+
+router.delete("/delete/:id", roleMiddleware(["ADMIN", "KEPSEK"]), (req, res, next) =>
+  controller.hardDelete(req, res, next),
 );
 
 export default router;

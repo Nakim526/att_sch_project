@@ -104,7 +104,7 @@ class StudentController {
     }
   }
 
-  async delete(req: AuthRequest, res: Response, next: NextFunction) {
+  async hardDelete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       console.log(req.body);
 
