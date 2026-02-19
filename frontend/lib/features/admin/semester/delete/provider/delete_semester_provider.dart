@@ -1,23 +1,23 @@
 import 'package:att_school/core/utils/helper/backend_message_helper.dart';
-import 'package:att_school/features/admin/academic-year/delete/data/delete_academic_year_service.dart';
+import 'package:att_school/features/admin/semester/delete/data/delete_semester_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
-class DeleteAcademicYearProvider extends ChangeNotifier {
-  final DeleteAcademicYearService service;
+class DeleteSemesterProvider extends ChangeNotifier {
+  final DeleteSemesterService service;
   bool _isLoading = false;
   String _error = '';
 
-  DeleteAcademicYearProvider(this.service);
+  DeleteSemesterProvider(this.service);
 
   bool get isLoading => _isLoading;
 
-  Future<BackendMessageHelper> deleteAcademicYear(String id) async {
+  Future<BackendMessageHelper> deleteSemester(String id) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await service.deleteAcademicYear(id);
+      final response = await service.deleteSemester(id);
 
       return BackendMessageHelper(
         response.statusCode == 200,

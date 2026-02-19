@@ -36,7 +36,7 @@ const Map<AppTextVariant, _TextStyleConfig> _config = {
   AppTextVariant.h4: _TextStyleConfig(20, FontWeight.w700),
   AppTextVariant.input: _TextStyleConfig(AppSize.normal, FontWeight.normal),
   AppTextVariant.button: _TextStyleConfig(AppSize.medium, FontWeight.bold),
-  AppTextVariant.caption: _TextStyleConfig(AppSize.normal, FontWeight.normal),
+  AppTextVariant.caption: _TextStyleConfig(AppSize.base, FontWeight.normal),
   AppTextVariant.overline: _TextStyleConfig(AppSize.small, FontWeight.normal),
   AppTextVariant.hint: _TextStyleConfig(AppSize.base, FontWeight.normal),
   AppTextVariant.link: _TextStyleConfig(AppSize.base, FontWeight.w500),

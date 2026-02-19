@@ -42,7 +42,7 @@ class AppSection extends StatelessWidget {
             width: double.infinity,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: spacing ?? AppSize.medium,
               children: children,
             ),

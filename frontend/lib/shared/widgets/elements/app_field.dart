@@ -11,33 +11,17 @@ class AppField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(flex: 2, child: AppText(field, variant: AppTextVariant.body)),
-        AppText(" : ", variant: AppTextVariant.body),
-        if (value != null)
-          Expanded(
-            flex: 3,
-            child: AppText(value!, variant: AppTextVariant.body),
-          ),
-        if (values != null)
-          Expanded(
-            flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (values!.length > 1)
-                  for (final value in values!)
-                    AppText(
-                      '${values!.indexOf(value) + 1}. $value',
-                      variant: AppTextVariant.body,
-                    )
-                else
-                  AppText(values!.first, variant: AppTextVariant.body),
-              ],
-            ),
-          ),
+        AppText(field, variant: AppTextVariant.caption),
+        if (value != null && value!.isNotEmpty)
+          AppText(value!, variant: AppTextVariant.body)
+        else if (values != null && values!.isNotEmpty)
+          for (final value in values!)
+            AppText(value, variant: AppTextVariant.body)
+        else
+          const AppText('None', variant: AppTextVariant.caption),
       ],
     );
   }

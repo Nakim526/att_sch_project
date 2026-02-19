@@ -30,4 +30,6 @@ class AppString {
   static const String classUrl = '$baseUrl/classes';
 
   static const String subjectUrl = '$baseUrl/subjects';
+
+  static const String studentUrl = '$baseUrl/students';
 }

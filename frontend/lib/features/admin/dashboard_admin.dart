@@ -47,24 +47,14 @@ class DashboardAdmin extends StatelessWidget {
               ],
             ),
             AppTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, '/students');
+              },
               maxWidth: AppSizeScreen.card(context),
               children: [
                 Icon(Icons.person, size: AppSizeScreen.iconCard(context)),
                 AppText(
-                  "Absen Guru",
-                  variant: AppTextVariant.title,
-                  maxLines: 2,
-                ),
-              ],
-            ),
-            AppTile(
-              onTap: () {},
-              maxWidth: AppSizeScreen.card(context),
-              children: [
-                Icon(Icons.person, size: AppSizeScreen.iconCard(context)),
-                AppText(
-                  "Absen Siswa",
+                  "Siswa",
                   variant: AppTextVariant.title,
                   textAlign: TextAlign.center,
                   maxLines: 2,

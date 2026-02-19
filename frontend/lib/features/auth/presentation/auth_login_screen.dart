@@ -5,6 +5,7 @@ import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
+import 'package:att_school/shared/widgets/layout/app_loading.dart';
 import 'package:att_school/shared/widgets/layout/app_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,7 @@ class AuthLoginScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/dashboard');
                         return;
                       }
+                      
                       await AppDialog.show(
                         context,
                         title: 'Error',
@@ -54,11 +56,7 @@ class AuthLoginScreen extends StatelessWidget {
                 ),
               ],
             ),
-            if (provider.isLoading)
-              Container(
-                color: Colors.black45,
-                child: const Center(child: CircularProgressIndicator()),
-              ),
+            if (provider.isLoading) AppLoading(),
           ],
         );
       },

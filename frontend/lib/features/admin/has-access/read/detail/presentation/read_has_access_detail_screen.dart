@@ -1,4 +1,3 @@
-import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/has-access/read/detail/provider/read_has_access_detail_provider.dart';
 import 'package:att_school/features/admin/has-access/update/presentation/update_has_acccess_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -56,7 +55,6 @@ class ReadHasAccessDetailScreen extends StatelessWidget {
                 ),
                 if (detail != null)
                   AppSection(
-                    spacing: AppSize.xSmall,
                     children: [
                       AppField('Nama', value: detail.name),
                       AppField('Email', value: detail.email),

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 class ReadSemesterListProvider extends ChangeNotifier {
   final ReadSemesterService service;
   final ReadAcademicYearListProvider provider;
-  List<Map<String, dynamic>> _semester = [];
+  List<Map<String, dynamic>> _semesters = [];
   List<Map<String, dynamic>> _academicYears = [];
   bool _isLoading = false;
   String _error = '';
@@ -17,7 +17,7 @@ class ReadSemesterListProvider extends ChangeNotifier {
     _fetch();
   }
 
-  List<Map<String, dynamic>> get semester => _semester;
+  List<Map<String, dynamic>> get semesters => _semesters;
 
   bool get isLoading => _isLoading;
 
@@ -73,7 +73,7 @@ class ReadSemesterListProvider extends ChangeNotifier {
         result.add(data.toMap());
       }
 
-      _semester = result;
+      _semesters = result;
     } on DioException catch (e) {
       _error = "${e.response?.statusCode} - ${e.response?.statusMessage}";
 
@@ -99,8 +99,8 @@ class ReadSemesterListProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _semester =
-        _semester.where((e) {
+    _semesters =
+        _semesters.where((e) {
           return e['name'].toString().toLowerCase().contains(
             query.toLowerCase(),
           );

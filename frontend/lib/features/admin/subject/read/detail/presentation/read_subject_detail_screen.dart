@@ -1,4 +1,3 @@
-import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/subject/read/detail/provider/read_subject_detail_provider.dart';
 import 'package:att_school/features/admin/subject/update/presentation/update_subject_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -56,7 +55,6 @@ class ReadSubjectDetailScreen extends StatelessWidget {
                 ),
                 if (detail != null)
                   AppSection(
-                    spacing: AppSize.xSmall,
                     children: [
                       AppField('Kode', value: detail.code),
                       AppField('Mata Pelajaran', value: detail.name),

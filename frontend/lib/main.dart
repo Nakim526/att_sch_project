@@ -31,11 +31,22 @@ import 'package:att_school/features/admin/has-access/update/data/update_has_acce
 import 'package:att_school/features/admin/has-access/update/provider/update_has_access_provider.dart';
 import 'package:att_school/features/admin/semester/create/data/create_semester_service.dart';
 import 'package:att_school/features/admin/semester/create/provider/create_semester_provider.dart';
+import 'package:att_school/features/admin/semester/delete/data/delete_semester_service.dart';
+import 'package:att_school/features/admin/semester/delete/provider/delete_semester_provider.dart';
 import 'package:att_school/features/admin/semester/read/data/read_semester_service.dart';
 import 'package:att_school/features/admin/semester/read/detail/provider/read_semester_detail_provider.dart';
 import 'package:att_school/features/admin/semester/read/list/provider/read_semester_list_provider.dart';
 import 'package:att_school/features/admin/semester/update/data/update_semester_service.dart';
 import 'package:att_school/features/admin/semester/update/provider/update_semester_provider.dart';
+import 'package:att_school/features/admin/student/create/data/create_student_service.dart';
+import 'package:att_school/features/admin/student/create/provider/create_student_provider.dart';
+import 'package:att_school/features/admin/student/delete/data/delete_student_service.dart';
+import 'package:att_school/features/admin/student/delete/provider/delete_student_provider.dart';
+import 'package:att_school/features/admin/student/read/data/read_student_service.dart';
+import 'package:att_school/features/admin/student/read/detail/provider/read_student_detail_provider.dart';
+import 'package:att_school/features/admin/student/read/list/provider/read_student_list_provider.dart';
+import 'package:att_school/features/admin/student/update/data/update_student_service.dart';
+import 'package:att_school/features/admin/student/update/provider/update_student_provider.dart';
 import 'package:att_school/features/admin/subject/create/data/create_subject_service.dart';
 import 'package:att_school/features/admin/subject/create/provider/create_subject_provider.dart';
 import 'package:att_school/features/admin/subject/delete/data/delete_subject_service.dart';
@@ -165,9 +176,23 @@ void main() {
         Provider<UpdateSemesterService>(
           create: (context) => UpdateSemesterService(context.read<Dio>()),
         ),
-        // Provider<DeleteSemesterService>(
-        //   create: (context) => DeleteSemesterService(context.read<Dio>()),
-        // ),
+        Provider<DeleteSemesterService>(
+          create: (context) => DeleteSemesterService(context.read<Dio>()),
+        ),
+
+        /// 🔸 Students
+        Provider<CreateStudentService>(
+          create: (context) => CreateStudentService(context.read<Dio>()),
+        ),
+        Provider<ReadStudentService>(
+          create: (context) => ReadStudentService(context.read<Dio>()),
+        ),
+        Provider<UpdateStudentService>(
+          create: (context) => UpdateStudentService(context.read<Dio>()),
+        ),
+        Provider<DeleteStudentService>(
+          create: (context) => DeleteStudentService(context.read<Dio>()),
+        ),
 
         /// 🔹 Providers (State)
         /// 🔸 Auth
@@ -385,11 +410,48 @@ void main() {
             );
           },
         ),
-        // ChangeNotifierProvider<DeleteSemesterProvider>(
-        //   create: (context) {
-        //     return DeleteSemesterProvider(context.read<DeleteSemesterService>());
-        //   },
-        // ),
+        ChangeNotifierProvider<DeleteSemesterProvider>(
+          create: (context) {
+            return DeleteSemesterProvider(
+              context.read<DeleteSemesterService>(),
+            );
+          },
+        ),
+
+        // /// 🔸 Students
+        ChangeNotifierProvider<ReadStudentListProvider>(
+          create: (context) {
+            return ReadStudentListProvider(context.read<ReadStudentService>());
+          },
+        ),
+        ChangeNotifierProvider<CreateStudentProvider>(
+          create: (context) {
+            return CreateStudentProvider(
+              context.read<CreateStudentService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<ReadStudentDetailProvider>(
+          create: (context) {
+            return ReadStudentDetailProvider(
+              context.read<ReadStudentService>(),
+              context.read<SchoolProvider>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<UpdateStudentProvider>(
+          create: (context) {
+            return UpdateStudentProvider(
+              context.read<UpdateStudentService>(),
+            );
+          },
+        ),
+        ChangeNotifierProvider<DeleteStudentProvider>(
+          create: (context) {
+            return DeleteStudentProvider(context.read<DeleteStudentService>());
+          },
+        ),
+
         ChangeNotifierProvider(create: (_) => ThemeController()),
       ],
       child: const MainApp(),

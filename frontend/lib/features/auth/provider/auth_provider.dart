@@ -21,6 +21,10 @@ class AuthProvider extends ChangeNotifier {
     try {
       final response = await service.login();
 
+      if (response.statusCode != 200) {
+        return BackendMessageHelper(false, message: response.statusMessage);
+      }
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('roles', response.data['user']['roles'].toString());
 

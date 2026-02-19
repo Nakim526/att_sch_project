@@ -1,4 +1,3 @@
-import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/features/admin/teacher/read/detail/provider/read_teacher_detail_provider.dart';
 import 'package:att_school/features/admin/teacher/update/presentation/update_teacher_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -56,7 +55,6 @@ class ReadTeacherDetailScreen extends StatelessWidget {
                 ),
                 if (detail != null)
                   AppSection(
-                    spacing: AppSize.xSmall,
                     children: [
                       AppField('NIP', value: detail.nip),
                       AppField('Nama', value: detail.name),

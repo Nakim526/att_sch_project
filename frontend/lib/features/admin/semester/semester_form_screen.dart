@@ -158,9 +158,9 @@ class _SemesterFormScreenState extends State<SemesterFormScreen> {
       );
 
       _errorEndAcademicYearDate = _selectedEndDate!.isAfter(
-        DateTime(int.parse(academicYear[1])),
+        DateTime(int.parse(academicYear[1]), 12, 31),
       );
-      
+
       _errorStartDate = _errorStartAcademicYearDate;
       _errorEndDate = _errorEndAcademicYearDate;
     });

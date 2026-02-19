@@ -5,7 +5,9 @@ import 'package:att_school/features/admin/class/read/list/presentation/read_clas
 import 'package:att_school/features/admin/has-access/create/presentation/create_has_access_screen.dart';
 import 'package:att_school/features/admin/has-access/read/list/presentation/read_has_access_list_screen.dart';
 import 'package:att_school/features/admin/semester/create/presentation/create_semester_screen.dart';
-import 'package:att_school/features/admin/semester/read/list/presentation/read_semester_year_list_screen.dart';
+import 'package:att_school/features/admin/semester/read/list/presentation/read_semester_list_screen.dart';
+import 'package:att_school/features/admin/student/create/presentation/create_student_screen.dart';
+import 'package:att_school/features/admin/student/read/list/presentation/read_student_list_screen.dart';
 import 'package:att_school/features/admin/subject/create/presentation/create_subject_screen.dart';
 import 'package:att_school/features/admin/subject/read/list/presentation/read_subject_list_screen.dart';
 import 'package:att_school/features/admin/teacher/create/presentation/create_teacher_screen.dart';
@@ -31,6 +33,8 @@ class AppRoutes {
       '/classes/create': (context) => const CreateClassScreen(),
       '/subjects': (context) => const ReadSubjectListScreen(),
       '/subjects/create': (context) => const CreateSubjectScreen(),
+      '/students': (context) => const ReadStudentListScreen(),
+      '/students/create': (context) => const CreateStudentScreen(),
     };
   }
 }

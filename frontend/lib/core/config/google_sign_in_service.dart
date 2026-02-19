@@ -1,4 +1,5 @@
 import 'package:att_school/core/constant/string/app_string.dart';
+import 'package:att_school/core/utils/helper/backend_message_helper.dart';
 import 'package:att_school/core/utils/helper/connection_helper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -7,14 +8,15 @@ class GoogleSignInService {
 
   static final GoogleSignInService instance = GoogleSignInService._();
 
-  static Future<String?> login() async {
+  static Future<BackendMessageHelper> login() async {
     final hasConnectionInternet = await ConnectionHelper.check();
 
     if (!hasConnectionInternet) {
-      throw 'No internet connection';
+      return BackendMessageHelper(false, message: 'No internet connection');
     }
 
     final googleSignIn = GoogleSignIn.instance;
+    
     try {
       await googleSignIn.initialize(
         clientId: AppString.clientId,
@@ -25,12 +27,17 @@ class GoogleSignInService {
 
       final auth = user.authentication;
 
-      return auth.idToken;
-    } on GoogleSignInException catch (e) {
-      if (e.code.toString() == 'GoogleSignInExceptionCode.canceled') {
-        throw 'Login canceled by user';
+      if (auth.idToken != null) {
+        return BackendMessageHelper(true, data: auth.idToken);
       }
-      throw e.code.toString();
+
+      return BackendMessageHelper(false, message: 'Unauthorized');
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        return BackendMessageHelper(false, message: 'Login canceled by user');
+      }
+
+      return BackendMessageHelper(false, message: e.code.toString());
     }
   }
 

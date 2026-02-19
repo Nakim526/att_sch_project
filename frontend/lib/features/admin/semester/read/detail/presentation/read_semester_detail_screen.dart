@@ -1,5 +1,6 @@
-import 'package:att_school/features/admin/class/read/detail/provider/read_class_detail_provider.dart';
-import 'package:att_school/features/admin/class/update/presentation/update_class_screen.dart';
+import 'package:att_school/core/utils/formatter/date_formatter.dart';
+import 'package:att_school/features/admin/semester/read/detail/provider/read_semester_detail_provider.dart';
+import 'package:att_school/features/admin/semester/update/presentation/update_semester_screen.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_field.dart';
@@ -12,15 +13,14 @@ import 'package:att_school/shared/widgets/layout/app_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ReadClassDetailScreen extends StatelessWidget {
-  const ReadClassDetailScreen({super.key});
+class ReadSemesterDetailScreen extends StatelessWidget {
+  const ReadSemesterDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ReadClassDetailProvider>(
+    return Consumer<ReadSemesterDetailProvider>(
       builder: (context, provider, _) {
-        final detail = provider.class_;
-        final class_ = "${detail?.grade} - ${detail?.name}";
+        final detail = provider.semester;
 
         // 🔥 SIDE-EFFECT: dialog
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,9 +35,9 @@ class ReadClassDetailScreen extends StatelessWidget {
         return Stack(
           children: [
             AppScreen(
-              appBar: AppBar(title: const Text('Read Class Detail')),
+              appBar: AppBar(title: const Text('Read Semester Detail')),
               children: [
-                AppText("Class Detail", variant: AppTextVariant.h2),
+                AppText("Semester Detail", variant: AppTextVariant.h2),
                 AppButton(
                   "Update",
                   onPressed: () async {
@@ -45,20 +45,31 @@ class ReadClassDetailScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return UpdateClassScreen(provider.class_?.id! ?? '');
+                          return UpdateSemesterScreen(
+                            provider.semester?.id! ?? '',
+                          );
                         },
                       ),
                     );
 
-                    provider.reload();
+                    await provider.reload();
                   },
                   variant: AppButtonVariant.primary,
                 ),
                 if (detail != null)
                   AppSection(
                     children: [
-                      AppField('Kelas', value: class_),
-                      AppField('Sekolah', value: detail.school!),
+                      AppField(
+                        'Tanggal Mulai',
+                        value: DateFormatter.toView(detail.startDate),
+                      ),
+                      AppField(
+                        'Tanggal Berakhir',
+                        value: DateFormatter.toView(detail.endDate),
+                      ),
+                      AppField('Semester', value: detail.type),
+                      AppField('Tahun Akademik', value: detail.academicYear),
+                      AppField('Sekolah', value: detail.school),
                     ],
                   ),
               ],

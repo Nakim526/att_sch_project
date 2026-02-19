@@ -80,7 +80,7 @@ class ReadTeacherListScreen extends StatelessWidget {
                         AppDialog.confirm(
                           context,
                           title: 'Delete Data',
-                          message: "Are you sure to delete ${detail['name']}?",
+                          message: "Are you sure to delete this record?",
                           onConfirm: () async {
                             final result = await provider.deleteTeacher(
                               detail['id'],

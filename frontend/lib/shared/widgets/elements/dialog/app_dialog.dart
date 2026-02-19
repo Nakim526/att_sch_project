@@ -50,36 +50,37 @@ class AppDialog {
     bool exit = false,
   }) async {
     return await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: context.surface,
-          shape: OutlineInputBorder(
-            borderRadius: AppBorderRadius.small,
-            borderSide: BorderSide(color: context.outline),
-          ),
-          elevation: AppSize.small,
-          title: AppText(title, variant: AppTextVariant.h2),
-          content: AppText(message ?? '', variant: AppTextVariant.body),
-          actions: [
-            AppButton(
-              false_,
-              variant: AppButtonVariant.secondary,
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-            ),
-            AppButton(
-              true_,
-              variant: AppButtonVariant.primary,
-              onPressed: () {
-                exit
-                    ? SystemNavigator.pop()
-                    : Navigator.of(dialogContext).pop(true);
-                onConfirm?.call();
-              },
-            ),
-          ],
-        );
-      },
-    );
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              backgroundColor: context.surface,
+              shape: OutlineInputBorder(
+                borderRadius: AppBorderRadius.small,
+                borderSide: BorderSide(color: context.outline),
+              ),
+              elevation: AppSize.small,
+              title: AppText(title, variant: AppTextVariant.h2),
+              content: AppText(message ?? '', variant: AppTextVariant.body),
+              actions: [
+                AppButton(
+                  false_,
+                  variant: AppButtonVariant.secondary,
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                ),
+                AppButton(
+                  true_,
+                  variant: AppButtonVariant.primary,
+                  onPressed: () {
+                    exit
+                        ? SystemNavigator.pop()
+                        : Navigator.of(dialogContext).pop(true);
+                    onConfirm?.call();
+                  },
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 }

@@ -1,4 +1,3 @@
-import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/utils/formatter/date_formatter.dart';
 import 'package:att_school/features/admin/academic-year/read/detail/provider/read_academic_year_detail_provider.dart';
 import 'package:att_school/features/admin/academic-year/update/presentation/update_academic_year_screen.dart';
@@ -59,7 +58,6 @@ class ReadAcademicYearDetailScreen extends StatelessWidget {
                 ),
                 if (detail != null)
                   AppSection(
-                    spacing: AppSize.xSmall,
                     children: [
                       AppField(
                         'Tanggal Mulai',

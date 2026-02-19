@@ -1,4 +1,5 @@
 import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/features/admin/semester/delete/provider/delete_semester_provider.dart';
 import 'package:att_school/features/admin/semester/read/detail/presentation/read_semester_detail_page.dart';
 import 'package:att_school/features/admin/semester/read/list/provider/read_semester_list_provider.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
@@ -17,7 +18,7 @@ class ReadSemesterListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final provider = context.read<DeleteSemesterProvider>();
+    final provider = context.read<DeleteSemesterProvider>();
 
     return Consumer<ReadSemesterListProvider>(
       builder: (context, list, _) {
@@ -44,10 +45,7 @@ class ReadSemesterListScreen extends StatelessWidget {
                     AppButton(
                       "Create Semester",
                       onPressed: () async {
-                        await Navigator.pushNamed(
-                          context,
-                          '/semesters/create',
-                        );
+                        await Navigator.pushNamed(context, '/semesters/create');
 
                         await list.reload();
                       },
@@ -61,7 +59,7 @@ class ReadSemesterListScreen extends StatelessWidget {
                         'Mulai': 'startDate',
                         'Selesai': 'endDate',
                       },
-                      data: list.semester,
+                      data: list.semesters,
                       cellLink: ['type'],
                       onDetail: (id) async {
                         await Navigator.push(
@@ -77,23 +75,23 @@ class ReadSemesterListScreen extends StatelessWidget {
                         AppDialog.confirm(
                           context,
                           title: 'Delete Data',
-                          message: "Are you sure to delete ${detail['name']}?",
+                          message: "Are you sure to delete this record?",
                           onConfirm: () async {
-                            // final result = await provider.deleteSemester(
-                            //   detail['id'],
-                            // );
+                            final result = await provider.deleteSemester(
+                              detail['id'],
+                            );
 
-                            // if (result.status) {
-                            //   return list.reload();
-                            // }
+                            if (result.status) {
+                              return list.reload();
+                            }
 
-                            // if (context.mounted) {
-                            //   AppDialog.show(
-                            //     context,
-                            //     title: "Error",
-                            //     message: result.message,
-                            //   );
-                            // }
+                            if (context.mounted) {
+                              AppDialog.show(
+                                context,
+                                title: "Error",
+                                message: result.message,
+                              );
+                            }
                           },
                         );
                       },

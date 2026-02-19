@@ -1,7 +1,7 @@
 import 'package:att_school/core/constant/size/app_size.dart';
-import 'package:att_school/features/admin/class/delete/provider/delete_class_provider.dart';
-import 'package:att_school/features/admin/class/read/detail/presentation/read_class_detail_page.dart';
-import 'package:att_school/features/admin/class/read/list/provider/read_class_list_provider.dart';
+import 'package:att_school/features/admin/student/delete/provider/delete_student_provider.dart';
+import 'package:att_school/features/admin/student/read/detail/presentation/read_student_detail_page.dart';
+import 'package:att_school/features/admin/student/read/list/provider/read_student_list_provider.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/app_text.dart';
@@ -13,14 +13,14 @@ import 'package:att_school/shared/widgets/layout/app_table_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ReadClassListScreen extends StatelessWidget {
-  const ReadClassListScreen({super.key});
+class ReadStudentListScreen extends StatelessWidget {
+  const ReadStudentListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<DeleteClassProvider>();
+    final provider = context.read<DeleteStudentProvider>();
 
-    return Consumer<ReadClassListProvider>(
+    return Consumer<ReadStudentListProvider>(
       builder: (context, list, _) {
         // 🔥 SIDE-EFFECT: dialog
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,31 +35,40 @@ class ReadClassListScreen extends StatelessWidget {
         return Stack(
           children: [
             AppScreen(
-              appBar: AppBar(title: const Text('Read Class List')),
+              appBar: AppBar(title: const Text('Read Student List')),
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSize.medium,
                   children: [
-                    AppText("Class List", variant: AppTextVariant.h2),
+                    AppText("Student List", variant: AppTextVariant.h2),
                     AppButton(
-                      "Create Class",
+                      "Create Student",
                       onPressed: () async {
-                        await Navigator.pushNamed(context, '/classes/create');
+                        await Navigator.pushNamed(context, '/students/create');
+
                         await list.reload();
                       },
                       variant: AppButtonVariant.primary,
                     ),
                     AppSearch(onChanged: list.search),
                     AppTableList(
-                      columns: {'Grade': 'gradeLevel', 'Name': 'name'},
-                      data: list.classes,
+                      columns: {
+                        'NIS': 'nis',
+                        'Nama': 'name',
+                        'Jenis Kelamin': 'gender',
+                        'Status': 'isActive',
+                      },
+                      data: list.students,
                       cellLink: ['name'],
+                      customData: {
+                        'isActive': (v) => v ? 'Aktif' : 'Tidak Aktif',
+                      },
                       onDetail: (id) async {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => ReadClassDetailPage(id),
+                            builder: (_) => ReadStudentDetailPage(id),
                           ),
                         );
 
@@ -71,12 +80,12 @@ class ReadClassListScreen extends StatelessWidget {
                           title: 'Delete Data',
                           message: "Are you sure to delete this record?",
                           onConfirm: () async {
-                            final result = await provider.deleteClass(
+                            final result = await provider.deleteStudent(
                               detail['id'],
                             );
 
                             if (result.status) {
-                              return await list.reload();
+                              return list.reload();
                             }
 
                             if (context.mounted) {

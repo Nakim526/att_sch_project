@@ -11,10 +11,10 @@ class AuthService {
   Future<Response> login() async {
     final credential = await GoogleSignInService.login();
 
-    if (credential != null) {
+    if (credential.status) {
       final response = await dio.post(
         AppString.loginUrl,
-        data: {"idToken": credential},
+        data: {"idToken": credential.data},
       );
 
       if (response.statusCode == 200) {
@@ -28,7 +28,7 @@ class AuthService {
     return Response(
       requestOptions: RequestOptions(),
       statusCode: 401,
-      statusMessage: 'Unauthorized',
+      statusMessage: credential.message,
     );
   }
 
