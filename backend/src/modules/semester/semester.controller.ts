@@ -35,6 +35,21 @@ class AcademicYearController {
     }
   }
 
+  async findAcademicYear(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const { id } = req.params as { id: string };
+
+      const result = await service.findAllByAcademicYear(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findType(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       console.log("REQUEST USER: ", req.user);
@@ -60,9 +75,7 @@ class AcademicYearController {
       const result = await service.findById(id);
 
       if (!result) {
-        return res
-          .status(404)
-          .json({ message: "Semester tidak ditemukan" });
+        return res.status(404).json({ message: "Semester tidak ditemukan" });
       }
 
       res.json({ data: result });
@@ -93,7 +106,7 @@ class AcademicYearController {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
-      
+
       const { id } = req.params as { id: string };
 
       await service.delete(id);

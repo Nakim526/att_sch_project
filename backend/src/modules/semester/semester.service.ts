@@ -23,6 +23,14 @@ class SemesterService {
     });
   }
 
+  async findAllByAcademicYear(academicYearId: string) {
+    return await prisma.semester.findMany({
+      where: { academicYearId },
+      orderBy: { startDate: "asc" },
+      include: { academicYear: true },
+    });
+  }
+
   async findAllByType(name: SemesterType) {
     return await prisma.semester.findMany({
       where: { name },
