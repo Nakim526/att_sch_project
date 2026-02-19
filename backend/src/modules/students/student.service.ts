@@ -70,6 +70,7 @@ class StudentService {
           gender: data.gender,
           phone: data.phone,
           address: data.address,
+          isActive: true,
         },
       });
 
@@ -85,6 +86,7 @@ class StudentService {
             studentId: student.id,
             classId: data.classId,
             semesterId: data.semesterId,
+            isActive: true,
           },
           create: {
             studentId: student.id,
