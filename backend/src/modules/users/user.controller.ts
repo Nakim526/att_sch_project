@@ -8,9 +8,10 @@ class UserController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const { schoolId } = req.user!;
+      const { schoolId } = req.user as { schoolId: string };
       const result = await service.createUser(schoolId, req.body);
 
+      console.log("RESULT: ", result);
       res.status(201).json({
         message: "User baru berhasil dibuat",
         data: result,
@@ -25,9 +26,10 @@ class UserController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const { schoolId } = req.user!;
+      const { schoolId } = req.user as { schoolId: string };
       const result = await service.readUserList(schoolId);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -42,6 +44,7 @@ class UserController {
       const { id } = req.params as { id: string };
       const result = await service.readUserDetail(id);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -53,9 +56,10 @@ class UserController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const { id } = req.user!;
+      const { id } = req.user as { id: string };
       const result = await service.readMySelf(id);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -67,9 +71,10 @@ class UserController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const { id } = req.user!;
+      const { id } = req.user as { id: string };
       const result = await service.updateUser(id, req.body);
 
+      console.log("RESULT: ", result);
       res.json({
         message: "Data User berhasil diperbarui",
         data: result,

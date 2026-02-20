@@ -8,9 +8,10 @@ class TeacherController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const schoolId = req.user!.schoolId;
+      const { schoolId } = req.user as { schoolId: string };
       const result = await service.createTeacher(schoolId, req.body);
 
+      console.log("RESULT: ", result);
       res.status(201).json({
         message: "Guru baru berhasil dibuat",
         data: result,
@@ -25,9 +26,10 @@ class TeacherController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const schoolId = req.user!.schoolId;
+      const { schoolId } = req.user as { schoolId: string };
       const result = await service.readTeachersList(schoolId);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -42,6 +44,7 @@ class TeacherController {
       const { id } = req.params as { id: string };
       const result = await service.readTeacherDetail(id);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -53,9 +56,10 @@ class TeacherController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const userId = req.user!.id;
-      const result = await service.readMySelf(userId);
+      const { id } = req.user as { id: string };
+      const result = await service.readMySelf(id);
 
+      console.log("RESULT: ", result);
       res.json({ data: result });
     } catch (error) {
       next(error);
@@ -70,6 +74,7 @@ class TeacherController {
       const { id } = req.params as { id: string };
       const result = await service.updateTeacher(id, req.body);
 
+      console.log("RESULT: ", result);
       res.json({
         message: "Data Guru berhasil diperbarui",
         data: result,
@@ -83,10 +88,11 @@ class TeacherController {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
-
-      const userId = req.user!.id;
-      const result = await service.updateMySelf(userId, req.body);
-
+      
+      const { id } = req.user as { id: string };
+      const result = await service.updateMySelf(id, req.body);
+      
+      console.log("RESULT: ", result);
       res.json({
         message: "Data Guru berhasil diperbarui",
         data: result,
