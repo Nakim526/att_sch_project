@@ -8,26 +8,22 @@ import userService from "../users/user.service";
 import { Prisma, RoleName } from "@prisma/client";
 
 class TeacherService {
-  async anyUsed(tx: Prisma.TransactionClient, nip: string) {
-    const teachers = await tx.teacher.findMany({
-      where: { nip },
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    nip: string,
+    userId?: string,
+  ) {
+    const existing = await tx.teacher.findFirst({
+      where: { nip, userId: userId ? { not: userId } : undefined },
     });
 
-    let self = true;
-
-    if (teachers.length > 0) {
-      self = teachers.some((t) => t.nip === nip);
-    }
-
-    if (!self) {
+    if (existing) {
       throw new Error(`NIP ${nip} sudah digunakan`);
     }
-
-    return self;
   }
 
   async assignRole(tx: Prisma.TransactionClient, userId: string) {
-    const role = await tx.role.findUnique({
+    const role = await tx.role.findFirst({
       where: { name: RoleName.GURU },
     });
 
@@ -64,9 +60,9 @@ class TeacherService {
 
   async createTeacher(schoolId: string, data: CreateTeacherTypes) {
     return await prisma.$transaction(async (tx) => {
-      await userService.anyUsed(tx, data.email);
+      await userService.ensureAvailable(tx, data.email);
 
-      await this.anyUsed(tx, data.nip);
+      await this.ensureAvailable(tx, data.nip);
 
       await this.assignRole(tx, data.userId);
 
@@ -109,9 +105,9 @@ class TeacherService {
     id: string,
     data: UpdateTeacherTypes,
   ) {
-    await userService.anyUsed(tx, data.email);
+    await userService.ensureAvailable(tx, data.email, data.userId);
 
-    await this.anyUsed(tx, data.nip);
+    await this.ensureAvailable(tx, data.nip, data.userId);
 
     await this.assignRole(tx, data.userId);
 

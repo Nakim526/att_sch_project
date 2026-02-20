@@ -4,7 +4,7 @@ import { signToken } from "../../utils/jwt";
 import { parseEnum } from "../../utils/parser";
 import { verifyGoogleToken } from "./google.service";
 
-export async function loginWithGoogle(idToken: string) {
+export async function loginWithGoogle(idToken: string, schoolId: string) {
   // 1️⃣ verify token ke Google
   const googleUser = await verifyGoogleToken(idToken);
 
@@ -12,7 +12,12 @@ export async function loginWithGoogle(idToken: string) {
 
   // 2️⃣ allow-list
   const allowed = await prisma.allowedEmail.findUnique({
-    where: { email: googleUser.email },
+    where: {
+      schoolId_email: {
+        schoolId,
+        email: googleUser.email,
+      },
+    },
   });
 
   if (!allowed || !allowed.isActive) {

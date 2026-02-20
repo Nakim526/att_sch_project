@@ -139,7 +139,7 @@ model UserRole {
 model AllowedEmail {
   id       String @id @default(uuid())
   schoolId String
-  email    String @unique
+  email    String
   userId   String @unique
 
   isActive Boolean   @default(true) // Sudah digunakan untuk registrasi

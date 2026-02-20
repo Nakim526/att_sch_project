@@ -4,22 +4,18 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 import { CreateUserTypes, UpdateUserTypes } from "./user.types";
 
 class UserService {
-  async anyUsed(tx: Prisma.TransactionClient, email: string) {
-    const users = await tx.user.findMany({
-      where: { email },
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    email: string,
+    userId?: string,
+  ) {
+    const used = await tx.user.findFirst({
+      where: { email, id: userId ? { not: userId } : undefined },
     });
 
-    let self = true;
-
-    if (users.length > 0) {
-      self = users.some((u) => u.email === email);
-    }
-
-    if (!self) {
+    if (used) {
       throw new Error(`Email ${email} sudah digunakan`);
     }
-
-    return self;
   }
 
   async assignRoles(
@@ -50,7 +46,7 @@ class UserService {
 
   async createUser(schoolId: string, data: CreateUserTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.anyUsed(tx, data.email);
+      await this.ensureAvailable(tx, data.email);
 
       const user = await tx.user.upsert({
         where: { email: data.email },
@@ -60,9 +56,9 @@ class UserService {
           isActive: true,
         },
         create: {
+          schoolId,
           name: data.name,
           email: data.email,
-          schoolId,
         },
       });
 
@@ -80,21 +76,21 @@ class UserService {
     });
   }
 
-  async readAllUsers(schoolId: string) {
+  async readUserList(schoolId: string) {
     return await prisma.user.findMany({
       where: { schoolId },
       include: { roles: { select: { role: true } } },
     });
   }
 
-  async readUserById(id: string) {
+  async readUserDetail(id: string) {
     return await prisma.user.findUnique({
       where: { id },
       include: { roles: { select: { role: true } } },
     });
   }
 
-  async readUserSelf(id: string) {
+  async readMySelf(id: string) {
     return await prisma.user.findUnique({
       where: { id },
       include: { roles: { select: { role: true } } },
@@ -103,7 +99,7 @@ class UserService {
 
   async updateUser(id: string, data: UpdateUserTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.anyUsed(tx, data.email);
+      await this.ensureAvailable(tx, data.email, id);
 
       await this.assignRoles(tx, id, data.roles);
 
@@ -118,7 +114,12 @@ class UserService {
       });
 
       await tx.allowedEmail.update({
-        where: { userId: id },
+        where: {
+          schoolId_email: {
+            schoolId: user.schoolId,
+            email: user.email,
+          },
+        },
         data: { email: data.email },
       });
 
@@ -129,7 +130,6 @@ class UserService {
   async deleteUser(id: string) {
     return await prisma.user.delete({ where: { id } });
   }
-
 }
 
 export default new UserService();

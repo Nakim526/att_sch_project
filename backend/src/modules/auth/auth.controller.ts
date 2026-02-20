@@ -1,15 +1,21 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { loginWithGoogle } from "./auth.service";
+import { AuthRequest } from "../../middlewares/auth.middleware";
 
-export async function googleLogin(req: Request, res: Response) {
+export async function googleLogin(req: AuthRequest, res: Response) {
   try {
     const { idToken } = req.body;
+    const schoolId = req.user!.schoolId;
 
     if (!idToken) {
       return res.status(400).json({ message: "idToken required" });
     }
 
-    const result = await loginWithGoogle(idToken);
+    if (!schoolId) {
+      return res.status(400).json({ message: "schoolId not found" });
+    }
+
+    const result = await loginWithGoogle(idToken, schoolId);
     res.json(result);
   } catch (err: any) {
     if (err.message === "EMAIL_NOT_ALLOWED") {
