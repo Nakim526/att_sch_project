@@ -70,7 +70,7 @@ class SemesterService {
       include: { academicYear: true },
     });
 
-    let self = null;
+    let self = true;
 
     if (active.length > 0) {
       self = active.some((s) => s.id === id);

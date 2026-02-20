@@ -47,7 +47,7 @@ class AcademicYearService {
         where: { isActive: true },
       });
 
-      let selfChild = null;
+      let selfChild = true;
 
       if (active.length > 0) {
         selfChild = active.some((s) => s.academicYearId === id);
@@ -89,7 +89,7 @@ class AcademicYearService {
       where: { isActive: true },
     });
 
-    let self = null;
+    let self = true;
 
     if (active.length > 0) {
       self = active.some((s) => s.id === id);
