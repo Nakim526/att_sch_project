@@ -74,16 +74,10 @@ class StudentService {
         },
       });
 
-      const enrollments = await tx.studentEnrollment.findMany({
+      await tx.studentEnrollment.updateMany({
         where: { studentId: id },
+        data: { isActive: false },
       });
-
-      for (const { id } of enrollments) {
-        await tx.studentEnrollment.update({
-          where: { id },
-          data: { isActive: false },
-        });
-      }
 
       if (data.classId && data.semesterId) {
         await tx.studentEnrollment.upsert({
