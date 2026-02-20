@@ -34,14 +34,22 @@ class StudentService {
   async findAllBySchool(schoolId: string) {
     return prisma.student.findMany({
       where: { schoolId },
-      include: { enrollments: true },
+      include: {
+        enrollments: {
+          include: { class: true, semester: true },
+        },
+      },
     });
   }
 
   async findOneById(id: string) {
     return prisma.student.findUnique({
       where: { id },
-      include: { enrollments: true },
+      include: {
+        enrollments: {
+          include: { class: true, semester: true },
+        },
+      },
     });
   }
 
