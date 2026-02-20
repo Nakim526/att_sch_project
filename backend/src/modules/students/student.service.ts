@@ -74,7 +74,18 @@ class StudentService {
         },
       });
 
-      if (data.classId && data.semesterId)
+      const enrollments = await tx.studentEnrollment.findMany({
+        where: { studentId: id },
+      });
+
+      for (const { id } of enrollments) {
+        await tx.studentEnrollment.update({
+          where: { id },
+          data: { isActive: false },
+        });
+      }
+
+      if (data.classId && data.semesterId) {
         await tx.studentEnrollment.upsert({
           where: {
             studentId_semesterId: {
@@ -94,6 +105,7 @@ class StudentService {
             semesterId: data.semesterId,
           },
         });
+      }
 
       return student;
     });
