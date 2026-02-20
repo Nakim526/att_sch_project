@@ -41,33 +41,37 @@ class AcademicYearService {
 
   async update(id: string, data: UpdateAcademicYearTypes) {
     return await prisma.$transaction(async (tx) => {
-      const self = await this.anyActive(tx, id);
+      if (data.isActive) {
+        const self = await this.anyActive(tx, id);
 
-      const active = await tx.semester.findMany({
-        where: { isActive: true },
-      });
+        const active = await tx.semester.findMany({
+          where: { isActive: true },
+        });
 
-      let selfChild = true;
+        let selfChild = true;
 
-      if (active.length > 0) {
-        selfChild = active.some((s) => s.academicYearId === id);
+        if (active.length > 0) {
+          selfChild = active.some((s) => s.academicYearId === id);
 
-        if (!selfChild) {
-          throw new Error(
-            `Semester ${active
-              .map((s) => s.name)
-              .join(", ")} sedang aktif, silahkan non-aktifkan terlebih dahulu`,
-          );
+          if (!selfChild) {
+            throw new Error(
+              `Semester ${active
+                .map((s) => s.name)
+                .join(
+                  ", ",
+                )} sedang aktif, silahkan non-aktifkan terlebih dahulu`,
+            );
+          }
         }
-      }
 
-      if (!self && !selfChild) {
-        throw new Error("Unknown Error, contact admin to fix it");
-      }
+        if (!self && !selfChild) {
+          throw new Error("Unknown Error, contact admin to fix it");
+        }
 
-      await tx.class.updateMany({
-        data: { academicYearId: id },
-      });
+        await tx.class.updateMany({
+          data: { academicYearId: id },
+        });
+      }
 
       return await tx.academicYear.update({
         where: { id },
@@ -90,11 +94,11 @@ class AcademicYearService {
     let self = true;
 
     if (active.length > 0) {
-      self = active.some((s) => s.id === id);
+      self = active.some((e) => e.id === id);
 
       if (!self) {
         throw new Error(
-          `Tahun Ajaran ${active.map((s) => s.name).join(", ")} sedang aktif`,
+          `Tahun Ajaran ${active.map((e) => e.name).join(", ")} sedang aktif`,
         );
       }
     }

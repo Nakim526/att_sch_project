@@ -10,4 +10,5 @@ export interface UpdateAcademicYearTypes {
   name: string;
   startDate: Date;
   endDate: Date;
+  isActive?: boolean;
 }

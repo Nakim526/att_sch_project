@@ -49,15 +49,17 @@ class SemesterService {
 
   async update(id: string, data: UpdateSemesterTypes) {
     return await prisma.$transaction(async (tx) => {
-      const self = await this.anyActive(tx, id);
+      if (data.isActive) {
+        const self = await this.anyActive(tx, id);
 
-      const selfParent = await academicYearService.anyActive(
-        tx,
-        data.academicYearId,
-      );
+        const selfParent = await academicYearService.anyActive(
+          tx,
+          data.academicYearId,
+        );
 
-      if (!self && !selfParent) {
-        throw new Error("Unknown Error, contact admin to fix it");
+        if (!self && !selfParent) {
+          throw new Error("Unknown Error, contact admin to fix it");
+        }
       }
 
       return await tx.semester.update({
