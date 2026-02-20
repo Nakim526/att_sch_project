@@ -47,9 +47,30 @@ class SemesterService {
   }
 
   async update(id: string, data: UpdateSemesterTypes) {
-    return await prisma.semester.update({
-      where: { id },
-      data,
+    return await prisma.$transaction(async (tx) => {
+      const existed = await tx.semester.findMany({
+        where: { isActive: true },
+        include: { academicYear: true },
+      });
+
+      if (existed.length > 0) {
+        const semester = existed.some((s) => s.id === id);
+
+        if (!semester) {
+          throw new Error(
+            `Semester ${existed
+              .map((s) => {
+                return `${s.name} ${s.academicYear.name}`;
+              })
+              .join(", ")} sedang aktif`,
+          );
+        }
+      }
+
+      return await tx.semester.update({
+        where: { id },
+        data,
+      });
     });
   }
 
