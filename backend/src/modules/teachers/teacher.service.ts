@@ -114,21 +114,34 @@ class TeacherService {
   async readTeachersList(schoolId: string) {
     return await prisma.teacher.findMany({
       where: { schoolId },
-      include: { teachingAssignments: true },
+      include: {
+        user: true,
+        teachingAssignments: true,
+        classAssignments: true,
+      },
     });
   }
 
   async readTeacherDetail(id: string) {
     return await prisma.teacher.findUnique({
       where: { id },
-      include: { teachingAssignments: true },
+      include: {
+        user: true,
+        teachingAssignments: true,
+        classAssignments: true,
+      },
     });
   }
 
   async readMySelf(userId: string) {
     return await prisma.teacher.findUnique({
       where: { userId },
-      include: { teachingAssignments: true },
+      include: {
+        user: true,
+        teachingAssignments: true,
+        classAssignments: true,
+        vaultFiles: true,
+      },
     });
   }
 
