@@ -1,240 +1,159 @@
-import e from "express";
 import prisma from "../../config/prisma";
-import { AuthRequest } from "../../middlewares/auth.middleware";
 import {
-  AssignTeacherTypes,
   CreateTeacherTypes,
-  UpdateOldTeacherTypes,
+  CreateTeachingAssignmentTypes,
   UpdateTeacherTypes,
 } from "./teacher.types";
 import userService from "../users/user.service";
-import hasAccessService from "../has-access/has-access.service";
-import { Prisma } from "@prisma/client";
+import { Prisma, RoleName } from "@prisma/client";
 
 class TeacherService {
-  async assign(tx: Prisma.TransactionClient, data: AssignTeacherTypes) {
-    const { id, userId, name, nip, schoolId } = data;
-
-    const nipUsed = await tx.teacher.findUnique({
+  async anyUsed(tx: Prisma.TransactionClient, nip: string) {
+    const teachers = await tx.teacher.findMany({
       where: { nip },
     });
 
-    if (nipUsed && id !== nipUsed.id) {
-      throw new Error("NIP already registered");
+    let self = true;
+
+    if (teachers.length > 0) {
+      self = teachers.some((t) => t.nip === nip);
     }
 
-    const existedTeacher = await tx.teacher.findUnique({
-      where: { userId },
-    });
-
-    if (existedTeacher) {
-      if (id !== existedTeacher.id) {
-        if (existedTeacher.isActive) {
-          throw new Error("Teacher already assigned");
-        }
-
-        return await tx.teacher.update({
-          where: { userId },
-          data: { name, nip, isActive: true },
-        });
-      }
-
-      return await tx.teacher.update({
-        where: { id },
-        data: { name, nip, isActive: true },
-      });
+    if (!self) {
+      throw new Error(`NIP ${nip} sudah digunakan`);
     }
 
-    return false;
+    return self;
   }
 
-  async createTeacher(data: CreateTeacherTypes) {
-    return await prisma.$transaction(async (tx) => {
-      return await this.createTeacherTransaction(tx, data);
+  async assignRole(tx: Prisma.TransactionClient, userId: string) {
+    const role = await tx.role.findUnique({
+      where: { name: RoleName.GURU },
+    });
+
+    return await tx.userRole.upsert({
+      where: { userId_roleId: { userId, roleId: role!.id } },
+      update: { userId, roleId: role!.id },
+      create: { userId, roleId: role!.id },
     });
   }
 
-  async createTeacherTransaction(
+  async assignTeacher(
     tx: Prisma.TransactionClient,
-    data: CreateTeacherTypes,
+    teacherId: string,
+    data: CreateTeachingAssignmentTypes,
   ) {
-    const { nip, name, email, schoolId } = data;
-
-    // 1️⃣ Cek email sudah pernah dipakai atau belum
-    const alllowed = await tx.allowedEmail.findUnique({
-      where: { email },
-    });
-
-    if (!alllowed) {
-      throw new Error("Email not allowed");
-    }
-
-    const user = await tx.user.findUnique({
-      where: { id: alllowed!.userId },
-      include: { roles: { include: { role: true } } },
-    });
-
-    const hasRole = user?.roles.some((r) => r.role.name === "GURU");
-
-    if (!hasRole) {
-      const role = await tx.role.findUnique({
-        where: { name: "GURU" },
-      });
-
-      await tx.userRole.create({
-        data: {
-          userId: user!.id,
-          roleId: role!.id,
+    return await tx.teachingAssignment.upsert({
+      where: {
+        teacherId_subjectId_classId_semesterId: {
+          teacherId,
+          subjectId: data.subjectId,
+          classId: data.classId,
+          semesterId: data.semesterId,
         },
-      });
-    }
-
-    await tx.user.update({
-      where: { id: alllowed!.userId },
-      data: { isActive: true, name },
+      },
+      update: {},
+      create: {
+        teacherId,
+        subjectId: data.subjectId,
+        classId: data.classId,
+        semesterId: data.semesterId,
+      },
     });
+  }
 
-    if (!user) {
-      throw new Error("Failed to create user");
-    }
+  async createTeacher(schoolId: string, data: CreateTeacherTypes) {
+    return await prisma.$transaction(async (tx) => {
+      await userService.anyUsed(tx, data.email);
 
-    const existed = await this.assign(tx, {
-      ...data,
-      id: null,
-      userId: user.id,
-      schoolId: data.schoolId,
-    });
+      await this.anyUsed(tx, data.nip);
 
-    if (!existed) {
-      return await tx.teacher.create({
+      await this.assignRole(tx, data.userId);
+
+      const teacher = await tx.teacher.create({
         data: {
-          name,
-          nip,
-          userId: user.id,
           schoolId,
+          userId: data.userId,
+          nip: data.nip,
+          name: data.name,
+          gender: data.gender,
+          phone: data.phone,
+          address: data.address,
         },
       });
-    }
-  }
 
-  async getAllTeachers(schoolId: string) {
-    return await prisma.teacher.findMany({
-      where: { schoolId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-            isActive: true,
-          },
-        },
-      },
+      await this.assignTeacher(tx, teacher.id, {
+        subjectId: data.subjectId,
+        classId: data.classId,
+        semesterId: data.semesterId,
+      });
+
+      return teacher;
     });
   }
 
-  async getAllTeachersForce(schoolId: string) {
-    return await prisma.teacher.findMany({
-      where: { schoolId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-            isActive: true,
-          },
-        },
-      },
-    });
+  async readTeachersList(schoolId: string) {
+    return await prisma.teacher.findMany({ where: { schoolId } });
   }
 
-  async getTeacherById(id: string) {
-    return await prisma.teacher.findUnique({
-      where: { id },
-      include: {
-        user: true,
-      },
-    });
+  async readTeacherDetail(id: string) {
+    return await prisma.teacher.findUnique({ where: { id } });
   }
 
-  async getMyTeacher(userId: string) {
-    return await prisma.teacher.findUnique({
-      where: { userId },
-    });
+  async readMySelf(userId: string) {
+    return await prisma.teacher.findUnique({ where: { userId } });
   }
 
-  async updateOldTeacher(
+  async updateTransaction(
     tx: Prisma.TransactionClient,
-    data: UpdateOldTeacherTypes,
+    id: string,
+    data: UpdateTeacherTypes,
   ) {
-    const { userId, name } = data;
+    await userService.anyUsed(tx, data.email);
 
-    const teacher = await tx.teacher.findUnique({ where: { userId } });
+    await this.anyUsed(tx, data.nip);
 
-    if (!teacher) {
-      throw new Error("Teacher not found");
-    }
+    await this.assignRole(tx, data.userId);
 
-    return await tx.teacher.update({
-      where: { userId },
+    const teacher = await tx.teacher.update({
+      where: { id },
       data: {
-        isActive: true,
-        name: name,
+        userId: data.userId,
+        nip: data.nip,
+        name: data.name,
+        gender: data.gender,
+        phone: data.phone,
+        address: data.address,
       },
+    });
+
+    await this.assignTeacher(tx, teacher.id, {
+      subjectId: data.subjectId,
+      classId: data.classId,
+      semesterId: data.semesterId,
+    });
+
+    return teacher;
+  }
+
+  async updateTeacher(id: string, data: UpdateTeacherTypes) {
+    return await prisma.$transaction(async (tx) => {
+      return await this.updateTransaction(tx, id, data);
     });
   }
 
-  async updateTeacher(data: UpdateTeacherTypes) {
+  async updateMySelf(userId: string, data: UpdateTeacherTypes) {
     return await prisma.$transaction(async (tx) => {
-      const teacher = await tx.teacher.findUnique({ where: { id: data.id } });
+      const teacher = await this.readMySelf(userId);
 
-      if (!teacher) {
-        throw new Error("Teacher not found");
-      }
+      if (!teacher) throw new Error("Guru tidak ditemukan");
 
-      const user = await tx.user.findUnique({ where: { email: data.email } });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const existed = await this.assign(tx, {
-        id: data.id,
-        userId: user.id,
-        name: data.name,
-        nip: data.nip,
-        schoolId: user.schoolId,
-      });
-
-      if (!existed) {
-        await tx.teacher.update({
-          where: { id: data.id },
-          data: { isActive: false },
-        });
-
-        return await this.createTeacherTransaction(tx, {
-          ...data,
-          userId: user.id,
-          schoolId: user.schoolId,
-        });
-      }
-
-      return existed;
+      return await this.updateTransaction(tx, teacher!.id, data);
     });
   }
 
   async deleteTeacher(id: string) {
-    return await prisma.$transaction(async (tx) => {
-      const teacher = await tx.teacher.findUnique({ where: { id } });
-
-      if (!teacher) {
-        throw new Error("Teacher not found");
-      }
-
-      return tx.teacher.update({
-        where: { id },
-        data: { isActive: false },
-      });
-    });
+    return await prisma.teacher.delete({ where: { id } });
   }
 }
 

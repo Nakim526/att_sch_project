@@ -21,9 +21,27 @@ router.get(
 );
 
 router.get(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.detail,
+);
+
+router.get(
   "/me",
   roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
   controller.me,
+);
+
+router.put(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.update,
+);
+
+router.delete(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.delete,
 );
 
 export default router;

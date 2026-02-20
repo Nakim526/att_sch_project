@@ -267,13 +267,11 @@ async function main() {
       update: {
         schoolId: school.id,
         email: emailData.email,
-        roleId: emailData.roleId,
         userId: user.id,
       },
       create: {
         schoolId: school.id,
         email: emailData.email,
-        roleId: emailData.roleId,
         userId: user.id,
       },
     });

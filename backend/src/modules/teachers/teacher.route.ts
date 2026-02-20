@@ -21,12 +21,6 @@ router.get(
 );
 
 router.get(
-  "/all",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.listForce,
-);
-
-router.get(
   "/:id",
   roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
   controller.detail,

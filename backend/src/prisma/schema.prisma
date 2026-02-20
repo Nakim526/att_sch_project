@@ -92,8 +92,6 @@ model User {
   email    String  @unique // Email Google
   avatar   String? // Photo URL dari Google
 
-  googleId String? @unique // Google OAuth ID untuk validasi
-
   isActive Boolean @default(true)
 
   lastLoginAt DateTime?
@@ -103,8 +101,8 @@ model User {
   school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   // Multi-role support
-  roles         UserRole[]
-  allowedEmails AllowedEmail[]
+  roles        UserRole[]
+  allowedEmail AllowedEmail?
 
   // Jika user adalah GURU/KEPSEK yang mengajar
   teacherProfile Teacher?
@@ -114,15 +112,13 @@ model User {
 
   @@index([schoolId])
   @@index([email])
-  @@index([googleId])
 }
 
 model Role {
   id   String   @id @default(uuid())
   name RoleName @unique
 
-  userRoles    UserRole[]
-  AllowedEmail AllowedEmail[]
+  userRoles UserRole[]
 }
 
 model UserRole {
@@ -141,11 +137,10 @@ model UserRole {
 
 // Whitelist Email - Hanya email yang terdaftar yang bisa login
 model AllowedEmail {
-  id       String  @id @default(uuid())
+  id       String @id @default(uuid())
   schoolId String
-  email    String  @unique
-  roleId   String?
-  userId   String
+  email    String
+  userId   String @unique
 
   isActive Boolean   @default(true) // Sudah digunakan untuk registrasi
   usedAt   DateTime? // Kapan pertama kali login
@@ -154,7 +149,6 @@ model AllowedEmail {
   updatedAt DateTime @updatedAt
 
   school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  role   Role?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([schoolId, email])

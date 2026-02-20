@@ -1,28 +1,33 @@
+import { Gender } from "@prisma/client";
+
 export interface CreateTeacherTypes {
-  name: string;
   nip: string;
+  name: string;
   email: string;
-  roles?: string[];
   userId: string;
-  schoolId: string;
+  gender?: Gender;
+  phone?: string;
+  address?: string;
+  subjectId: string;
+  classId: string;
+  semesterId: string;
 }
 
-export interface UpdateOldTeacherTypes {
-  name: string;
-  userId: string;
+export interface CreateTeachingAssignmentTypes {
+  subjectId: string;
+  classId: string;
+  semesterId: string;
 }
 
 export interface UpdateTeacherTypes {
-  id: string;
+  nip: string;
   name: string;
   email: string;
-  nip: string;
-}
-
-export interface AssignTeacherTypes {
-  id: string | null;
   userId: string;
-  name: string;
-  nip: string;
-  schoolId: string;
+  gender?: Gender;
+  phone?: string;
+  address?: string;
+  subjectId: string;
+  classId: string;
+  semesterId: string;
 }

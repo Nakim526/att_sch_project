@@ -5,20 +5,15 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 class TeacherController {
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
-      const { name, nip, email } = req.body;
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
 
-      const teacher = await service.createTeacher({
-        nip,
-        name,
-        email,
-        userId,
-        schoolId: req.user!.schoolId,
-      });
+      const schoolId = req.user!.schoolId;
+      const result = await service.createTeacher(schoolId, req.body);
 
       res.status(201).json({
-        message: "Teacher created",
-        data: teacher,
+        message: "Guru baru berhasil dibuat",
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -27,17 +22,13 @@ class TeacherController {
 
   async list(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const data = await service.getAllTeachers(req.user!.schoolId);
-      res.json({ data: data });
-    } catch (error) {
-      next(error);
-    }
-  }
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
 
-  async listForce(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const data = await service.getAllTeachersForce(req.user!.schoolId);
-      res.json({ data: data });
+      const schoolId = req.user!.schoolId;
+      const result = await service.readTeachersList(schoolId);
+
+      res.json({ data: result });
     } catch (error) {
       next(error);
     }
@@ -45,9 +36,13 @@ class TeacherController {
 
   async detail(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { id } = req.params as { id: string };
-      const data = await service.getTeacherById(id);
-      res.json({ data: data });
+      const result = await service.readTeacherDetail(id);
+
+      res.json({ data: result });
     } catch (error) {
       next(error);
     }
@@ -55,13 +50,13 @@ class TeacherController {
 
   async me(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const teacher = await service.getMyTeacher(req.user!.id);
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
 
-      if (!teacher) {
-        return res.status(404).json({ message: "Teacher not found" });
-      }
+      const userId = req.user!.id;
+      const result = await service.readMySelf(userId);
 
-      res.json(teacher);
+      res.json({ data: result });
     } catch (error) {
       next(error);
     }
@@ -69,12 +64,15 @@ class TeacherController {
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { id } = req.params as { id: string };
-      const data = await service.updateTeacher({ id, ...req.body });
+      const result = await service.updateTeacher(id, req.body);
 
       res.json({
-        message: "Data berhasil diperbarui",
-        data: data,
+        message: "Data Guru berhasil diperbarui",
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -83,12 +81,15 @@ class TeacherController {
 
   async updateMe(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const id = req.user!.id;
-      const data = await service.updateTeacher({ id, ...req.body });
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const userId = req.user!.id;
+      const result = await service.updateMySelf(userId, req.body);
 
       res.json({
-        message: "Data berhasil diperbarui",
-        data: data,
+        message: "Data Guru berhasil diperbarui",
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -97,12 +98,13 @@ class TeacherController {
 
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
       const { id } = req.params as { id: string };
       await service.deleteTeacher(id);
 
-      res.json({
-        message: "Data berhasil dihapus",
-      });
+      res.json({ message: "Data berhasil dihapus" });
     } catch (error) {
       next(error);
     }

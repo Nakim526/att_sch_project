@@ -1,34 +1,96 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import service from "./user.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
 class UserController {
-  async create(req: AuthRequest, res: Response) {
-    const { name, email, roles } = req.body;
+  async create(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
 
-    const school = await service.createUser({
-      name,
-      email,
-      roles,
-      schoolId: req.user!.schoolId,
-    });
+      const schoolId = req.user!.schoolId;
+      const result = await service.createUser(schoolId, req.body);
 
-    res.status(201).json(school);
-  }
-
-  async list(req: AuthRequest, res: Response) {
-    const data = await service.getAllUsers(req.user!.schoolId);
-    res.json(data);
-  }
-
-  async me(req: AuthRequest, res: Response) {
-    const user = await service.getMyUser(req.user!.id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      res.status(201).json({
+        message: "User baru berhasil dibuat",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
     }
+  }
 
-    res.json(user);
+  async list(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const schoolId = req.user!.schoolId;
+      const result = await service.readAllUsers(schoolId);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async detail(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const { id } = req.params as { id: string };
+      const result = await service.readAllUsers(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async me(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const id = req.user!.id;
+      const result = await service.readUserSelf(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const id = req.user!.id;
+      const result = await service.updateUser(id, req.body);
+
+      res.json({
+        message: "Data User berhasil diperbarui",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const { id } = req.params as { id: string };
+      await service.deleteUser(id);
+
+      res.json({ message: "Data berhasil dihapus" });
+    } catch (error) {
+      next(error);
+    }
   }
 }
 
