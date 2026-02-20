@@ -43,16 +43,28 @@ class AcademicYearService {
     return await prisma.$transaction(async (tx) => {
       const self = await this.anyActive(tx, id);
 
-      if (self) {
+      const semesters = await tx.semester.findMany({
+        where: { academicYearId: id, isActive: true },
+      });
+
+      if (semesters.length > 0) {
+        throw new Error(
+          `Semester ${semesters.map((s) => s.name).join(", ")} sedang aktif`,
+        );
+      }
+
+      if (self && semesters.length === 0) {
         await tx.class.updateMany({
           data: { academicYearId: id },
         });
+
+        return await tx.academicYear.update({
+          where: { id },
+          data,
+        });
       }
 
-      return await tx.academicYear.update({
-        where: { id },
-        data,
-      });
+      throw new Error('Unknown Error, contact admin to fix it');
     });
   }
 
