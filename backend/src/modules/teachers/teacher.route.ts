@@ -7,6 +7,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
+// Guru
+router.get("/me", roleMiddleware(["GURU"]), controller.me);
+
+router.put("/me", roleMiddleware(["GURU"]), controller.updateMe);
+
 // Admin / Operator / Kepsek
 router.post(
   "/",
@@ -37,10 +42,5 @@ router.delete(
   roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
   controller.delete,
 );
-
-// Guru
-router.get("/me", roleMiddleware(["GURU"]), controller.me);
-
-router.put("/me", roleMiddleware(["GURU"]), controller.updateMe);
 
 export default router;

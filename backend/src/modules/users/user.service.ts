@@ -10,7 +10,7 @@ class UserService {
     userId?: string,
   ) {
     const used = await tx.user.findFirst({
-      where: { email, id: userId ? { not: userId } : undefined },
+      where: { email, ...(userId && { id: { not: userId } }) },
     });
 
     if (used) {
