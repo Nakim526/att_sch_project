@@ -6,19 +6,12 @@ export async function googleLogin(req: AuthRequest, res: Response) {
   try {
     const { idToken } = req.body;
 
-    console.log("REQUEST USER: ", req.user);
-    console.log("REQUEST BODY: ", req.body);
-
     if (!idToken) {
       return res.status(400).json({ message: "idToken required" });
     }
 
-    // if (!schoolId) {
-    //   return res.status(400).json({ message: "schoolId not found" });
-    // }
-
-    // const result = await loginWithGoogle(idToken, schoolId);
-    // res.json(result);
+    const result = await loginWithGoogle(idToken);
+    res.json(result);
   } catch (err: any) {
     if (err.message === "EMAIL_NOT_ALLOWED") {
       return res.status(403).json({ message: "Email not allowed" });
