@@ -61,6 +61,8 @@ class AcademicYearService {
         }
       }
 
+      console.log(self, selfChild);
+
       if (self || selfChild) {
         await tx.class.updateMany({
           data: { academicYearId: id },
