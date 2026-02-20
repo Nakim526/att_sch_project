@@ -61,20 +61,18 @@ class AcademicYearService {
         }
       }
 
-      console.log(self, selfChild);
-
-      if (self || selfChild) {
-        await tx.class.updateMany({
-          data: { academicYearId: id },
-        });
-
-        return await tx.academicYear.update({
-          where: { id },
-          data,
-        });
+      if (!self && !selfChild) {
+        throw new Error("Unknown Error, contact admin to fix it");
       }
 
-      throw new Error("Unknown Error, contact admin to fix it");
+      await tx.class.updateMany({
+        data: { academicYearId: id },
+      });
+
+      return await tx.academicYear.update({
+        where: { id },
+        data,
+      });
     });
   }
 

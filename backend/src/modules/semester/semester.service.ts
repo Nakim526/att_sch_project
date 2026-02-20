@@ -84,11 +84,23 @@ class SemesterService {
             .join(", ")} sedang aktif`,
         );
       }
-    } else {
+    }
+
+    const selfParent = await tx.academicYear.findUnique({
+      where: { id: active[0].academicYearId, isActive: true },
+    });
+
+    if (!selfParent) {
       throw new Error("Tahun Ajaran untuk semester ini tidak aktif");
     }
 
-    return await academicYearService.anyActive(tx, active[0].academicYearId);
+    await academicYearService.anyActive(tx, selfParent.id);
+
+    if (!self) {
+      throw new Error("Unknown Error, contact admin to fix it");
+    }
+
+    return self;
   }
 }
 
