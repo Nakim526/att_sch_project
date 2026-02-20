@@ -40,7 +40,7 @@ class UserController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-      const result = await service.readAllUsers(id);
+      const result = await service.readUserById(id);
 
       res.json({ data: result });
     } catch (error) {

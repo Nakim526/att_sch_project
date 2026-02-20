@@ -88,14 +88,14 @@ class UserService {
   }
 
   async readUserById(id: string) {
-    return await prisma.user.findMany({
+    return await prisma.user.findUnique({
       where: { id },
       include: { roles: { select: { role: true } } },
     });
   }
 
   async readUserSelf(id: string) {
-    return await prisma.user.findMany({
+    return await prisma.user.findUnique({
       where: { id },
       include: { roles: { select: { role: true } } },
     });
