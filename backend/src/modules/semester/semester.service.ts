@@ -84,6 +84,8 @@ class SemesterService {
             .join(", ")} sedang aktif`,
         );
       }
+    } else {
+      throw new Error("Tahun Ajaran untuk semester ini tidak aktif");
     }
 
     return await academicYearService.anyActive(tx, active[0].academicYearId);
