@@ -43,17 +43,25 @@ class AcademicYearService {
     return await prisma.$transaction(async (tx) => {
       const self = await this.anyActive(tx, id);
 
-      const semesters = await tx.semester.findMany({
-        where: { academicYearId: id, isActive: true },
+      const active = await tx.semester.findMany({
+        where: { isActive: true },
       });
 
-      if (semesters.length > 0) {
-        throw new Error(
-          `Semester ${semesters.map((s) => s.name).join(", ")} sedang aktif`,
-        );
+      let selfChild = null;
+
+      if (active.length > 0) {
+        selfChild = active.some((s) => s.academicYearId === id);
+
+        if (!selfChild) {
+          throw new Error(
+            `Semester ${active
+              .map((s) => s.name)
+              .join(", ")} sedang aktif, silahkan non-aktifkan terlebih dahulu`,
+          );
+        }
       }
 
-      if (self && semesters.length === 0) {
+      if (self && selfChild) {
         await tx.class.updateMany({
           data: { academicYearId: id },
         });
@@ -64,7 +72,7 @@ class AcademicYearService {
         });
       }
 
-      throw new Error('Unknown Error, contact admin to fix it');
+      throw new Error("Unknown Error, contact admin to fix it");
     });
   }
 
@@ -75,18 +83,18 @@ class AcademicYearService {
   }
 
   async anyActive(tx: Prisma.TransactionClient, id: string) {
-    const existed = await tx.academicYear.findMany({
+    const active = await tx.academicYear.findMany({
       where: { isActive: true },
     });
 
     let self = null;
 
-    if (existed.length > 0) {
-      self = existed.some((s) => s.id === id);
+    if (active.length > 0) {
+      self = active.some((s) => s.id === id);
 
       if (!self) {
         throw new Error(
-          `Tahun Ajaran ${existed.map((s) => s.name).join(", ")} sedang aktif`,
+          `Tahun Ajaran ${active.map((s) => s.name).join(", ")} sedang aktif`,
         );
       }
     }

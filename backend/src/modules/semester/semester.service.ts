@@ -3,6 +3,7 @@
 import { Prisma, SemesterType } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { CreateSemesterTypes, UpdateSemesterTypes } from "./semester.types";
+import academicYearService from "../academic-year/academic-year.service";
 
 class SemesterService {
   async create(data: CreateSemesterTypes) {
@@ -64,19 +65,19 @@ class SemesterService {
   }
 
   async anyActive(tx: Prisma.TransactionClient, id: string) {
-    const existed = await tx.semester.findMany({
+    const active = await tx.semester.findMany({
       where: { isActive: true },
       include: { academicYear: true },
     });
 
     let self = null;
 
-    if (existed.length > 0) {
-      self = existed.some((s) => s.id === id);
+    if (active.length > 0) {
+      self = active.some((s) => s.id === id);
 
       if (!self) {
         throw new Error(
-          `Semester ${existed
+          `Semester ${active
             .map((s) => {
               return `${s.name} ${s.academicYear.name}`;
             })
@@ -85,7 +86,7 @@ class SemesterService {
       }
     }
 
-    return self;
+    return await academicYearService.anyActive(tx, active[0].academicYearId);
   }
 }
 
