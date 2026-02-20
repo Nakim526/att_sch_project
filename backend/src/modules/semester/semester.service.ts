@@ -49,7 +49,16 @@ class SemesterService {
 
   async update(id: string, data: UpdateSemesterTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.anyActive(tx, id);
+      const self = await this.anyActive(tx, id);
+
+      const selfParent = await academicYearService.anyActive(
+        tx,
+        data.academicYearId,
+      );
+
+      if (!self && !selfParent) {
+        throw new Error("Unknown Error, contact admin to fix it");
+      }
 
       return await tx.semester.update({
         where: { id },
@@ -84,20 +93,6 @@ class SemesterService {
             .join(", ")} sedang aktif`,
         );
       }
-    }
-
-    const selfParent = await tx.academicYear.findUnique({
-      where: { id: active[0].academicYearId, isActive: true },
-    });
-
-    if (!selfParent) {
-      throw new Error("Tahun Ajaran untuk semester ini tidak aktif");
-    }
-
-    await academicYearService.anyActive(tx, selfParent.id);
-
-    if (!self) {
-      throw new Error("Unknown Error, contact admin to fix it");
     }
 
     return self;
