@@ -11,14 +11,37 @@ class TeacherService {
   async ensureAvailable(
     tx: Prisma.TransactionClient,
     nip: string,
-    userId?: string,
+    email: string,
+    id?: string,
   ) {
-    const existing = await tx.teacher.findFirst({
-      where: { nip, userId: userId ? { not: userId } : undefined },
+    const user = await tx.user.findUnique({
+      where: { email },
     });
 
-    if (existing) {
-      throw new Error(`NIP ${nip} sudah digunakan`);
+    if (!user) {
+      throw new Error(`Email ${email} tidak ditemukan`);
+    }
+
+    const emailUsed = await tx.teacher.findFirst({
+      where: {
+        userId: user!.id,
+        ...(id && { id: { not: id } }),
+      },
+    });
+
+    if (emailUsed) {
+      throw new Error(`Email ${email} sudah digunakan`);
+    }
+
+    const nipUsed = await tx.teacher.findFirst({
+      where: {
+        nip,
+        ...(id && { id: { not: id } }),
+      },
+    });
+
+    if (nipUsed) {
+      throw new Error(`NIP atau email sudah digunakan`);
     }
   }
 
@@ -60,9 +83,7 @@ class TeacherService {
 
   async createTeacher(schoolId: string, data: CreateTeacherTypes) {
     return await prisma.$transaction(async (tx) => {
-      await userService.ensureAvailable(tx, data.email);
-
-      await this.ensureAvailable(tx, data.nip);
+      await this.ensureAvailable(tx, data.nip, data.email);
 
       await this.assignRole(tx, data.userId);
 
@@ -105,9 +126,7 @@ class TeacherService {
     id: string,
     data: UpdateTeacherTypes,
   ) {
-    await userService.ensureAvailable(tx, data.email, data.userId);
-
-    await this.ensureAvailable(tx, data.nip, data.userId);
+    await this.ensureAvailable(tx, data.nip, data.email, id);
 
     await this.assignRole(tx, data.userId);
 
@@ -140,7 +159,7 @@ class TeacherService {
 
   async updateMySelf(userId: string, data: UpdateTeacherTypes) {
     return await prisma.$transaction(async (tx) => {
-      const teacher = await this.readMySelf(userId);
+      const teacher = await tx.teacher.findUnique({ where: { userId } });
 
       if (!teacher) throw new Error("Guru tidak ditemukan");
 
