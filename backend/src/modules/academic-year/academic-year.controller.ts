@@ -30,6 +30,17 @@ class AcademicYearController {
     }
   }
 
+  async findActive(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const schoolId = req.user!.schoolId;
+      const result = await service.findActive(schoolId);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findOne(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };

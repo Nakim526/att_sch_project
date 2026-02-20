@@ -26,6 +26,13 @@ class AcademicYearService {
     });
   }
 
+  async findActive(schoolId: string) {
+    return await prisma.academicYear.findFirst({
+      where: { isActive: true, schoolId },
+      orderBy: { name: "asc" },
+    });
+  }
+
   async findById(id: string) {
     return await prisma.academicYear.findUnique({
       where: { id },

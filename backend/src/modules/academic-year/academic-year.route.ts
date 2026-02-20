@@ -20,6 +20,8 @@ router.post("/", (req, res, next) => controller.create(req, res, next));
 
 router.get("/", (req, res, next) => controller.findAll(req, res, next));
 
+router.get("/active", (req, res, next) => controller.findActive(req, res, next));
+
 router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
 
 router.put("/:id", (req, res, next) => controller.update(req, res, next));
