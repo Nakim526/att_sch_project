@@ -32,6 +32,13 @@ class SemesterService {
     });
   }
 
+  async findActiveByAcademicYear(academicYearId: string) {
+    return await prisma.semester.findFirst({
+      where: { isActive: true, academicYearId },
+      include: { academicYear: true },
+    });
+  }
+
   async findAllByType(name: SemesterType) {
     return await prisma.semester.findMany({
       where: { name },

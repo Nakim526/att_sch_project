@@ -20,9 +20,17 @@ router.post("/", (req, res, next) => controller.create(req, res, next));
 
 router.get("/", (req, res, next) => controller.findAll(req, res, next));
 
-router.get("/academic-year/:id", (req, res, next) => controller.findAcademicYear(req, res, next));
+router.get("/academic-year/:id", (req, res, next) =>
+  controller.findAcademicYear(req, res, next),
+);
 
-router.get("/type/:type", (req, res, next) => controller.findType(req, res, next));
+router.get("/active/:id", (req, res, next) =>
+  controller.findActiveByAcademicYear(req, res, next),
+);
+
+router.get("/type/:type", (req, res, next) =>
+  controller.findType(req, res, next),
+);
 
 router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
 

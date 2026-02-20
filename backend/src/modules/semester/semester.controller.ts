@@ -50,6 +50,21 @@ class AcademicYearController {
     }
   }
 
+  async findActiveByAcademicYear(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("REQUEST USER: ", req.user);
+      console.log("REQUEST BODY: ", req.body);
+
+      const { id } = req.params as { id: string };
+
+      const result = await service.findActiveByAcademicYear(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findType(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       console.log("REQUEST USER: ", req.user);
