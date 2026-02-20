@@ -1,6 +1,6 @@
 // src/modules/academic-year/academic-year.service.ts
 
-import { SemesterType } from "@prisma/client";
+import { Prisma, SemesterType } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { CreateSemesterTypes, UpdateSemesterTypes } from "./semester.types";
 
@@ -48,24 +48,7 @@ class SemesterService {
 
   async update(id: string, data: UpdateSemesterTypes) {
     return await prisma.$transaction(async (tx) => {
-      const existed = await tx.semester.findMany({
-        where: { isActive: true },
-        include: { academicYear: true },
-      });
-
-      if (existed.length > 0) {
-        const semester = existed.some((s) => s.id === id);
-
-        if (!semester) {
-          throw new Error(
-            `Semester ${existed
-              .map((s) => {
-                return `${s.name} ${s.academicYear.name}`;
-              })
-              .join(", ")} sedang aktif`,
-          );
-        }
-      }
+      await this.anyActive(tx, id);
 
       return await tx.semester.update({
         where: { id },
@@ -78,6 +61,31 @@ class SemesterService {
     return await prisma.semester.delete({
       where: { id },
     });
+  }
+
+  async anyActive(tx: Prisma.TransactionClient, id: string) {
+    const existed = await tx.semester.findMany({
+      where: { isActive: true },
+      include: { academicYear: true },
+    });
+
+    let self = null;
+
+    if (existed.length > 0) {
+      self = existed.some((s) => s.id === id);
+
+      if (!self) {
+        throw new Error(
+          `Semester ${existed
+            .map((s) => {
+              return `${s.name} ${s.academicYear.name}`;
+            })
+            .join(", ")} sedang aktif`,
+        );
+      }
+    }
+
+    return self;
   }
 }
 

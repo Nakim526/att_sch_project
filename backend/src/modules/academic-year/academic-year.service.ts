@@ -1,7 +1,11 @@
 // src/modules/academic-year/academic-year.service.ts
 
+import { Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
-import { CreateAcademicYearTypes, UpdateAcademicYearTypes } from "./academic-year.types";
+import {
+  CreateAcademicYearTypes,
+  UpdateAcademicYearTypes,
+} from "./academic-year.types";
 
 class AcademicYearService {
   async create(schoolId: string, data: CreateAcademicYearTypes) {
@@ -29,9 +33,19 @@ class AcademicYearService {
   }
 
   async update(id: string, data: UpdateAcademicYearTypes) {
-    return await prisma.academicYear.update({
-      where: { id },
-      data,
+    return await prisma.$transaction(async (tx) => {
+      const self = await this.anyActive(tx, id);
+
+      if (self) {
+        await tx.class.updateMany({
+          data: { academicYearId: id },
+        });
+      }
+
+      return await tx.academicYear.update({
+        where: { id },
+        data,
+      });
     });
   }
 
@@ -39,6 +53,26 @@ class AcademicYearService {
     return await prisma.academicYear.delete({
       where: { id },
     });
+  }
+
+  async anyActive(tx: Prisma.TransactionClient, id: string) {
+    const existed = await tx.academicYear.findMany({
+      where: { isActive: true },
+    });
+
+    let self = null;
+
+    if (existed.length > 0) {
+      self = existed.some((s) => s.id === id);
+
+      if (!self) {
+        throw new Error(
+          `Tahun Ajaran ${existed.map((s) => s.name).join(", ")} sedang aktif`,
+        );
+      }
+    }
+
+    return self;
   }
 }
 
