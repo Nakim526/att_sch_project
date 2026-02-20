@@ -43,6 +43,8 @@ class TeacherService {
     if (nipUsed) {
       throw new Error(`NIP atau email sudah digunakan`);
     }
+
+    return user;
   }
 
   async assignRole(tx: Prisma.TransactionClient, userId: string) {
@@ -83,14 +85,14 @@ class TeacherService {
 
   async createTeacher(schoolId: string, data: CreateTeacherTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, data.nip, data.email);
+      const user = await this.ensureAvailable(tx, data.nip, data.email);
 
-      await this.assignRole(tx, data.userId);
+      await this.assignRole(tx, user.id);
 
       const teacher = await tx.teacher.create({
         data: {
           schoolId,
-          userId: data.userId,
+          userId: user.id,
           nip: data.nip,
           name: data.name,
           gender: data.gender,
@@ -126,14 +128,14 @@ class TeacherService {
     id: string,
     data: UpdateTeacherTypes,
   ) {
-    await this.ensureAvailable(tx, data.nip, data.email, id);
+    const user = await this.ensureAvailable(tx, data.nip, data.email, id);
 
-    await this.assignRole(tx, data.userId);
+    await this.assignRole(tx, user.id);
 
     const teacher = await tx.teacher.update({
       where: { id },
       data: {
-        userId: data.userId,
+        userId: user.id,
         nip: data.nip,
         name: data.name,
         gender: data.gender,

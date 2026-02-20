@@ -4,7 +4,6 @@ export interface CreateTeacherTypes {
   nip: string;
   name: string;
   email: string;
-  userId: string;
   gender?: Gender;
   phone?: string;
   address?: string;
@@ -23,7 +22,6 @@ export interface UpdateTeacherTypes {
   nip: string;
   name: string;
   email: string;
-  userId: string;
   gender?: Gender;
   phone?: string;
   address?: string;
