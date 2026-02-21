@@ -34,7 +34,7 @@ class StudentService {
           semesterId: data.semesterId,
         },
       },
-      update: { classId: data.classId },
+      update: { classId: data.classId, isActive: true },
       create: {
         studentId: studentId,
         classId: data.classId,
