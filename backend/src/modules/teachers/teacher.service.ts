@@ -1,7 +1,7 @@
 import prisma from "../../config/prisma";
 import {
   CreateTeacherTypes,
-  CreateTeachingAssignmentTypes,
+  TeachingAssignmentTypes,
   UpdateTeacherTypes,
 } from "./teacher.types";
 import userService from "../users/user.service";
@@ -62,7 +62,7 @@ class TeacherService {
   async assignTeacher(
     tx: Prisma.TransactionClient,
     teacherId: string,
-    data: CreateTeachingAssignmentTypes,
+    data: TeachingAssignmentTypes,
   ) {
     return await tx.teachingAssignment.upsert({
       where: {
@@ -101,11 +101,9 @@ class TeacherService {
         },
       });
 
-      await this.assignTeacher(tx, teacher.id, {
-        subjectId: data.subjectId,
-        classId: data.classId,
-        semesterId: data.semesterId,
-      });
+      for (const assignment of data.assignments) {
+        await this.assignTeacher(tx, teacher.id, assignment);
+      }
 
       return teacher;
     });
@@ -166,11 +164,9 @@ class TeacherService {
       },
     });
 
-    await this.assignTeacher(tx, teacher.id, {
-      subjectId: data.subjectId,
-      classId: data.classId,
-      semesterId: data.semesterId,
-    });
+    for (const assignment of data.assignments) {
+      await this.assignTeacher(tx, teacher.id, assignment);
+    }
 
     return teacher;
   }

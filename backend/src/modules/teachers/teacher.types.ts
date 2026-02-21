@@ -7,12 +7,10 @@ export interface CreateTeacherTypes {
   gender?: Gender;
   phone?: string;
   address?: string;
-  subjectId: string;
-  classId: string;
-  semesterId: string;
+  assignments: TeachingAssignmentTypes[];
 }
 
-export interface CreateTeachingAssignmentTypes {
+export interface TeachingAssignmentTypes {
   subjectId: string;
   classId: string;
   semesterId: string;
@@ -25,7 +23,5 @@ export interface UpdateTeacherTypes {
   gender?: Gender;
   phone?: string;
   address?: string;
-  subjectId: string;
-  classId: string;
-  semesterId: string;
+  assignments: TeachingAssignmentTypes[];
 }
