@@ -62,25 +62,31 @@ class TeacherService {
   async assignTeacher(
     tx: Prisma.TransactionClient,
     teacherId: string,
-    data: TeachingAssignmentTypes,
+    data: TeachingAssignmentTypes[],
   ) {
-    return await tx.teachingAssignment.upsert({
-      where: {
-        teacherId_subjectId_classId_semesterId: {
-          teacherId,
-          subjectId: data.subjectId,
-          classId: data.classId,
-          semesterId: data.semesterId,
-        },
-      },
-      update: {},
-      create: {
-        teacherId,
-        subjectId: data.subjectId,
-        classId: data.classId,
-        semesterId: data.semesterId,
-      },
+    await tx.teachingAssignment.deleteMany({
+      where: { teacherId, semesterId: data[0].semesterId },
     });
+
+    for (const assignment of data) {
+      await tx.teachingAssignment.upsert({
+        where: {
+          teacherId_subjectId_classId_semesterId: {
+            teacherId,
+            subjectId: assignment.subjectId,
+            classId: assignment.classId,
+            semesterId: assignment.semesterId,
+          },
+        },
+        update: {},
+        create: {
+          teacherId,
+          subjectId: assignment.subjectId,
+          classId: assignment.classId,
+          semesterId: assignment.semesterId,
+        },
+      });
+    }
   }
 
   async createTeacher(schoolId: string, data: CreateTeacherTypes) {
@@ -101,9 +107,7 @@ class TeacherService {
         },
       });
 
-      for (const assignment of data.assignments) {
-        await this.assignTeacher(tx, teacher.id, assignment);
-      }
+      await this.assignTeacher(tx, teacher.id, data.assignments);
 
       return teacher;
     });
@@ -164,9 +168,7 @@ class TeacherService {
       },
     });
 
-    for (const assignment of data.assignments) {
-      await this.assignTeacher(tx, teacher.id, assignment);
-    }
+    await this.assignTeacher(tx, teacher.id, data.assignments);
 
     return teacher;
   }

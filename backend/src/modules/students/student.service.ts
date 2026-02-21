@@ -1,31 +1,58 @@
 // src/modules/student/student.service.ts
 
+import { Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
-import { CreateStudentTypes, UpdateStudentTypes } from "./student.types";
+import {
+  CreateStudentTypes,
+  StudentEnrollmentTypes,
+  UpdateStudentTypes,
+} from "./student.types";
 
 class StudentService {
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    schoolId: string,
+    nis: string,
+    studentId?: string,
+  ) {
+    const used = await tx.student.findFirst({
+      where: { schoolId, nis, ...(studentId && { id: { not: studentId } }) },
+    });
+
+    if (used) throw new Error(`NIS ${nis} sudah digunakan`);
+  }
+
+  async assignStudent(
+    tx: Prisma.TransactionClient,
+    studentId: string,
+    data: StudentEnrollmentTypes,
+  ) {
+    await tx.studentEnrollment.upsert({
+      where: {
+        studentId_semesterId: {
+          studentId,
+          semesterId: data.semesterId,
+        },
+      },
+      update: { classId: data.classId },
+      create: {
+        studentId: studentId,
+        classId: data.classId,
+        semesterId: data.semesterId,
+      },
+    });
+  }
+
   async create(schoolId: string, data: CreateStudentTypes) {
     return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, schoolId, data.nis);
+
       const student = await tx.student.create({
-        data: {
-          name: data.name,
-          nis: data.nis,
-          schoolId,
-          nisn: data.nisn,
-          gender: data.gender,
-          phone: data.phone,
-          address: data.address,
-        },
+        data: { schoolId, ...data },
       });
 
       if (data.classId && data.semesterId)
-        await tx.studentEnrollment.create({
-          data: {
-            studentId: student.id,
-            classId: data.classId,
-            semesterId: data.semesterId,
-          },
-        });
+        await this.assignStudent(tx, student.id, data);
 
       return student;
     });
@@ -34,22 +61,14 @@ class StudentService {
   async findAllBySchool(schoolId: string) {
     return prisma.student.findMany({
       where: { schoolId },
-      include: {
-        enrollments: {
-          include: { class: true, semester: true },
-        },
-      },
+      include: { enrollments: true },
     });
   }
 
   async findOneById(id: string) {
     return prisma.student.findUnique({
       where: { id },
-      include: {
-        enrollments: {
-          include: { class: true, semester: true },
-        },
-      },
+      include: { enrollments: true },
     });
   }
 
@@ -69,17 +88,11 @@ class StudentService {
 
   async update(id: string, data: UpdateStudentTypes) {
     return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, data.nis, id);
+
       const student = await tx.student.update({
         where: { id },
-        data: {
-          name: data.name,
-          nis: data.nis,
-          nisn: data.nisn,
-          gender: data.gender,
-          phone: data.phone,
-          address: data.address,
-          isActive: true,
-        },
+        data: { isActive: true, ...data },
       });
 
       await tx.studentEnrollment.updateMany({
@@ -87,27 +100,8 @@ class StudentService {
         data: { isActive: false },
       });
 
-      if (data.classId && data.semesterId) {
-        await tx.studentEnrollment.upsert({
-          where: {
-            studentId_semesterId: {
-              studentId: id,
-              semesterId: data.semesterId,
-            },
-          },
-          update: {
-            studentId: student.id,
-            classId: data.classId,
-            semesterId: data.semesterId,
-            isActive: true,
-          },
-          create: {
-            studentId: student.id,
-            classId: data.classId,
-            semesterId: data.semesterId,
-          },
-        });
-      }
+      if (data.classId && data.semesterId)
+        await this.assignStudent(tx, student.id, data);
 
       return student;
     });

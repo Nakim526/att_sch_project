@@ -2,6 +2,11 @@
 
 import { Gender } from "@prisma/client";
 
+export interface StudentEnrollmentTypes {
+  classId: string;
+  semesterId: string;
+}
+
 export interface CreateStudentTypes {
   name: string;
   nis: string;
@@ -15,11 +20,11 @@ export interface CreateStudentTypes {
 
 export interface UpdateStudentTypes {
   name?: string;
-  nis?: string;
+  nis: string;
   nisn?: string;
   gender?: Gender;
   phone?: string;
   address?: string;
-  classId?: string;
-  semesterId?: string;
+  classId: string;
+  semesterId: string;
 }
