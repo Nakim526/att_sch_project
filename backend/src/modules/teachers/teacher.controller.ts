@@ -51,7 +51,7 @@ class TeacherController {
     }
   }
 
-  async me(req: AuthRequest, res: Response, next: NextFunction) {
+  async readMe(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
@@ -108,7 +108,8 @@ class TeacherController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-      await service.deleteTeacher(id);
+      const { schoolId } = req.user as { schoolId: string };
+      await service.deleteTeacher(id, schoolId);
 
       res.json({ message: "Data berhasil dihapus" });
     } catch (error) {

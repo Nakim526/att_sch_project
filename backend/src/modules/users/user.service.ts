@@ -6,11 +6,16 @@ import { CreateUserTypes, UpdateUserTypes } from "./user.types";
 class UserService {
   async ensureAvailable(
     tx: Prisma.TransactionClient,
+    schoolId: string,
     email: string,
     userId?: string,
   ) {
     const used = await tx.user.findFirst({
-      where: { email, ...(userId && { id: { not: userId } }) },
+      where: {
+        schoolId,
+        email,
+        ...(userId && { id: { not: userId } }),
+      },
     });
 
     if (used) {
@@ -46,16 +51,10 @@ class UserService {
 
   async createUser(schoolId: string, data: CreateUserTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, data.email);
+      await this.ensureAvailable(tx, schoolId, data.email);
 
-      const user = await tx.user.upsert({
-        where: { email: data.email },
-        update: {
-          schoolId,
-          name: data.name,
-          isActive: true,
-        },
-        create: {
+      const user = await tx.user.create({
+        data: {
           schoolId,
           name: data.name,
           email: data.email,
@@ -90,18 +89,15 @@ class UserService {
     });
   }
 
-  async readMySelf(id: string) {
-    return await prisma.user.findUnique({
-      where: { id },
-      include: { roles: { select: { role: true } } },
-    });
-  }
-
-  async updateUser(id: string, data: UpdateUserTypes) {
+  async updateUser(id: string, schoolId: string, data: UpdateUserTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, data.email, id);
+      await this.ensureAvailable(tx, schoolId, data.email, id);
 
       await this.assignRoles(tx, id, data.roles);
+
+      const oldData = await tx.user.findUnique({ where: { id } });
+
+      if (!oldData) throw new Error("User tidak ditemukan");
 
       const user = await tx.user.update({
         where: { id },
@@ -117,7 +113,7 @@ class UserService {
         where: {
           schoolId_email: {
             schoolId: user.schoolId,
-            email: user.email,
+            email: oldData.email,
           },
         },
         data: { email: data.email },
@@ -127,8 +123,8 @@ class UserService {
     });
   }
 
-  async deleteUser(id: string) {
-    return await prisma.user.delete({ where: { id } });
+  async deleteUser(id: string, schoolId: string) {
+    return await prisma.user.delete({ where: { id, schoolId } });
   }
 }
 

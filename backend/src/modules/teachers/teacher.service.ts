@@ -191,8 +191,8 @@ class TeacherService {
     });
   }
 
-  async deleteTeacher(id: string) {
-    return await prisma.teacher.delete({ where: { id } });
+  async deleteTeacher(id: string, schoolId: string) {
+    return await prisma.teacher.delete({ where: { id, schoolId } });
   }
 }
 

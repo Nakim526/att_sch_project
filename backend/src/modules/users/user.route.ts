@@ -26,12 +26,6 @@ router.get(
   controller.detail,
 );
 
-router.get(
-  "/me",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.me,
-);
-
 router.put(
   "/:id",
   roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),

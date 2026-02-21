@@ -51,28 +51,14 @@ class UserController {
     }
   }
 
-  async me(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      console.log("REQUEST USER: ", req.user);
-      console.log("REQUEST BODY: ", req.body);
-
-      const { id } = req.user as { id: string };
-      const result = await service.readMySelf(id);
-
-      console.log("RESULT: ", result);
-      res.json({ data: result });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const { id } = req.user as { id: string };
-      const result = await service.updateUser(id, req.body);
+      const { id } = req.params as { id: string };
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.updateUser(id, schoolId, req.body);
 
       console.log("RESULT: ", result);
       res.json({
@@ -90,7 +76,8 @@ class UserController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-      await service.deleteUser(id);
+      const { schoolId } = req.user as { schoolId: string };
+      await service.deleteUser(id, schoolId);
 
       res.json({ message: "Data berhasil dihapus" });
     } catch (error) {
