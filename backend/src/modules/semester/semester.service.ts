@@ -54,19 +54,10 @@ class SemesterService {
     });
   }
 
-  async update(id: string, data: UpdateSemesterTypes) {
+  async update(schoolId: string, id: string, data: UpdateSemesterTypes) {
     return await prisma.$transaction(async (tx) => {
       if (data.isActive) {
-        const self = await this.anyActive(tx, id);
-
-        const selfParent = await academicYearService.anyActive(
-          tx,
-          data.academicYearId,
-        );
-
-        if (!self && !selfParent) {
-          throw new Error("Unknown Error, contact admin to fix it");
-        }
+        await this.ensureActive(tx, schoolId, id);
       }
 
       return await tx.semester.update({
@@ -77,34 +68,48 @@ class SemesterService {
   }
 
   async delete(id: string) {
-    return await prisma.semester.delete({
-      where: { id },
+    return await prisma.$transaction(async (tx) => {
+      const semester = await tx.semester.findUnique({
+        where: { id },
+        include: { academicYear: true },
+      });
+
+      if (!semester) throw new Error("Semester tidak ditemukan");
+
+      return tx.semester.delete({
+        where: { id, academicYearId: semester.academicYearId },
+      });
     });
   }
 
-  async anyActive(tx: Prisma.TransactionClient, id: string) {
-    const active = await tx.semester.findMany({
-      where: { isActive: true },
+  async ensureActive(
+    tx: Prisma.TransactionClient,
+    schoolId: string,
+    id: string,
+  ) {
+    const semester = await tx.semester.findUnique({
+      where: { id },
       include: { academicYear: true },
     });
 
-    let self = true;
+    if (!semester) throw new Error("Semester tidak ditemukan");
 
-    if (active.length > 0) {
-      self = active.some((s) => s.id === id);
+    const active = await tx.semester.findFirst({
+      where: {
+        isActive: true,
+        academicYearId: semester.academicYearId,
+        id: { not: id },
+      },
+    });
 
-      if (!self) {
-        throw new Error(
-          `Semester ${active
-            .map((s) => {
-              return `${s.name} ${s.academicYear.name}`;
-            })
-            .join(", ")} sedang aktif`,
-        );
-      }
-    }
+    if (active) throw new Error(`Semester ${active.name} sedang aktif`);
 
-    return self;
+    const academicYear = await tx.academicYear.findFirst({
+      where: { schoolId, isActive: true, id: semester.academicYearId },
+    });
+
+    if (!academicYear)
+      throw new Error(`Tahun Ajaran ${semester.academicYear.name} tidak aktif`);
   }
 }
 

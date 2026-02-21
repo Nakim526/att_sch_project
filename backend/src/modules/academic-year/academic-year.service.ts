@@ -38,38 +38,16 @@ class AcademicYearService {
     });
   }
 
-  async update(id: string, data: UpdateAcademicYearTypes) {
+  async update(schoolId: string, id: string, data: UpdateAcademicYearTypes) {
     return await prisma.$transaction(async (tx) => {
       if (data.isActive) {
-        const self = await this.anyActive(tx, id);
-
-        const active = await tx.semester.findMany({
-          where: { isActive: true },
-        });
-
-        let selfChild = true;
-
-        if (active.length > 0) {
-          selfChild = active.some((s) => s.academicYearId === id);
-
-          if (!selfChild) {
-            throw new Error(
-              `Semester ${active
-                .map((s) => s.name)
-                .join(
-                  ", ",
-                )} sedang aktif, silahkan non-aktifkan terlebih dahulu`,
-            );
-          }
-        }
-
-        if (!self && !selfChild) {
-          throw new Error("Unknown Error, contact admin to fix it");
-        }
+        await this.ensureActive(tx, schoolId, id);
 
         await tx.class.updateMany({
-          data: { academicYearId: id },
+          data: { schoolId, academicYearId: id },
         });
+      } else {
+        await this.ensureNotActive(tx, id);
       }
 
       return await tx.academicYear.update({
@@ -79,30 +57,34 @@ class AcademicYearService {
     });
   }
 
-  async delete(id: string) {
+  async delete(schoolId: string, id: string) {
     return await prisma.academicYear.delete({
-      where: { id },
+      where: { schoolId, id },
     });
   }
 
-  async anyActive(tx: Prisma.TransactionClient, id: string) {
-    const active = await tx.academicYear.findMany({
-      where: { isActive: true },
+  async ensureNotActive(tx: Prisma.TransactionClient, id: string) {
+    const active = await tx.semester.findFirst({
+      where: { isActive: true, academicYearId: id },
     });
 
-    let self = true;
-
-    if (active.length > 0) {
-      self = active.some((e) => e.id === id);
-
-      if (!self) {
-        throw new Error(
-          `Tahun Ajaran ${active.map((e) => e.name).join(", ")} sedang aktif`,
-        );
-      }
+    if (active) {
+      throw new Error(
+        `Semester ${active.name} sedang aktif, silahkan non-aktifkan terlebih dahulu`,
+      );
     }
+  }
 
-    return self;
+  async ensureActive(
+    tx: Prisma.TransactionClient,
+    schoolId: string,
+    id: string,
+  ) {
+    const active = await tx.academicYear.findFirst({
+      where: { schoolId, isActive: true, id: { not: id } },
+    });
+
+    if (active) throw new Error(`Tahun Ajaran ${active.name} sedang aktif`);
   }
 }
 
