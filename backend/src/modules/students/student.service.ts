@@ -48,7 +48,7 @@ class StudentService {
       await this.ensureAvailable(tx, schoolId, data.nis);
 
       const student = await tx.student.create({
-        data: { schoolId, ...data },
+        data: { ...data, schoolId },
       });
 
       if (data.classId && data.semesterId)
@@ -92,7 +92,7 @@ class StudentService {
 
       const student = await tx.student.update({
         where: { id },
-        data: { isActive: true, ...data },
+        data: { ...data, isActive: true },
       });
 
       await tx.studentEnrollment.updateMany({
