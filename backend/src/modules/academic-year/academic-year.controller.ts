@@ -61,7 +61,8 @@ class AcademicYearController {
   async update(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };
-      const result = await service.update(id, req.body);
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.update(schoolId, id, req.body);
 
       res.json({
         message: "Tahun Akademik berhasil diperbarui",
@@ -75,7 +76,8 @@ class AcademicYearController {
   async delete(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };
-      await service.delete(id);
+      const { schoolId } = req.user as { schoolId: string };
+      await service.delete(schoolId, id);
 
       res.json({
         message: "Tahun Akademik berhasil dihapus",

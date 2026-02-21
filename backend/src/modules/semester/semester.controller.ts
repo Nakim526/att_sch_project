@@ -50,7 +50,11 @@ class AcademicYearController {
     }
   }
 
-  async findActiveByAcademicYear(req: AuthRequest, res: Response, next: NextFunction) {
+  async findActiveByAcademicYear(
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
@@ -105,8 +109,8 @@ class AcademicYearController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-
-      const result = await service.update(id, req.body);
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.update(schoolId, id, req.body);
 
       res.json({
         message: "Semester berhasil diperbarui",
