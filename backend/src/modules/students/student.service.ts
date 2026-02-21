@@ -48,11 +48,21 @@ class StudentService {
       await this.ensureAvailable(tx, schoolId, data.nis);
 
       const student = await tx.student.create({
-        data: { ...data, schoolId },
+        data: {
+          schoolId,
+          nis: data.nis,
+          name: data.name,
+          gender: data.gender,
+          phone: data.phone,
+          address: data.address,
+        },
       });
 
       if (data.classId && data.semesterId)
-        await this.assignStudent(tx, student.id, data);
+        await this.assignStudent(tx, student.id, {
+          classId: data.classId,
+          semesterId: data.semesterId,
+        });
 
       return student;
     });
@@ -65,9 +75,9 @@ class StudentService {
     });
   }
 
-  async findOneById(id: string) {
+  async findOneById(id: string, schoolId: string) {
     return prisma.student.findUnique({
-      where: { id },
+      where: { id, schoolId },
       include: { enrollments: true },
     });
   }
@@ -86,13 +96,20 @@ class StudentService {
     });
   }
 
-  async update(id: string, data: UpdateStudentTypes) {
+  async update(id: string, schoolId: string, data: UpdateStudentTypes) {
     return await prisma.$transaction(async (tx) => {
       await this.ensureAvailable(tx, data.nis, id);
 
       const student = await tx.student.update({
-        where: { id },
-        data: { ...data, isActive: true },
+        where: { id, schoolId },
+        data: {
+          nis: data.nis,
+          name: data.name,
+          gender: data.gender,
+          phone: data.phone,
+          address: data.address,
+          isActive: true,
+        },
       });
 
       await tx.studentEnrollment.updateMany({
@@ -101,37 +118,34 @@ class StudentService {
       });
 
       if (data.classId && data.semesterId)
-        await this.assignStudent(tx, student.id, data);
+        await this.assignStudent(tx, student.id, {
+          classId: data.classId,
+          semesterId: data.semesterId,
+        });
 
       return student;
     });
   }
 
-  async softDelete(id: string) {
+  async softDelete(id: string, schoolId: string) {
     return await prisma.$transaction(async (tx) => {
       const student = await tx.student.update({
-        where: { id },
+        where: { id, schoolId },
         data: { isActive: false },
       });
 
-      const enrollments = await tx.studentEnrollment.findMany({
+      await tx.studentEnrollment.updateMany({
         where: { studentId: id },
+        data: { isActive: false },
       });
-
-      for (const { id } of enrollments) {
-        await tx.studentEnrollment.update({
-          where: { id },
-          data: { isActive: false },
-        });
-      }
 
       return student;
     });
   }
 
-  async hardDelete(id: string) {
+  async hardDelete(id: string, schoolId: string) {
     return prisma.student.delete({
-      where: { id },
+      where: { id, schoolId },
     });
   }
 }

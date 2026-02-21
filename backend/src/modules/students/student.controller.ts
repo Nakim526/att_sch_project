@@ -39,7 +39,8 @@ class StudentController {
       console.log(req.body);
 
       const { id } = req.params as { id: string };
-      const result = await studentService.findOneById(id);
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await studentService.findOneById(id, schoolId);
 
       res.json({ data: result });
     } catch (error) {
@@ -78,7 +79,8 @@ class StudentController {
       console.log(req.body);
 
       const { id } = req.params as { id: string };
-      const result = await studentService.update(id, req.body);
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await studentService.update(id, schoolId, req.body);
 
       res.json({
         message: "Data siswa berhasil diperbarui",
@@ -94,7 +96,8 @@ class StudentController {
       console.log(req.body);
 
       const { id } = req.params as { id: string };
-      await studentService.softDelete(id);
+      const { schoolId } = req.user as { schoolId: string };
+      await studentService.softDelete(id, schoolId);
 
       res.json({
         message: "Siswa berhasil dihapus",
@@ -109,7 +112,8 @@ class StudentController {
       console.log(req.body);
 
       const { id } = req.params as { id: string };
-      await studentService.hardDelete(id);
+      const { schoolId } = req.user as { schoolId: string };
+      await studentService.hardDelete(id, schoolId);
 
       res.json({
         message: "Siswa berhasil dihapus",
