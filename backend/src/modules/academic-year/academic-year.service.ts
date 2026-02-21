@@ -44,7 +44,8 @@ class AcademicYearService {
         await this.ensureActive(tx, schoolId, id);
 
         await tx.class.updateMany({
-          data: { schoolId, academicYearId: id },
+          where: { schoolId },
+          data: { academicYearId: id },
         });
       } else {
         await this.ensureNotActive(tx, id);
