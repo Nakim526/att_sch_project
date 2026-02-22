@@ -17,8 +17,9 @@ class SemesterService {
     });
   }
 
-  async findAllBySchool() {
+  async findAllBySchool(schoolId: string) {
     return await prisma.semester.findMany({
+      where: { academicYear: { schoolId } },
       orderBy: { startDate: "asc" },
       include: { academicYear: true },
     });
@@ -39,9 +40,9 @@ class SemesterService {
     });
   }
 
-  async findAllByType(name: SemesterType) {
+  async findAllByType(name: SemesterType, schoolId: string) {
     return await prisma.semester.findMany({
-      where: { name },
+      where: { name, academicYear: { schoolId } },
       orderBy: { startDate: "asc" },
       include: { academicYear: true },
     });
