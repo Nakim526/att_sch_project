@@ -14,49 +14,50 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
     where: { name: schoolName },
   });
 
-  if (!school) {
-    throw new Error("SCHOOL_NOT_FOUND");
-  }
+  if (!school) throw new Error("SCHOOL_NOT_FOUND");
 
-  // 2️⃣ allow-list
-  const allowed = await prisma.allowedEmail.findUnique({
+  let admin = await prisma.user.findFirst({
     where: {
-      schoolId_email: {
-        schoolId: school.id,
-        email: googleUser.email,
-      },
+      email: googleUser.email,
+      roles: { some: { role: { name: RoleName.ADMIN } } },
     },
   });
 
-  if (!allowed || !allowed.isActive) {
-    throw new Error("EMAIL_NOT_ALLOWED");
-  }
+  let user = null;
 
-  // 3️⃣ ambil user + role
-  let user = await prisma.user.findUnique({
-    where: { email: googleUser.email, id: allowed.userId },
-    include: {
-      roles: { include: { role: true } },
-      school: true,
-    },
-  });
-
-  if (!user || !user.isActive) {
-    throw new Error("USER_NOT_FOUND");
-  }
-
-  if (user.roles.some((r) => r.role.name === RoleName.ADMIN)) {
+  if (admin) {
     user = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        schoolId: school.id,
+      where: { id: admin.id },
+      data: { schoolId: school.id },
+      include: {
+        roles: { include: { role: true } },
+        school: true,
       },
+    });
+  } else {
+    // 2️⃣ allow-list
+    const allowed = await prisma.allowedEmail.findUnique({
+      where: {
+        schoolId_email: {
+          schoolId: school.id,
+          email: googleUser.email,
+        },
+      },
+    });
+
+    if (!allowed || !allowed.isActive) throw new Error("EMAIL_NOT_ALLOWED");
+
+    // 3️⃣ ambil user + role
+    user = await prisma.user.findUnique({
+      where: { id: allowed.userId },
       include: {
         roles: { include: { role: true } },
         school: true,
       },
     });
   }
+
+  if (!user || !user.isActive) throw new Error("USER_NOT_FOUND");
 
   console.log("user", user);
 

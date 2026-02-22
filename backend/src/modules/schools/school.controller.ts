@@ -8,8 +8,7 @@ class SchoolController {
       console.log(`REQUEST USER: ${req.user}`);
       console.log(`REQUEST BODY: ${req.body}`);
 
-      const user = req.user as { id: string, email: string };
-      const result = await service.createSchool(user, req.body);
+      const result = await service.createSchool(req.body);
 
       res.status(201).json({
         message: "Sekolah berhasil dibuat",

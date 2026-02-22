@@ -57,7 +57,7 @@ class SchoolService {
     });
   }
 
-  async createSchool(admin: AdminTypes, data: CreateSchoolTypes) {
+  async createSchool(data: CreateSchoolTypes) {
     return prisma.$transaction(async (tx) => {
       console.log(`DATA: ${JSON.stringify(data)}`);
       await this.ensureAvailable(tx, data.name);
@@ -81,10 +81,6 @@ class SchoolService {
         name: data.principalName,
         email: data.principalEmail,
         roles: [RoleName.KEPSEK],
-      });
-
-      await tx.allowedEmail.create({
-        data: { schoolId: school.id, userId: admin.id, email: admin.email },
       });
 
       return { school, principal };
