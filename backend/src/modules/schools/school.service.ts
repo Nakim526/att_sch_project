@@ -28,7 +28,8 @@ class SchoolService {
       },
     });
 
-    if (!principal) throw new Error("Kepala Sekolah tidak ditemukan");
+    if (!principal)
+      throw new Error("Kepala Sekolah tidak ditemukan, Silahkan hubungi Admin");
 
     return principal;
   }
