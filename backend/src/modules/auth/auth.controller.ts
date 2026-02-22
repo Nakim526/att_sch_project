@@ -4,13 +4,13 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 
 export async function googleLogin(req: AuthRequest, res: Response) {
   try {
-    const { idToken } = req.body;
+    const { idToken, schoolName } = req.body;
 
     if (!idToken) {
       return res.status(400).json({ message: "idToken required" });
     }
 
-    const result = await loginWithGoogle(idToken);
+    const result = await loginWithGoogle(idToken, schoolName);
     res.json(result);
   } catch (err: any) {
     if (err.message === "EMAIL_NOT_ALLOWED") {

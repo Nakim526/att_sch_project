@@ -4,15 +4,28 @@ import { signToken } from "../../utils/jwt";
 import { parseEnum } from "../../utils/parser";
 import { verifyGoogleToken } from "./google.service";
 
-export async function loginWithGoogle(idToken: string) {
+export async function loginWithGoogle(idToken: string, schoolName: string) {
   // 1️⃣ verify token ke Google
   const googleUser = await verifyGoogleToken(idToken);
 
   console.log("googleUser", googleUser);
 
+  const school = await prisma.school.findUnique({
+    where: { name: schoolName },
+  });
+
+  if (!school) {
+    throw new Error("SCHOOL_NOT_FOUND");
+  }
+
   // 2️⃣ allow-list
-  const allowed = await prisma.allowedEmail.findFirst({
-    where: { email: googleUser.email },
+  const allowed = await prisma.allowedEmail.findUnique({
+    where: {
+      schoolId_email: {
+        schoolId: school.id,
+        email: googleUser.email,
+      },
+    },
   });
 
   if (!allowed || !allowed.isActive) {
@@ -21,7 +34,7 @@ export async function loginWithGoogle(idToken: string) {
 
   // 3️⃣ ambil user + role
   const user = await prisma.user.findUnique({
-    where: { email: googleUser.email },
+    where: { email: googleUser.email, id: allowed.userId },
     include: {
       roles: { include: { role: true } },
       school: true,
