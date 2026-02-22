@@ -9,16 +9,10 @@ class SchoolController {
       console.log(`REQUEST BODY: ${req.body}`);
 
       const user = req.user as { name: string; email: string };
-      const { schoolName, address } = req.body as {
-        schoolName: string;
-        address: string;
-      };
-
       const result = await service.createSchool({
         userName: user.name,
         userEmail: user.email,
-        name: schoolName,
-        address,
+        ...req.body,
       });
 
       res.status(201).json({
