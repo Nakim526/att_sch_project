@@ -27,7 +27,8 @@ class AcademicYearController {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
 
-      const result = await service.findAllBySchool();
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.findAllBySchool(schoolId);
 
       res.json({ data: result });
     } catch (error) {
@@ -75,8 +76,8 @@ class AcademicYearController {
       console.log("REQUEST BODY: ", req.body);
 
       const { type } = req.params as { type: SemesterType };
-
-      const result = await service.findAllByType(type);
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.findAllByType(type, schoolId);
 
       res.json({ data: result });
     } catch (error) {
