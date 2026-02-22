@@ -5,6 +5,7 @@ import { verifyToken } from "../utils/jwt";
 export interface AuthRequest extends Request {
   user?: {
     id: string;
+    name: string;
     email: string;
     roles: string[];
     schoolId: string;

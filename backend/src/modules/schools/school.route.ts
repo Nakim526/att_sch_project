@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as controller from "./school.controller";
+import controller from "./school.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { roleMiddleware } from "../../middlewares/role.middleware";
 
@@ -8,8 +8,22 @@ const router = Router();
 router.use(authMiddleware);
 
 // Admin / Operator / Kepsek
-router.post("/", roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]), controller.create);
-router.get("/", roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]), controller.list);
-router.get("/me", roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]), controller.me);
+router.get(
+  "/me",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  controller.me,
+);
+
+// Hanya Admin/Developer
+router.post("/", roleMiddleware(["ADMIN"]), controller.create);
+
+router.get("/", roleMiddleware(["ADMIN"]), controller.list);
+
+router.get("/:id", roleMiddleware(["ADMIN"]), controller.detail);
+
+router.put("/:id", roleMiddleware(["ADMIN"]), controller.update);
+
+router.delete("/:id", roleMiddleware(["ADMIN"]), controller.delete);
+
 
 export default router;

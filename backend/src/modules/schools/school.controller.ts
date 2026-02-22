@@ -1,32 +1,107 @@
-import { Response } from "express";
-import * as service from "./school.service";
+import { NextFunction, Response } from "express";
+import service from "./school.service";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 
-export async function create(req: AuthRequest, res: Response) {
-  const { name, address } = req.body;
+class SchoolController {
+  async create(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
 
-  const school = await service.createSchool({
-    name,
-    address,
-  });
+      const user = req.user as { name: string; email: string };
+      const { schoolName, address } = req.body as {
+        schoolName: string;
+        address: string;
+      };
 
-  res.status(201).json(school);
-}
+      const result = await service.createSchool({
+        userName: user.name,
+        userEmail: user.email,
+        name: schoolName,
+        address,
+      });
 
-export async function list(req: AuthRequest, res: Response) {
-  console.log(req.user);
-  const data = await service.getAllSchools(req.user!.schoolId);
-  res.json(data);
-}
-
-export async function me(req: AuthRequest, res: Response) {
-  console.log(req.user);
-  
-  const school = await service.getMySchool(req.user!.schoolId);
-
-  if (!school) {
-    return res.status(404).json({ message: "School not found" });
+      res.status(201).json({
+        message: "Sekolah berhasil dibuat",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 
-  res.json(school);
+  async list(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const result = await service.getAllSchools();
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async me(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.getMySchool(schoolId);
+
+      if (!result) {
+        return res.status(404).json({ message: "School not found" });
+      }
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async detail(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const { id } = req.params as { id: string };
+      const result = await service.getSchoolById(id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async update(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const { id } = req.params as { id: string };
+      const result = await service.updateSchool(id, req.body);
+
+      res.json({ message: "Data Sekolah berhasil diperbarui", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async delete(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const { id } = req.params as { id: string };
+      const result = await service.deleteSchool(id);
+
+      res.json({ message: "Data berhasil dihapus", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
+
+export default new SchoolController();
