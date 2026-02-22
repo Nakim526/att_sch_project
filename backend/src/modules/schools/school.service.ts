@@ -155,7 +155,7 @@ class SchoolService {
         ]);
       } else {
         await tx.user.update({
-          where: { id: newPrincipal.id },
+          where: { id: oldPrincipal.id },
           data: { name: data.principalName },
         });
       }
