@@ -13,6 +13,7 @@ class SchoolService {
 
   async createSchool(data: CreateSchoolTypes) {
     return prisma.$transaction(async (tx) => {
+      console.log(`DATA: ${JSON.stringify(data)}`);
       await this.ensureAvailable(tx, data.name);
 
       const school = await tx.school.create({
