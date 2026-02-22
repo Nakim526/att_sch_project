@@ -153,6 +153,11 @@ class SchoolService {
           ...rolesNewPrincipal,
           RoleName.KEPSEK,
         ]);
+      } else {
+        await tx.user.update({
+          where: { id: newPrincipal.id },
+          data: { name: data.principalName },
+        });
       }
 
       await tx.school.update({
