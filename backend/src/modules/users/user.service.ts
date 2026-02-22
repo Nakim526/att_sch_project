@@ -12,7 +12,6 @@ class UserService {
   ) {
     const used = await tx.user.findFirst({
       where: {
-        schoolId,
         email,
         ...(userId && { id: { not: userId } }),
       },
@@ -130,7 +129,7 @@ class UserService {
         create: {
           userId: user.id,
           schoolId: user.schoolId,
-          email: data.email
+          email: data.email,
         },
       });
 
