@@ -80,10 +80,10 @@ class TeacherService {
         },
         update: {},
         create: {
-          teacherId,
-          subjectId: assignment.subjectId,
-          classId: assignment.classId,
-          semesterId: assignment.semesterId,
+          teacher: { connect: { id: teacherId } },
+          subject: { connect: { id: assignment.subjectId } },
+          class: { connect: { id: assignment.classId } },
+          semester: { connect: { id: assignment.semesterId } },
         },
       });
     }

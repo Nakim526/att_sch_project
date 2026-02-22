@@ -19,8 +19,8 @@ class ClassService {
 
     return await tx.classTeacherAssignment.create({
       data: {
-        classId: data.classId,
-        teacherId: data.teacherId,
+        class: { connect: { id: data.classId } },
+        teacher: { connect: { id: data.teacherId } },
         role: data.role,
       },
     });
