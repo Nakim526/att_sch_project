@@ -8,8 +8,14 @@ import {
 } from "./school.types";
 
 class SchoolService {
-  async ensureAvailable(tx: Prisma.TransactionClient, name: string) {
-    const used = await tx.school.findFirst({ where: { name } });
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    name: string,
+    id?: string,
+  ) {
+    const used = await tx.school.findFirst({
+      where: { name, ...(id && { id: { not: id } }) },
+    });
 
     if (used) throw new Error(`Sekolah ${name} sudah digunakan`);
   }
@@ -119,7 +125,7 @@ class SchoolService {
 
   async updateSchool(id: string, data: UpdateSchoolTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, data.name);
+      await this.ensureAvailable(tx, data.name, id);
 
       const school = await tx.school.findUnique({ where: { id } });
 
