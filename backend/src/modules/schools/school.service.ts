@@ -14,48 +14,17 @@ class SchoolService {
     if (used) throw new Error(`Sekolah ${name} sudah digunakan`);
   }
 
-  async createSchool(admin: AdminTypes, data: CreateSchoolTypes) {
-    return prisma.$transaction(async (tx) => {
-      console.log(`DATA: ${JSON.stringify(data)}`);
-      await this.ensureAvailable(tx, data.name);
-
-      const school = await tx.school.create({
-        data: {
-          name: data.name,
-          address: data.address,
-          phone: data.phone,
-          email: data.email,
-        },
-      });
-
-      await userService.createUserTransaction(tx, school.id, {
-        name: data.principalName,
-        email: data.principalEmail,
-        roles: [RoleName.KEPSEK],
-      });
-
-      await tx.allowedEmail.create({
-        data: { schoolId: school.id, userId: admin.id, email: admin.email },
-      });
-
-      return school;
+  async getPrincipal(tx: Prisma.TransactionClient, schoolId: string) {
+    const principal = await tx.user.findFirst({
+      where: {
+        schoolId,
+        roles: { some: { role: { name: RoleName.KEPSEK } } },
+      },
     });
-  }
 
-  async getAllSchools() {
-    return await prisma.school.findMany();
-  }
+    if (!principal) throw new Error("Kepala Sekolah tidak ditemukan");
 
-  async getMySchool(id: string) {
-    return await prisma.school.findUnique({
-      where: { id },
-    });
-  }
-
-  async getSchoolById(id: string) {
-    return await prisma.school.findUnique({
-      where: { id },
-    });
+    return principal;
   }
 
   async updatePrincipal(
@@ -79,6 +48,66 @@ class SchoolService {
         userId: newPrincipalId,
         roleId: r,
       })),
+    });
+  }
+
+  async createSchool(admin: AdminTypes, data: CreateSchoolTypes) {
+    return prisma.$transaction(async (tx) => {
+      console.log(`DATA: ${JSON.stringify(data)}`);
+      await this.ensureAvailable(tx, data.name);
+
+      const school = await tx.school.create({
+        data: {
+          name: data.name,
+          address: data.address,
+          phone: data.phone,
+          email: data.email,
+        },
+      });
+
+      const principal = await userService.createUserTransaction(tx, school.id, {
+        name: data.principalName,
+        email: data.principalEmail,
+        roles: [RoleName.KEPSEK],
+      });
+
+      await tx.allowedEmail.create({
+        data: { schoolId: school.id, userId: admin.id, email: admin.email },
+      });
+
+      return { school, principal };
+    });
+  }
+
+  async getAllSchools() {
+    return await prisma.school.findMany();
+  }
+
+  async getMySchool(id: string) {
+    return await prisma.$transaction(async (tx) => {
+      const school = await tx.school.findUnique({
+        where: { id },
+      });
+
+      if (!school) throw new Error("Sekolah tidak ditemukan");
+
+      const principal = await this.getPrincipal(tx, id);
+
+      return { school, principal };
+    });
+  }
+
+  async getSchoolById(id: string) {
+    return await prisma.$transaction(async (tx) => {
+      const school = await tx.school.findUnique({
+        where: { id },
+      });
+
+      if (!school) throw new Error("Sekolah tidak ditemukan");
+
+      const principal = await this.getPrincipal(tx, id);
+
+      return { school, principal };
     });
   }
 
@@ -117,7 +146,7 @@ class SchoolService {
         ]);
       }
 
-      return await tx.school.update({
+      await tx.school.update({
         where: { id },
         data: {
           name: data.name,
@@ -126,6 +155,10 @@ class SchoolService {
           email: data.email,
         },
       });
+
+      const principal = await this.getPrincipal(tx, id);
+
+      return { school, principal };
     });
   }
 
