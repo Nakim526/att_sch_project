@@ -17,7 +17,10 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log('REQUEST USER: ', req.user);
   const authHeader = req.headers.authorization;
+
+  console.log('AUTH HEADER: ', authHeader);
 
   if (!authHeader) {
     return res.status(401).json({ message: 'Unauthorized' });
