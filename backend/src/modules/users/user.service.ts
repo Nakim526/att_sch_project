@@ -119,14 +119,19 @@ class UserService {
         },
       });
 
-      await tx.allowedEmail.update({
+      await tx.allowedEmail.upsert({
         where: {
           schoolId_email: {
             schoolId: user.schoolId,
             email: oldData.email,
           },
         },
-        data: { email: data.email },
+        update: { email: data.email },
+        create: {
+          userId: user.id,
+          schoolId: user.schoolId,
+          email: data.email
+        },
       });
 
       return user;
