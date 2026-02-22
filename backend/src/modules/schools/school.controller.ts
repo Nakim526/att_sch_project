@@ -8,12 +8,8 @@ class SchoolController {
       console.log(`REQUEST USER: ${req.user}`);
       console.log(`REQUEST BODY: ${req.body}`);
 
-      const user = req.user as { name: string; email: string };
-      const result = await service.createSchool({
-        userName: user.name,
-        userEmail: user.email,
-        ...req.body,
-      });
+      const user = req.user as { id: string, email: string };
+      const result = await service.createSchool(user, req.body);
 
       res.status(201).json({
         message: "Sekolah berhasil dibuat",
@@ -76,6 +72,20 @@ class SchoolController {
 
       const { id } = req.params as { id: string };
       const result = await service.updateSchool(id, req.body);
+
+      res.json({ message: "Data Sekolah berhasil diperbarui", data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateMe(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      console.log(`REQUEST USER: ${req.user}`);
+      console.log(`REQUEST BODY: ${req.body}`);
+
+      const { schoolId } = req.user as { schoolId: string };
+      const result = await service.updateSchool(schoolId, req.body);
 
       res.json({ message: "Data Sekolah berhasil diperbarui", data: result });
     } catch (error) {

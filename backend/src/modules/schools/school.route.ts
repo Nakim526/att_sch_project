@@ -14,6 +14,9 @@ router.get(
   controller.me,
 );
 
+// Hanya Kepsek
+router.put("/me", roleMiddleware(["KEPSEK"]), controller.updateMe);
+
 // Hanya Admin/Developer
 router.post("/", roleMiddleware(["ADMIN"]), controller.create);
 

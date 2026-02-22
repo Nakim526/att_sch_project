@@ -45,6 +45,15 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
     throw new Error("USER_NOT_FOUND");
   }
 
+  if (user.roles.some((r) => r.role.name === RoleName.ADMIN)) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        schoolId: school.id,
+      },
+    });
+  }
+
   console.log("user", user);
 
   // 4️⃣ JWT payload
@@ -60,8 +69,5 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
 
   const token = signToken(payload);
 
-  return {
-    token,
-    user: payload,
-  };
+  return { token, user: payload };
 }

@@ -1,6 +1,11 @@
+export interface AdminTypes {
+  id: string;
+  email: string;
+}
+
 export interface CreateSchoolTypes {
-  userName: string;
-  userEmail: string;
+  principalName: string;
+  principalEmail: string;
   name: string;
   address: string;
   phone?: string;
@@ -8,6 +13,8 @@ export interface CreateSchoolTypes {
 }
 
 export interface UpdateSchoolTypes {
+  principalName: string;
+  principalEmail: string;
   name: string;
   address: string;
   phone?: string;
