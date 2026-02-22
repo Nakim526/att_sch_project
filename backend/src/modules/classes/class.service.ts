@@ -75,7 +75,10 @@ class ClassService {
 
       return await tx.class.update({
         where: { id, schoolId },
-        data,
+        data: {
+          name: data.name,
+          gradeLevel: data.grade,
+        },
       });
     });
   }
