@@ -60,6 +60,7 @@ class UserService {
     schoolId: string,
     data: CreateUserTypes,
   ) {
+    console.log(`DATA: ${JSON.stringify(data)}`);
     await this.ensureAvailable(tx, schoolId, data.email);
 
     const user = await tx.user.create({
