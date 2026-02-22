@@ -1,6 +1,6 @@
 // src/modules/class/class.service.ts
 
-import { Prisma } from "@prisma/client";
+import { ClassTeacherRole, Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
 import {
   ClassTeacherAssignmentTypes,
@@ -21,7 +21,7 @@ class ClassService {
       data: {
         class: { connect: { id: data.classId } },
         teacher: { connect: { id: data.teacherId } },
-        role: data.role,
+        role: data.role ?? ClassTeacherRole.HOMEROOM,
       },
     });
   }
