@@ -102,7 +102,7 @@ model User {
 
   // Multi-role support
   roles        UserRole[]
-  allowedEmail AllowedEmail?
+  allowedEmail AllowedEmail[]
 
   // Jika user adalah GURU/KEPSEK yang mengajar
   teacherProfile Teacher?
@@ -139,8 +139,8 @@ model UserRole {
 model AllowedEmail {
   id       String @id @default(uuid())
   schoolId String
-  email    String
-  userId   String @unique
+  email    String @unique
+  userId   String
 
   isActive Boolean   @default(true) // Sudah digunakan untuk registrasi
   usedAt   DateTime? // Kapan pertama kali login
