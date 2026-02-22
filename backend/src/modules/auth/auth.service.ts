@@ -33,7 +33,7 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
   }
 
   // 3️⃣ ambil user + role
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: { email: googleUser.email, id: allowed.userId },
     include: {
       roles: { include: { role: true } },
@@ -46,10 +46,14 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
   }
 
   if (user.roles.some((r) => r.role.name === RoleName.ADMIN)) {
-    await prisma.user.update({
+    user = await prisma.user.update({
       where: { id: user.id },
       data: {
         schoolId: school.id,
+      },
+      include: {
+        roles: { include: { role: true } },
+        school: true,
       },
     });
   }
