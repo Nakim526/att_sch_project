@@ -71,6 +71,8 @@ class ClassService {
           teacherId: data.teacherId,
           role: data.role,
         });
+      } else {
+        await tx.classTeacherAssignment.deleteMany({ where: { classId: id } });
       }
 
       return await tx.class.update({
