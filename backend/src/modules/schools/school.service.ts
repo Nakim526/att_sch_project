@@ -65,6 +65,12 @@ class SchoolService {
         },
       });
 
+      const user = await tx.user.findUnique({
+        where: { email: data.principalEmail },
+      });
+
+      if (user) throw new Error("Email sudah digunakan");
+
       const principal = await userService.createUserTransaction(tx, school.id, {
         name: data.principalName,
         email: data.principalEmail,
