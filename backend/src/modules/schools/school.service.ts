@@ -133,6 +133,7 @@ class SchoolService {
           schoolId: id,
           roles: { some: { role: { name: RoleName.KEPSEK } } },
         },
+        include: { roles: { include: { role: true } } },
       });
 
       if (!oldPrincipal) throw new Error("Kepala Sekolah tidak ditemukan");
@@ -145,12 +146,19 @@ class SchoolService {
       if (!newPrincipal) throw new Error("User tidak ditemukan");
 
       if (oldPrincipal.email !== newPrincipal.email) {
-        const rolesNewPrincipal = newPrincipal.user.roles.map(
+        const oldPrincipalRoles = oldPrincipal.roles.map((r) => r.role.name);
+
+        if (oldPrincipalRoles.length === 1)
+          throw new Error(
+            `Tidak bisa dihapus, setidaknya ${oldPrincipal.name} memiliki 2 hak akses`,
+          );
+
+        const newPrincipalRoles = newPrincipal.user.roles.map(
           (r) => r.role.name,
         );
 
         await this.updatePrincipal(tx, oldPrincipal.id, newPrincipal.id, [
-          ...rolesNewPrincipal,
+          ...newPrincipalRoles,
           RoleName.KEPSEK,
         ]);
       } else {
