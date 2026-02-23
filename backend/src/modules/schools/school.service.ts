@@ -66,22 +66,10 @@ class SchoolService {
       })),
     });
 
-    let user = null;
-
-    user = await tx.user.findUnique({ where: { id: data.newId } });
-
-    console.log("USER SEBELUM: ", user);
-
-    user = await tx.user.update({
+    return await tx.user.update({
       where: { id: data.newId },
       data: { name: data.newName },
     });
-
-    user = await tx.user.findUnique({ where: { id: data.newId } });
-
-    console.log("USER SESUDAH: ", user);
-
-    return user;
   }
 
   async createSchool(data: CreateSchoolTypes) {
@@ -190,7 +178,7 @@ class SchoolService {
         principal = await this.updatePrincipal(tx, {
           oldId: oldPrincipal.id,
           newId: newPrincipal.user.id,
-          newName: newPrincipal.user.name,
+          newName: data.principalName,
           newRoles: [...newPrincipalRoles, RoleName.KEPSEK],
         });
       } else {
