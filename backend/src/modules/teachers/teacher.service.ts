@@ -190,7 +190,11 @@ class TeacherService {
   }
 
   async deleteTeacher(id: string, schoolId: string) {
-    return await prisma.teacher.delete({ where: { id, schoolId } });
+    return await prisma.$transaction(async (tx) => {
+      await tx.teachingAssignment.deleteMany({ where: { teacherId: id } });
+
+      return await tx.teacher.delete({ where: { id, schoolId } });
+    });
   }
 }
 
