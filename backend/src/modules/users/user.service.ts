@@ -174,20 +174,26 @@ class UserService {
         include: { teachingAssignments: true, classAssignments: true },
       });
 
-      if (!admin && teacher) {
-        const classAssignment = teacher.classAssignments.length > 0;
-        const teachingAssignment = teacher.teachingAssignments.length > 0;
+      if (teacher) {
+        if (!admin) {
+          const classAssignment = teacher.classAssignments.length > 0;
+          const teachingAssignment = teacher.teachingAssignments.length > 0;
 
-        if (classAssignment || teachingAssignment) {
-          throw new Error(
-            "Guru memiliki riwayat data, hubungi Kepala Sekolah Anda untuk menghapusnya",
-          );
+          if (classAssignment || teachingAssignment) {
+            throw new Error(
+              "Guru memiliki riwayat data, hubungi Kepala Sekolah Anda untuk menghapusnya",
+            );
+          }
         }
+
+        await tx.classTeacherAssignment.deleteMany({
+          where: { teacherId: teacher.id },
+        });
+
+        await tx.teachingAssignment.deleteMany({
+          where: { teacherId: teacher.id },
+        });
       }
-
-      await tx.classTeacherAssignment.deleteMany({ where: { teacherId: id } });
-
-      await tx.teachingAssignment.deleteMany({ where: { teacherId: id } });
 
       return await tx.user.delete({ where: { id, schoolId } });
     });
