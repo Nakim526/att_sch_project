@@ -67,8 +67,8 @@ class SchoolService {
     });
 
     let user = null;
-    
-    user = tx.user.findUnique({ where: { id: data.newId } });
+
+    user = await tx.user.findUnique({ where: { id: data.newId } });
 
     console.log("USER SEBELUM: ", user);
 
@@ -77,7 +77,7 @@ class SchoolService {
       data: { name: data.newName },
     });
 
-    user = tx.user.findUnique({ where: { id: data.newId } });
+    user = await tx.user.findUnique({ where: { id: data.newId } });
 
     console.log("USER SESUDAH: ", user);
 
