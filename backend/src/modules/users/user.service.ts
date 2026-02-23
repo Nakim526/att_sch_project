@@ -174,9 +174,7 @@ class UserService {
         include: { teachingAssignments: true, classAssignments: true },
       });
 
-      if (!teacher) throw new Error("Guru tidak ditemukan");
-
-      if (!admin) {
+      if (!admin && teacher) {
         const classAssignment = teacher.classAssignments.length > 0;
         const teachingAssignment = teacher.teachingAssignments.length > 0;
 
