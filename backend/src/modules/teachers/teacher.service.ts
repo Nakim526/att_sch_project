@@ -15,43 +15,27 @@ class TeacherService {
     email: string,
     id?: string,
   ) {
-    const user = await tx.user.findUnique({
-      where: { email },
-    });
+    const user = await tx.user.findUnique({ where: { email } });
 
-    if (!user) {
-      throw new Error(`Email ${email} tidak ditemukan`);
-    }
+    if (!user) throw new Error(`Email ${email} tidak ditemukan`);
 
     const emailUsed = await tx.teacher.findFirst({
-      where: {
-        userId: user!.id,
-        ...(id && { id: { not: id } }),
-      },
+      where: { userId: user.id, ...(id && { id: { not: id } }) },
     });
 
-    if (emailUsed) {
-      throw new Error(`Email ${email} sudah digunakan`);
-    }
+    if (emailUsed) throw new Error(`Email ${email} sudah digunakan`);
 
     const nipUsed = await tx.teacher.findFirst({
-      where: {
-        nip,
-        ...(id && { id: { not: id } }),
-      },
+      where: { nip, ...(id && { id: { not: id } }) },
     });
 
-    if (nipUsed) {
-      throw new Error(`NIP atau email sudah digunakan`);
-    }
+    if (nipUsed) throw new Error(`NIP ${nip} sudah digunakan`);
 
     return user;
   }
 
   async assignRole(tx: Prisma.TransactionClient, userId: string) {
-    const role = await tx.role.findFirst({
-      where: { name: RoleName.GURU },
-    });
+    const role = await tx.role.findFirst({ where: { name: RoleName.GURU } });
 
     return await tx.userRole.upsert({
       where: { userId_roleId: { userId, roleId: role!.id } },
@@ -217,12 +201,48 @@ class TeacherService {
 
       if (!teacher) throw new Error("Guru tidak ditemukan");
 
-      return await this.updateTransaction(tx, teacher!.id, data);
+      return await this.updateTransaction(tx, teacher.id, data);
     });
   }
 
-  async deleteTeacher(id: string, schoolId: string) {
+  async deleteTeacher(id: string, schoolId: string, userId: string) {
     return await prisma.$transaction(async (tx) => {
+      const teacher = await tx.teacher.findUnique({
+        where: { id },
+        include: {
+          classAssignments: true,
+          teachingAssignments: true,
+        },
+      });
+
+      if (!teacher) throw new Error("Guru tidak ditemukan");
+
+      const classAssignment = teacher.classAssignments.length > 0;
+      const teachingAssignment = teacher.teachingAssignments.length > 0;
+
+      if (classAssignment || teachingAssignment) {
+        const admin = await tx.user.findFirst({
+          where: {
+            id: userId,
+            roles: {
+              some: {
+                role: {
+                  OR: [{ name: RoleName.ADMIN }, { name: RoleName.KEPSEK }],
+                },
+              },
+            },
+          },
+        });
+
+        if (!admin) {
+          throw new Error(
+            `Guru memiliki riwayat, hubungi Kepala Sekolah untuk menghapusnya.`,
+          );
+        }
+      }
+
+      await tx.classTeacherAssignment.deleteMany({ where: { teacherId: id } });
+
       await tx.teachingAssignment.deleteMany({ where: { teacherId: id } });
 
       return await tx.teacher.delete({ where: { id, schoolId } });

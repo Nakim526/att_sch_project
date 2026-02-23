@@ -9,38 +9,19 @@ router.use(authMiddleware);
 
 // Guru
 router.get("/me", roleMiddleware(["GURU"]), controller.readMe);
-
 router.put("/me", roleMiddleware(["GURU"]), controller.updateMe);
 
 // Admin / Operator / Kepsek
-router.post(
-  "/",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.create,
-);
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 
-router.get(
-  "/",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.list,
-);
+router.post("/", controller.create);
 
-router.get(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.detail,
-);
+router.get("/", controller.list);
 
-router.put(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.update,
-);
+router.get("/:id", controller.detail);
 
-router.delete(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.delete,
-);
+router.put("/:id", controller.update);
+
+router.delete("/:id", controller.delete);
 
 export default router;

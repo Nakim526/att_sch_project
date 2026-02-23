@@ -6,36 +6,22 @@ import { roleMiddleware } from "../../middlewares/role.middleware";
 const router = Router();
 
 router.use(authMiddleware);
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
+
+// profile pribadi all user
+router.get("/me", controller.me);
+
+router.put("/me", controller.updateMe);
 
 // Admin / Operator / Kepsek
-router.post(
-  "/",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.create,
-);
+router.post("/", controller.create);
 
-router.get(
-  "/",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.list,
-);
+router.get("/", controller.list);
 
-router.get(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.detail,
-);
+router.get("/:id", controller.detail);
 
-router.put(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.update,
-);
+router.put("/:id", controller.update);
 
-router.delete(
-  "/:id",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
-  controller.delete,
-);
+router.delete("/:id", controller.delete);
 
 export default router;

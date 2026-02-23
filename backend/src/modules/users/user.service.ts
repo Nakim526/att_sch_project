@@ -6,7 +6,6 @@ import { CreateUserTypes, UpdateUserTypes } from "./user.types";
 class UserService {
   async ensureAvailable(
     tx: Prisma.TransactionClient,
-    schoolId: string,
     email: string,
     userId?: string,
   ) {
@@ -60,7 +59,7 @@ class UserService {
     data: CreateUserTypes,
   ) {
     console.log(`DATA: ${JSON.stringify(data)}`);
-    await this.ensureAvailable(tx, schoolId, data.email);
+    await this.ensureAvailable(tx, data.email);
 
     const user = await tx.user.create({
       data: {
@@ -91,6 +90,13 @@ class UserService {
     });
   }
 
+  async readMe(id: string) {
+    return await prisma.user.findUnique({
+      where: { id },
+      include: { roles: { select: { role: true } } },
+    });
+  }
+
   async readUserDetail(id: string) {
     return await prisma.user.findUnique({
       where: { id },
@@ -98,9 +104,9 @@ class UserService {
     });
   }
 
-  async updateUser(id: string, schoolId: string, data: UpdateUserTypes) {
+  async updateUser(id: string, data: UpdateUserTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, schoolId, data.email, id);
+      await this.ensureAvailable(tx, data.email, id);
 
       const oldData = await tx.user.findUnique({
         where: { id },
@@ -152,6 +158,8 @@ class UserService {
 
   async deleteUser(id: string, schoolId: string, userId: string) {
     return await prisma.$transaction(async (tx) => {
+      if (id === userId) throw new Error("Tidak bisa menghapus diri sendiri");
+
       const user = await tx.user.findUnique({ where: { id } });
 
       if (!user) throw new Error("User tidak ditemukan");

@@ -88,10 +88,10 @@ class TeacherController {
     try {
       console.log("REQUEST USER: ", req.user);
       console.log("REQUEST BODY: ", req.body);
-      
+
       const { id } = req.user as { id: string };
       const result = await service.updateMySelf(id, req.body);
-      
+
       console.log("RESULT: ", result);
       res.json({
         message: "Data Guru berhasil diperbarui",
@@ -108,8 +108,8 @@ class TeacherController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-      const { schoolId } = req.user as { schoolId: string };
-      await service.deleteTeacher(id, schoolId);
+      const user = req.user as { id: string; schoolId: string };
+      await service.deleteTeacher(id, user.schoolId, user.id);
 
       res.json({ message: "Data berhasil dihapus" });
     } catch (error) {
