@@ -4,6 +4,7 @@ import userService from "../users/user.service";
 import {
   AdminTypes,
   CreateSchoolTypes,
+  UpdatePrincipalTypes,
   UpdateSchoolTypes,
 } from "./school.types";
 
@@ -36,13 +37,11 @@ class SchoolService {
 
   async updatePrincipal(
     tx: Prisma.TransactionClient,
-    oldPrincipalId: string,
-    newPrincipalId: string,
-    newPrincipalRoles: RoleName[],
+    data: UpdatePrincipalTypes,
   ) {
     // ambil id role baru
     const roles = await tx.role.findMany({
-      where: { name: { in: newPrincipalRoles } },
+      where: { name: { in: data.newRoles } },
     });
 
     const principalRole = roles.find((r) => r.name === RoleName.KEPSEK);
@@ -50,19 +49,19 @@ class SchoolService {
     // hapus role kepsek sebelumnya
     await tx.userRole.delete({
       where: {
-        userId_roleId: { userId: oldPrincipalId, roleId: principalRole!.id },
+        userId_roleId: { userId: data.oldId, roleId: principalRole!.id },
       },
     });
 
     // hapus semua role lama
     await tx.userRole.deleteMany({
-      where: { userId: newPrincipalId },
+      where: { userId: data.newId },
     });
 
     // assign role baru
     await tx.userRole.createMany({
       data: roles.map((r) => ({
-        userId: newPrincipalId,
+        userId: data.newId,
         roleId: r.id,
       })),
     });
@@ -151,7 +150,7 @@ class SchoolService {
       const newPrincipal = await tx.allowedEmail.findUnique({
         where: { schoolId_email: { schoolId: id, email: data.principalEmail } },
         include: {
-          user: { select: { id: true, roles: { select: { role: true } } } },
+          user: { include: { roles: { select: { role: true } } } },
         },
       });
 
@@ -169,10 +168,12 @@ class SchoolService {
           (r) => r.role.name,
         );
 
-        await this.updatePrincipal(tx, oldPrincipal.id, newPrincipal.user.id, [
-          ...newPrincipalRoles,
-          RoleName.KEPSEK,
-        ]);
+        await this.updatePrincipal(tx, {
+          oldId: oldPrincipal.id,
+          newId: newPrincipal.user.id,
+          newName: newPrincipal.user.name,
+          newRoles: [...newPrincipalRoles, RoleName.KEPSEK],
+        });
       } else {
         await tx.user.update({
           where: { id: oldPrincipal.id },

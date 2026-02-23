@@ -1,6 +1,15 @@
+import { RoleName } from "@prisma/client";
+
 export interface AdminTypes {
   id: string;
   email: string;
+}
+
+export interface UpdatePrincipalTypes {
+  oldId: string;
+  newId: string;
+  newName: string;
+  newRoles: RoleName[];
 }
 
 export interface CreateSchoolTypes {
