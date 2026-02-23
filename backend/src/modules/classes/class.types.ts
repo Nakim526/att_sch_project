@@ -4,7 +4,7 @@ import { ClassTeacherRole } from "@prisma/client";
 
 export interface CreateClassTypes {
   name: string; // contoh: "VII A"
-  grade: number; // contoh: 7
+  gradeLevel: number; // contoh: 7
   academicYearId: string;
   teacherId?: string;
   role?: ClassTeacherRole;
@@ -12,7 +12,7 @@ export interface CreateClassTypes {
 
 export interface UpdateClassTypes {
   name?: string;
-  grade?: number;
+  gradeLevel?: number;
   teacherId?: string;
   role?: ClassTeacherRole;
 }

@@ -32,7 +32,7 @@ class ClassService {
         data: {
           schoolId,
           name: data.name,
-          gradeLevel: data.grade,
+          gradeLevel: data.gradeLevel,
           academicYearId: data.academicYearId,
         },
       });
@@ -79,7 +79,7 @@ class ClassService {
         where: { id, schoolId },
         data: {
           name: data.name,
-          gradeLevel: data.grade,
+          gradeLevel: data.gradeLevel,
         },
       });
     });
