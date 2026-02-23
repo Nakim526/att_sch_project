@@ -186,6 +186,8 @@ class TeacherService {
 
     await this.assignTeacher(tx, teacher.id, data.assignments);
 
+    await tx.user.update({ where: { id: user.id }, data: { name: data.name } });
+
     return teacher;
   }
 
