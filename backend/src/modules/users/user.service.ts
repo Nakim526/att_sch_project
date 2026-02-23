@@ -170,7 +170,7 @@ class UserService {
       });
 
       const teacher = await tx.teacher.findUnique({
-        where: { userId },
+        where: { userId: id },
         include: { teachingAssignments: true, classAssignments: true },
       });
 
