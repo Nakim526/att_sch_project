@@ -140,7 +140,9 @@ class SchoolService {
 
       const newPrincipal = await tx.allowedEmail.findUnique({
         where: { schoolId_email: { schoolId: id, email: data.principalEmail } },
-        include: { user: { select: { roles: { select: { role: true } } } } },
+        include: {
+          user: { select: { id: true, roles: { select: { role: true } } } },
+        },
       });
 
       if (!newPrincipal) throw new Error("User tidak ditemukan");
@@ -157,7 +159,7 @@ class SchoolService {
           (r) => r.role.name,
         );
 
-        await this.updatePrincipal(tx, oldPrincipal.id, newPrincipal.id, [
+        await this.updatePrincipal(tx, oldPrincipal.id, newPrincipal.user.id, [
           ...newPrincipalRoles,
           RoleName.KEPSEK,
         ]);
