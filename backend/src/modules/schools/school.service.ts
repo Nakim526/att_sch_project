@@ -66,10 +66,22 @@ class SchoolService {
       })),
     });
 
-    return await tx.user.update({
+    let user = null;
+    
+    user = tx.user.findUnique({ where: { id: data.newId } });
+
+    console.log("USER SEBELUM: ", user);
+
+    user = await tx.user.update({
       where: { id: data.newId },
       data: { name: data.newName },
     });
+
+    user = tx.user.findUnique({ where: { id: data.newId } });
+
+    console.log("USER SESUDAH: ", user);
+
+    return user;
   }
 
   async createSchool(data: CreateSchoolTypes) {
