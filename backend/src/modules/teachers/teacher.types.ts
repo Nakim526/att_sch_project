@@ -1,4 +1,4 @@
-import { Gender } from "@prisma/client";
+import { DayOfWeek, Gender } from "@prisma/client";
 
 export interface CreateTeacherTypes {
   nip: string;
@@ -11,9 +11,17 @@ export interface CreateTeacherTypes {
 }
 
 export interface TeachingAssignmentTypes {
-  subjectId: string;
   classId: string;
+  subjectId: string;
   semesterId: string;
+  schedules: ClassScheduleTypes[];
+}
+
+export interface ClassScheduleTypes {
+  dayOfWeek: DayOfWeek;
+  startTime: string;
+  endTime: string;
+  room?: string;
 }
 
 export interface UpdateTeacherTypes {

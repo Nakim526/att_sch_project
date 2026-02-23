@@ -1,5 +1,6 @@
 import prisma from "../../config/prisma";
 import {
+  ClassScheduleTypes,
   CreateTeacherTypes,
   TeachingAssignmentTypes,
   UpdateTeacherTypes,
@@ -64,12 +65,8 @@ class TeacherService {
     teacherId: string,
     data: TeachingAssignmentTypes[],
   ) {
-    await tx.teachingAssignment.deleteMany({
-      where: { teacherId, semesterId: data[0].semesterId },
-    });
-
     for (const assignment of data) {
-      await tx.teachingAssignment.upsert({
+      const teachingAssignment = await tx.teachingAssignment.upsert({
         where: {
           teacherId_subjectId_classId_semesterId: {
             teacherId,
@@ -86,7 +83,40 @@ class TeacherService {
           semester: { connect: { id: assignment.semesterId } },
         },
       });
+
+      for (const schedule of assignment.schedules) {
+        await this.assignSchedule(tx, teachingAssignment.id, schedule);
+      }
     }
+  }
+
+  async assignSchedule(
+    tx: Prisma.TransactionClient,
+    teachingAssignmentId: string,
+    data: ClassScheduleTypes,
+  ) {
+    return await tx.classSchedule.upsert({
+      where: {
+        teachingAssignmentId_dayOfWeek_startTime: {
+          teachingAssignmentId,
+          dayOfWeek: data.dayOfWeek,
+          startTime: data.startTime,
+        },
+      },
+      update: {
+        dayOfWeek: data.dayOfWeek,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        room: data.room,
+      },
+      create: {
+        teachingAssignmentId,
+        dayOfWeek: data.dayOfWeek,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        room: data.room,
+      },
+    });
   }
 
   async createTeacher(schoolId: string, data: CreateTeacherTypes) {
