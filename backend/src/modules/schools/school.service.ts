@@ -65,6 +65,11 @@ class SchoolService {
         roleId: r.id,
       })),
     });
+
+    return await tx.user.update({
+      where: { id: data.newId },
+      data: { name: data.newName },
+    });
   }
 
   async createSchool(data: CreateSchoolTypes) {
