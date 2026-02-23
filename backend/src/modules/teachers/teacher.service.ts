@@ -65,6 +65,8 @@ class TeacherService {
     teacherId: string,
     data: TeachingAssignmentTypes[],
   ) {
+    await tx.teachingAssignment.deleteMany({ where: { teacherId } });
+
     for (const assignment of data) {
       const teachingAssignment = await tx.teachingAssignment.upsert({
         where: {
