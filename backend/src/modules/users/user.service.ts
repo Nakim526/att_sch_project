@@ -193,6 +193,8 @@ class UserService {
         await tx.teachingAssignment.deleteMany({
           where: { teacherId: teacher.id },
         });
+
+        await tx.teacher.delete({ where: { id: teacher.id } });
       }
 
       return await tx.user.delete({ where: { id, schoolId } });
