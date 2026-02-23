@@ -150,8 +150,49 @@ class UserService {
     });
   }
 
-  async deleteUser(id: string, schoolId: string) {
-    return await prisma.user.delete({ where: { id, schoolId } });
+  async deleteUser(id: string, schoolId: string, userId: string) {
+    return await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({ where: { id } });
+
+      if (!user) throw new Error("User tidak ditemukan");
+
+      const admin = await tx.user.findFirst({
+        where: {
+          id: userId,
+          roles: {
+            some: {
+              role: {
+                OR: [{ name: RoleName.ADMIN }, { name: RoleName.KEPSEK }],
+              },
+            },
+          },
+        },
+      });
+
+      const teacher = await tx.teacher.findUnique({
+        where: { userId },
+        include: { teachingAssignments: true, classAssignments: true },
+      });
+
+      if (!teacher) throw new Error("Guru tidak ditemukan");
+
+      if (!admin) {
+        const classAssignment = teacher.classAssignments.length > 0;
+        const teachingAssignment = teacher.teachingAssignments.length > 0;
+
+        if (classAssignment || teachingAssignment) {
+          throw new Error(
+            "Guru memiliki riwayat data, hubungi Kepala Sekolah Anda untuk menghapusnya",
+          );
+        }
+      }
+
+      await tx.classTeacherAssignment.deleteMany({ where: { teacherId: id } });
+
+      await tx.teachingAssignment.deleteMany({ where: { teacherId: id } });
+
+      return await tx.user.delete({ where: { id, schoolId } });
+    });
   }
 }
 

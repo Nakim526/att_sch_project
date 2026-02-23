@@ -76,8 +76,8 @@ class UserController {
       console.log("REQUEST BODY: ", req.body);
 
       const { id } = req.params as { id: string };
-      const { schoolId } = req.user as { schoolId: string };
-      await service.deleteUser(id, schoolId);
+      const user = req.user as { id: string; schoolId: string };
+      await service.deleteUser(id, user.schoolId, user.id);
 
       res.json({ message: "Data berhasil dihapus" });
     } catch (error) {
