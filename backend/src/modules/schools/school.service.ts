@@ -177,7 +177,13 @@ class SchoolService {
   }
 
   async deleteSchool(id: string) {
-    return await prisma.school.delete({ where: { id } });
+    return await prisma.$transaction(async (tx) => {
+      await tx.teachingAssignment.deleteMany({
+        where: { teacher: { schoolId: id } },
+      });
+
+      return await tx.school.delete({ where: { id } });
+    });
   }
 }
 
