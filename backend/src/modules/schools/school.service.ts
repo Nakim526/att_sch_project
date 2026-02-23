@@ -40,20 +40,30 @@ class SchoolService {
     newPrincipalId: string,
     newPrincipalRoles: RoleName[],
   ) {
-    const role = await tx.role.findFirst({
-      where: { name: RoleName.KEPSEK },
+    // ambil id role baru
+    const roles = await tx.role.findMany({
+      where: { name: { in: newPrincipalRoles } },
     });
 
+    const principalRole = roles.find((r) => r.name === RoleName.KEPSEK);
+
+    // hapus role kepsek sebelumnya
     await tx.userRole.delete({
       where: {
-        userId_roleId: { userId: oldPrincipalId, roleId: role!.id },
+        userId_roleId: { userId: oldPrincipalId, roleId: principalRole!.id },
       },
     });
 
+    // hapus semua role lama
+    await tx.userRole.deleteMany({
+      where: { userId: newPrincipalId },
+    });
+
+    // assign role baru
     await tx.userRole.createMany({
-      data: newPrincipalRoles.map((r) => ({
+      data: roles.map((r) => ({
         userId: newPrincipalId,
-        roleId: r,
+        roleId: r.id,
       })),
     });
   }
