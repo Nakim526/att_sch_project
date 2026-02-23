@@ -161,6 +161,8 @@ class SchoolService {
 
       if (!newPrincipal) throw new Error("User tidak ditemukan");
 
+      let principal = null;
+
       if (oldPrincipal.email !== newPrincipal.email) {
         const oldPrincipalRoles = oldPrincipal.roles.map((r) => r.role.name);
 
@@ -173,14 +175,14 @@ class SchoolService {
           (r) => r.role.name,
         );
 
-        await this.updatePrincipal(tx, {
+        principal = await this.updatePrincipal(tx, {
           oldId: oldPrincipal.id,
           newId: newPrincipal.user.id,
           newName: newPrincipal.user.name,
           newRoles: [...newPrincipalRoles, RoleName.KEPSEK],
         });
       } else {
-        await tx.user.update({
+        principal = await tx.user.update({
           where: { id: oldPrincipal.id },
           data: { name: data.principalName },
         });
@@ -195,8 +197,6 @@ class SchoolService {
           email: data.email,
         },
       });
-
-      const principal = await this.getPrincipal(tx, id);
 
       return { school, principal };
     });
