@@ -102,11 +102,24 @@ class UserService {
     return await prisma.$transaction(async (tx) => {
       await this.ensureAvailable(tx, schoolId, data.email, id);
 
-      await this.assignRoles(tx, id, data.roles);
-
-      const oldData = await tx.user.findUnique({ where: { id } });
+      const oldData = await tx.user.findUnique({
+        where: { id },
+        include: { roles: { select: { role: true } } },
+      });
 
       if (!oldData) throw new Error("User tidak ditemukan");
+
+      await this.assignRoles(tx, id, data.roles);
+
+      if (
+        oldData.roles.some((r) => r.role.name === RoleName.GURU) &&
+        !data.roles.includes(RoleName.GURU)
+      ) {
+        await tx.teacher.update({
+          where: { userId: id },
+          data: { isActive: false },
+        });
+      }
 
       const user = await tx.user.update({
         where: { id },
