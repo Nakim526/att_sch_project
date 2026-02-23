@@ -148,7 +148,7 @@ class TeacherService {
       where: { schoolId },
       include: {
         user: true,
-        teachingAssignments: true,
+        teachingAssignments: { include: { schedules: true } },
         classAssignments: true,
       },
     });
@@ -159,7 +159,7 @@ class TeacherService {
       where: { id },
       include: {
         user: true,
-        teachingAssignments: true,
+        teachingAssignments: { include: { schedules: true } },
         classAssignments: true,
       },
     });
@@ -170,7 +170,7 @@ class TeacherService {
       where: { userId },
       include: {
         user: true,
-        teachingAssignments: true,
+        teachingAssignments: { include: { schedules: true } },
         classAssignments: true,
         vaultFiles: true,
       },
