@@ -14,13 +14,16 @@ const router = Router();
  * - KEPSEK
  */
 router.use(authMiddleware);
+
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]));
+
+router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
+
 router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 
 router.post("/", (req, res, next) => controller.create(req, res, next));
 
 router.get("/", (req, res, next) => controller.findAll(req, res, next));
-
-router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
 
 router.put("/:id", (req, res, next) => controller.update(req, res, next));
 

@@ -14,13 +14,23 @@ const router = Router();
  * - KEPSEK
  */
 router.use(authMiddleware);
+
+// guru hanya bisa baca yang aktif
+router.get(
+  "/active",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]),
+  (req, res, next) => controller.findActive(req, res, next),
+);
+
 router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 
 router.post("/", (req, res, next) => controller.create(req, res, next));
 
 router.get("/", (req, res, next) => controller.findAll(req, res, next));
 
-router.get("/active", (req, res, next) => controller.findActive(req, res, next));
+router.get("/active", (req, res, next) =>
+  controller.findActive(req, res, next),
+);
 
 router.get("/:id", (req, res, next) => controller.findOne(req, res, next));
 

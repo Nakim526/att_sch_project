@@ -10,7 +10,7 @@ router.use(authMiddleware);
 // Admin / Operator / Kepsek
 router.get(
   "/me",
-  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]),
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]),
   controller.me,
 );
 
