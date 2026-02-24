@@ -23,7 +23,7 @@ async function main() {
   await prisma.teachingAssignment.deleteMany();
   await prisma.user.deleteMany();
   await prisma.userRole.deleteMany();
-  
+
   console.log("🌱 Starting seed...");
 
   // =========================================
@@ -436,18 +436,14 @@ async function main() {
   for (const classData of classes) {
     await prisma.class.upsert({
       where: {
-        schoolId_academicYearId_name: {
+        schoolId_academicYearId_name_gradeLevel: {
           schoolId: school.id,
           academicYearId: academicYear.id,
           name: classData.name,
+          gradeLevel: classData.gradeLevel,
         },
       },
-      update: {
-        schoolId: school.id,
-        academicYearId: academicYear.id,
-        name: classData.name,
-        gradeLevel: classData.gradeLevel,
-      },
+      update: {},
       create: {
         schoolId: school.id,
         academicYearId: academicYear.id,

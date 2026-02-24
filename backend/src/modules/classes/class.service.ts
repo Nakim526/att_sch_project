@@ -3,12 +3,20 @@
 import { ClassTeacherRole, Prisma } from "@prisma/client";
 import prisma from "../../config/prisma";
 import {
+  CheckClassTypes,
   ClassTeacherAssignmentTypes,
   CreateClassTypes,
   UpdateClassTypes,
 } from "./class.types";
 
 class ClassService {
+  async ensureAvailable(tx: Prisma.TransactionClient, data: CheckClassTypes) {
+    const used = await tx.class.findUnique({
+      where: { schoolId_academicYearId_name_gradeLevel: data },
+    });
+
+    if (used) throw new Error(`Kelas ${used.name} sudah digunakan`);
+  }
   async assignClassTeacher(
     tx: Prisma.TransactionClient,
     data: ClassTeacherAssignmentTypes,
@@ -28,6 +36,13 @@ class ClassService {
 
   async create(schoolId: string, data: CreateClassTypes) {
     return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, {
+        schoolId,
+        academicYearId: data.academicYearId,
+        name: data.name,
+        gradeLevel: data.gradeLevel,
+      });
+
       const class_ = await tx.class.create({
         data: {
           schoolId,
@@ -81,6 +96,13 @@ class ClassService {
 
   async update(id: string, schoolId: string, data: UpdateClassTypes) {
     return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, {
+        schoolId,
+        academicYearId: data.academicYearId,
+        name: data.name,
+        gradeLevel: data.gradeLevel,
+      });
+
       if (data.teacherId) {
         await this.assignClassTeacher(tx, {
           classId: id,
@@ -92,7 +114,7 @@ class ClassService {
       }
 
       return await tx.class.update({
-        where: { id, schoolId },
+        where: { id },
         data: {
           name: data.name,
           gradeLevel: data.gradeLevel,

@@ -276,9 +276,8 @@ model Class {
   id             String @id @default(uuid())
   schoolId       String
   academicYearId String
-
-  name       String // "X-IPA-1", "XI-IPS-2"
-  gradeLevel Int // 10, 11, 12
+  name           String // "X-IPA-1", "XI-IPS-2"
+  gradeLevel     Int // 10, 11, 12
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -290,7 +289,7 @@ model Class {
   teachingAssignments TeachingAssignment[]
   classTeachers       ClassTeacherAssignment[]
 
-  @@unique([schoolId, academicYearId, name])
+  @@unique([schoolId, academicYearId, name, gradeLevel])
   @@index([schoolId])
   @@index([academicYearId])
 }
