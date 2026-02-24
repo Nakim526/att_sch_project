@@ -81,7 +81,7 @@ class ClassService {
       return await tx.class.findMany({
         where: {
           schoolId,
-          teachingAssignments: { every: { teacherId: teacher.id } },
+          teachingAssignments: { some: { teacherId: teacher.id } },
         },
         orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
       });
