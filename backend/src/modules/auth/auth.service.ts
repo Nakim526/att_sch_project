@@ -10,6 +10,8 @@ export async function loginWithGoogle(idToken: string, schoolName: string) {
 
   console.log("googleUser", googleUser);
 
+  if (!schoolName) throw new Error("SCHOOL_NAME_REQUIRED");
+
   const school = await prisma.school.findUnique({
     where: { name: schoolName },
   });

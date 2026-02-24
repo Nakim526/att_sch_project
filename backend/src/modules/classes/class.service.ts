@@ -56,10 +56,26 @@ class ClassService {
     });
   }
 
+  async findAllByTeacher(schoolId: string, userId: string) {
+    return await prisma.$transaction(async (tx) => {
+      const teacher = await tx.teacher.findUnique({ where: { userId } });
+
+      if (!teacher) throw new Error("Guru tidak ditemukan");
+
+      return await tx.class.findMany({
+        where: {
+          schoolId,
+          teachingAssignments: { every: { teacherId: teacher.id } },
+        },
+        orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
+      });
+    });
+  }
+
   async findById(id: string) {
     return await prisma.class.findUnique({
       where: { id },
-      include: { classTeachers: true },
+      include: { classTeachers: true, enrollments: true },
     });
   }
 

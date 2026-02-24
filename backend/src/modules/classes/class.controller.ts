@@ -30,6 +30,17 @@ class ClassController {
     }
   }
 
+  async findAllByTeacher(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id, schoolId } = req.user as { id: string; schoolId: string };
+      const result = await classService.findAllByTeacher(schoolId, id);
+
+      res.json({ data: result });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async findOne(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params as { id: string };
