@@ -15,7 +15,8 @@ class ClassService {
       where: { schoolId_academicYearId_name_gradeLevel: data },
     });
 
-    if (used) throw new Error(`Kelas ${used.name} sudah digunakan`);
+    if (used)
+      throw new Error(`Kelas ${used.gradeLevel} ${used.name} sudah digunakan`);
   }
   async assignClassTeacher(
     tx: Prisma.TransactionClient,
