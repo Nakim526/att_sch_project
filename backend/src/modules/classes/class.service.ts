@@ -91,7 +91,10 @@ class ClassService {
   async findById(id: string) {
     return await prisma.class.findUnique({
       where: { id },
-      include: { classTeachers: true, enrollments: true },
+      include: {
+        classTeachers: true,
+        enrollments: { include: { student: true } },
+      },
     });
   }
 
