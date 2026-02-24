@@ -10,9 +10,21 @@ import {
 } from "./class.types";
 
 class ClassService {
-  async ensureAvailable(tx: Prisma.TransactionClient, data: CheckClassTypes) {
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    data: CheckClassTypes,
+    id?: string,
+  ) {
     const used = await tx.class.findUnique({
-      where: { schoolId_academicYearId_name_gradeLevel: data },
+      where: {
+        schoolId_academicYearId_name_gradeLevel: {
+          schoolId: data.schoolId,
+          academicYearId: data.academicYearId,
+          name: data.name,
+          gradeLevel: data.gradeLevel,
+        },
+        ...(id && { NOT: { id } }),
+      },
     });
 
     if (used)
@@ -100,12 +112,16 @@ class ClassService {
 
   async update(id: string, schoolId: string, data: UpdateClassTypes) {
     return await prisma.$transaction(async (tx) => {
-      await this.ensureAvailable(tx, {
-        schoolId,
-        academicYearId: data.academicYearId,
-        name: data.name,
-        gradeLevel: data.gradeLevel,
-      });
+      await this.ensureAvailable(
+        tx,
+        {
+          schoolId,
+          academicYearId: data.academicYearId,
+          name: data.name,
+          gradeLevel: data.gradeLevel,
+        },
+        id,
+      );
 
       if (data.teacherId) {
         await this.assignClassTeacher(tx, {
