@@ -6,12 +6,14 @@ import { roleMiddleware } from "../../middlewares/role.middleware";
 const router = Router();
 
 router.use(authMiddleware);
-router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]));
 
 // profile pribadi all user
 router.get("/me", controller.me);
 
 router.put("/me", controller.updateMe);
+
+router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 
 // Admin / Operator / Kepsek
 router.post("/", controller.create);
