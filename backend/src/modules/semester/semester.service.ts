@@ -3,17 +3,60 @@
 import { Prisma, SemesterType } from "@prisma/client";
 import prisma from "../../config/prisma";
 import { CreateSemesterTypes, UpdateSemesterTypes } from "./semester.types";
-import academicYearService from "../academic-year/academic-year.service";
 
 class SemesterService {
-  async create(data: CreateSemesterTypes) {
-    return await prisma.semester.create({
-      data: {
-        academicYearId: data.academicYearId,
-        name: data.name,
-        startDate: data.startDate,
-        endDate: data.endDate,
+  async ensureAvailable(
+    tx: Prisma.TransactionClient,
+    academicYearId: string,
+    name: SemesterType,
+    id?: string,
+  ) {
+    const used = await tx.semester.findFirst({
+      where: {
+        academicYearId,
+        name,
+        ...(id && { id: { not: id } }),
       },
+    });
+
+    if (used) throw new Error(`Semester ${name} sudah digunakan`);
+  }
+
+  async ensureActive(
+    tx: Prisma.TransactionClient,
+    schoolId: string,
+    id: string,
+  ) {
+    const semester = await tx.semester.findUnique({
+      where: { id },
+      include: { academicYear: true },
+    });
+
+    if (!semester) throw new Error("Semester tidak ditemukan");
+
+    const active = await tx.semester.findFirst({
+      where: {
+        isActive: true,
+        academicYearId: semester.academicYearId,
+        id: { not: id },
+      },
+    });
+
+    if (active) throw new Error(`Semester ${active.name} sedang aktif`);
+
+    const academicYear = await tx.academicYear.findFirst({
+      where: { schoolId, isActive: true, id: semester.academicYearId },
+    });
+
+    if (!academicYear)
+      throw new Error(`Tahun Ajaran ${semester.academicYear.name} tidak aktif`);
+  }
+
+  async create(data: CreateSemesterTypes) {
+    return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, data.academicYearId, data.name);
+
+      return await tx.semester.create({ data });
     });
   }
 
@@ -57,6 +100,8 @@ class SemesterService {
 
   async update(schoolId: string, id: string, data: UpdateSemesterTypes) {
     return await prisma.$transaction(async (tx) => {
+      await this.ensureAvailable(tx, data.academicYearId, data.name, id);
+      
       if (data.isActive) {
         await this.ensureActive(tx, schoolId, id);
       }
@@ -81,36 +126,6 @@ class SemesterService {
         where: { id, academicYearId: semester.academicYearId },
       });
     });
-  }
-
-  async ensureActive(
-    tx: Prisma.TransactionClient,
-    schoolId: string,
-    id: string,
-  ) {
-    const semester = await tx.semester.findUnique({
-      where: { id },
-      include: { academicYear: true },
-    });
-
-    if (!semester) throw new Error("Semester tidak ditemukan");
-
-    const active = await tx.semester.findFirst({
-      where: {
-        isActive: true,
-        academicYearId: semester.academicYearId,
-        id: { not: id },
-      },
-    });
-
-    if (active) throw new Error(`Semester ${active.name} sedang aktif`);
-
-    const academicYear = await tx.academicYear.findFirst({
-      where: { schoolId, isActive: true, id: semester.academicYearId },
-    });
-
-    if (!academicYear)
-      throw new Error(`Tahun Ajaran ${semester.academicYear.name} tidak aktif`);
   }
 }
 
