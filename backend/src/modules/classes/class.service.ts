@@ -90,13 +90,15 @@ class ClassService {
 
       if (!teacher) throw new Error("Guru tidak ditemukan");
 
-      return await tx.class.findMany({
+      const class_ = await tx.class.findMany({
         where: {
           schoolId,
           teachingAssignments: { some: { teacherId: teacher.id } },
         },
         orderBy: [{ gradeLevel: "asc" }, { name: "asc" }],
       });
+
+      return { class_, teacherId: teacher.id };
     });
   }
 
