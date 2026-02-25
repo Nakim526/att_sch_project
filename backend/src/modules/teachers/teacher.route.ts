@@ -9,7 +9,15 @@ router.use(authMiddleware);
 
 // Guru
 router.get("/me", roleMiddleware(["GURU"]), controller.readMe);
+
 router.put("/me", roleMiddleware(["GURU"]), controller.updateMe);
+
+// baca detail guru lain
+router.get(
+  "/:id",
+  roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]),
+  controller.detail,
+);
 
 // Admin / Operator / Kepsek
 router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
@@ -17,8 +25,6 @@ router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK"]));
 router.post("/", controller.create);
 
 router.get("/", controller.list);
-
-router.get("/:id", controller.detail);
 
 router.put("/:id", controller.update);
 
