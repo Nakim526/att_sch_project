@@ -17,10 +17,8 @@ class TeacherService {
   ) {
     const user = await tx.user.findUnique({ where: { email } });
 
-    if (!user) throw new Error(`Email ${email} tidak ditemukan`);
-
     const emailUsed = await tx.teacher.findFirst({
-      where: { userId: user.id, ...(id && { id: { not: id } }) },
+      where: { userId: user?.id, ...(id && { id: { not: id } }) },
     });
 
     if (emailUsed) throw new Error(`Email ${email} sudah digunakan`);
@@ -109,6 +107,8 @@ class TeacherService {
     return await prisma.$transaction(async (tx) => {
       const user = await this.ensureAvailable(tx, data.nip, data.email);
 
+      if (!user) throw new Error("User tidak ditemukan");
+
       await this.assignRole(tx, user.id);
 
       const teacher = await tx.teacher.create({
@@ -168,7 +168,20 @@ class TeacherService {
     id: string,
     data: UpdateTeacherTypes,
   ) {
-    const user = await this.ensureAvailable(tx, data.nip, data.email, id);
+    const oldTeacher = await tx.teacher.findUnique({ where: { id } });
+
+    if (!oldTeacher) throw new Error("Guru tidak ditemukan");
+
+    let user = await this.ensureAvailable(tx, data.nip, data.email, id);
+
+    user = await tx.user.findUnique({ where: { id: oldTeacher.userId } });
+
+    if (!user) throw new Error("User tidak ditemukan");
+
+    await tx.user.update({
+      where: { id: user.id },
+      data: { email: data.email },
+    });
 
     await this.assignRole(tx, user.id);
 
@@ -183,7 +196,7 @@ class TeacherService {
         address: data.address,
       },
     });
-
+    
     await this.assignTeacher(tx, teacher.id, data.assignments);
 
     return teacher;
