@@ -121,10 +121,14 @@ class UserService {
         oldData.roles.some((r) => r.role.name === RoleName.GURU) &&
         !data.roles.includes(RoleName.GURU)
       ) {
-        await tx.teacher.update({
-          where: { userId: id },
-          data: { isActive: false },
-        });
+        const teacher = await tx.teacher.findUnique({ where: { userId: id } });
+
+        if (teacher) {
+          await tx.teacher.update({
+            where: { userId: id },
+            data: { isActive: false },
+          });
+        }
       }
 
       const user = await tx.user.update({
