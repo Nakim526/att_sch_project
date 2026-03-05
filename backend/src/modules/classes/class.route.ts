@@ -14,8 +14,6 @@ const router = Router();
  */
 router.use(authMiddleware);
 
-router.use(roleMiddleware(["ADMIN", "OPERATOR", "KEPSEK", "GURU"]));
-
 router.get("/teacher", (req, res, next) => controller.findAllByTeacher(req, res, next));
 
 router.get("/:id", (req, res, next) => controller.findOne(req, res, next));

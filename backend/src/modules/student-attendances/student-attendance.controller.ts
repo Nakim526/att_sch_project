@@ -1,7 +1,7 @@
 // src/modules/attendance/student-attendance.controller.ts
 
 import { Response, NextFunction } from "express";
-import { AuthRequest } from "../../../middlewares/auth.middleware";
+import { AuthRequest } from "../../middlewares/auth.middleware";
 import studentAttendanceService from "./student-attendance.service";
 
 class StudentAttendanceController {

@@ -2,9 +2,9 @@
 
 import { Router } from "express";
 import controller from "./teacher-attendance.controller";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-import { roleMiddleware } from "../../../middlewares/role.middleware";
-import upload from "../../../middlewares/multer.middleware";
+import { authMiddleware } from "../../middlewares/auth.middleware";
+import { roleMiddleware } from "../../middlewares/role.middleware";
+import upload from "../../middlewares/multer.middleware";
 
 const router = Router();
 

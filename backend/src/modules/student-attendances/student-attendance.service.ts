@@ -1,6 +1,6 @@
 // src/modules/attendance/student-attendance.service.ts
 
-import prisma from "../../../config/prisma";
+import prisma from "../../config/prisma";
 import { CreateStudentAttendanceTypes } from "./student-attendance.types";
 
 class StudentAttendanceService {

@@ -1,7 +1,7 @@
 // src/modules/attendance/teacher-attendance.service.ts
 
-import prisma from "../../../config/prisma";
-import { minioClient, MINIO_BUCKET } from "../../../config/minio";
+import prisma from "../../config/prisma";
+import { minioClient, MINIO_BUCKET } from "../../config/minio";
 import { TeacherCheckInTypes } from "./teacher-attendance.types";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";

@@ -2,7 +2,7 @@
 
 import { Router } from "express";
 import studentAttendanceController from "./student-attendance.controller";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = Router();
 
