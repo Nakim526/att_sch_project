@@ -1,4 +1,5 @@
 import 'package:att_school/app/app_route.dart';
+import 'package:att_school/app/app_splash.dart';
 import 'package:att_school/core/constant/theme/app_theme.dart';
 import 'package:att_school/core/constant/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,8 @@ class MainApp extends StatelessWidget {
         darkTheme: AppTheme.darkTheme,
         themeMode: themeController.themeMode,
         title: 'Att School',
-        routes: AppRoutes.routes(context),
-        initialRoute: '/login',
+        routes: AppRoutes.of(context),
+        home: const AppSplash(),
       ),
     );
   }

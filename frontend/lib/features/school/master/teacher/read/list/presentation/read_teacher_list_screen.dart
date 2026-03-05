@@ -1,0 +1,118 @@
+import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/features/school/master/teacher/delete/provider/delete_teacher_provider.dart';
+import 'package:att_school/features/school/master/teacher/read/detail/presentation/read_teacher_detail_page.dart';
+import 'package:att_school/features/school/master/teacher/read/list/provider/read_teacher_list_provider.dart';
+import 'package:att_school/shared/styles/app_button_style.dart';
+import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_text.dart';
+import 'package:att_school/shared/widgets/elements/button/app_button.dart';
+import 'package:att_school/shared/widgets/elements/dialog/app_dialog.dart';
+import 'package:att_school/shared/widgets/layout/app_loading.dart';
+import 'package:att_school/shared/widgets/layout/app_screen.dart';
+import 'package:att_school/shared/widgets/layout/app_search.dart';
+import 'package:att_school/shared/widgets/layout/app_table_list.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class ReadTeacherListScreen extends StatelessWidget {
+  const ReadTeacherListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.read<DeleteTeacherProvider>();
+
+    return Consumer<ReadTeacherListProvider>(
+      builder: (context, list, _) {
+        // 🔥 SIDE-EFFECT: dialog
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (list.error.isNotEmpty) {
+            AppDialog.show(context, title: 'Error', message: list.error);
+
+            // penting: reset error
+            list.clearError();
+          }
+        });
+
+        return Stack(
+          children: [
+            AppScreen(
+              appBar: AppBar(title: const Text('Read Teacher List')),
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSize.medium,
+                  children: [
+                    AppText("Teacher List", variant: AppTextVariant.h2),
+                    AppButton(
+                      "Create Teacher",
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/teachers/create');
+
+                        await list.reload();
+                      },
+                      variant: AppButtonVariant.primary,
+                    ),
+                    AppSearch(onChanged: list.search),
+                    AppTableList(
+                      columns: {
+                        'NIP': 'nip',
+                        'Name': 'name',
+                        'Email': 'email',
+                        'Status': 'isActive',
+                      },
+                      customData: {
+                        'isActive': (value) {
+                          return value ? 'Aktif' : 'Tidak Aktif';
+                        },
+                      },
+                      data: list.data,
+                      cellLink: ['name'],
+                      onDetail: (id) async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ReadTeacherDetailPage(id),
+                          ),
+                        );
+
+                        await list.reload();
+                      },
+                      onRemove: (detail) {
+                        AppDialog.confirm(
+                          context,
+                          title: 'Delete Data',
+                          message: "Are you sure to delete this record?",
+                          onConfirm: () async {
+                            final result = await provider.deleteTeacher(
+                              detail['id'],
+                            );
+
+                            if (result.status) {
+                              return await list.reload();
+                            }
+
+                            if (context.mounted) {
+                              await AppDialog.show(
+                                context,
+                                title: "Error",
+                                message: result.message,
+                              );
+                            }
+                          },
+                        );
+                      },
+                    ),
+                    Column(children: [
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (list.isLoading) AppLoading(),
+          ],
+        );
+      },
+    );
+  }
+}

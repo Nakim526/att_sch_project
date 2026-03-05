@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppDialog {
-  AppDialog._();
+  const AppDialog._();
 
   static Future<void> show(
     BuildContext context, {

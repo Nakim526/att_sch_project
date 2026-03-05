@@ -1,4 +1,5 @@
 import 'package:att_school/core/constant/size/app_size.dart';
+import 'package:att_school/core/constant/size/app_spacing.dart';
 import 'package:att_school/core/utils/extensions/theme_extension.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
@@ -12,6 +13,7 @@ class AppButton extends StatelessWidget {
   final AppButtonVariant variant;
   final Widget? prefixIcon;
   final TextAlign? textAlign;
+  final BorderRadius? borderRadius;
 
   const AppButton(
     this.text, {
@@ -21,6 +23,7 @@ class AppButton extends StatelessWidget {
     this.onPressed,
     this.prefixIcon,
     this.textAlign,
+    this.borderRadius,
   });
 
   @override
@@ -37,8 +40,14 @@ class AppButton extends StatelessWidget {
     } else if (variant == AppButtonVariant.icon) {
       return IconButton(
         icon: Icon(icon, size: AppSize.mediumPlus, color: context.onSurface),
-        style: AppButtonStyle.icon(context, variant),
+        style: AppButtonStyle.icon(
+          context,
+          variant,
+          borderRadius: borderRadius,
+        ),
         onPressed: onPressed,
+        padding: AppSpacing.medium,
+        constraints: BoxConstraints(minHeight: AppSize.fieldHeight),
       );
     }
 

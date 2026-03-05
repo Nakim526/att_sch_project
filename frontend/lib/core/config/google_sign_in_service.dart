@@ -1,5 +1,5 @@
 import 'package:att_school/core/constant/string/app_string.dart';
-import 'package:att_school/core/utils/helper/backend_message_helper.dart';
+import 'package:att_school/core/utils/helper/backend/backend_message_helper.dart';
 import 'package:att_school/core/utils/helper/connection_helper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -33,11 +33,11 @@ class GoogleSignInService {
 
       return BackendMessageHelper(false, message: 'Unauthorized');
     } on GoogleSignInException catch (e) {
-      if (e.code == GoogleSignInExceptionCode.canceled) {
-        return BackendMessageHelper(false, message: 'Login canceled by user');
-      }
+      // if (e.code == GoogleSignInExceptionCode.canceled) {
+      //   return BackendMessageHelper(false, message: 'Login canceled by user');
+      // }
 
-      return BackendMessageHelper(false, message: e.code.toString());
+      return BackendMessageHelper(false, message: e.description.toString());
     }
   }
 

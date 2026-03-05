@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'package:att_school/core/constant/size/app_size.dart';
-import 'package:att_school/core/constant/size/app_spacing.dart';
 import 'package:att_school/core/utils/extensions/theme_extension.dart';
-import 'package:att_school/shared/widgets/elements/input/app_text_input.dart';
+import 'package:att_school/shared/widgets/elements/input/text/app_text_input.dart';
 import 'package:flutter/material.dart';
 
 class AppSearch extends StatefulWidget {
@@ -54,14 +52,11 @@ class _AppSearchState extends State<AppSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: AppSpacing.only(top: AppSize.normal),
-      child: AppTextInput(
-        controller: _controller,
-        hintText: widget.hint,
-        onChanged: _onChanged,
-        suffixIcon: _controller.text.isNotEmpty ? _clearSearch(context) : null,
-      ),
+    return AppTextInput(
+      controller: _controller,
+      hintText: widget.hint,
+      onChanged: _onChanged,
+      suffixIcon: _controller.text.isNotEmpty ? _clearSearch(context) : null,
     );
   }
 }

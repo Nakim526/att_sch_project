@@ -74,11 +74,15 @@ class AppButtonStyle {
     );
   }
 
-  static ButtonStyle icon(BuildContext context, AppButtonVariant variant) {
+  static ButtonStyle icon(
+    BuildContext context,
+    AppButtonVariant variant, {
+    BorderRadius? borderRadius,
+  }) {
     final bg = _background(context, variant);
     final fg = _foreground(context, variant);
     final isDark = context.brightness == Brightness.dark;
-    final size = Size(AppSize.mediumPlus * 2, AppSize.fieldHeight);
+    final size = Size(AppSize.mediumPlus * 2, AppSize.fieldHeight + 1);
 
     return ButtonStyle(
       minimumSize: WidgetStatePropertyAll(size),
@@ -95,9 +99,9 @@ class AppButtonStyle {
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(
-            right: Radius.circular(AppSize.xSmall),
-          ),
+          borderRadius:
+              borderRadius ??
+              BorderRadius.horizontal(right: Radius.circular(AppSize.xSmall)),
           side: _border(context, variant),
         ),
       ),

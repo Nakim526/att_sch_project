@@ -6,6 +6,7 @@ abstract class AppSpacing {
 
   static const EdgeInsets xSmall = EdgeInsets.all(AppSize.xSmall);
   static const EdgeInsets small = EdgeInsets.all(AppSize.small);
+  static const EdgeInsets field = EdgeInsets.all(AppSize.field);
   static const EdgeInsets normal = EdgeInsets.all(AppSize.normal);
   static const EdgeInsets medium = EdgeInsets.all(AppSize.medium);
   static const EdgeInsets large = EdgeInsets.all(AppSize.large);
@@ -18,9 +19,9 @@ abstract class AppSpacing {
     vertical: AppSize.small,
   );
 
-  static const EdgeInsets field = EdgeInsets.symmetric(
-    horizontal: AppSize.normal,
-    vertical: AppSize.medium,
+  static const EdgeInsets items = EdgeInsets.symmetric(
+    horizontal: AppSize.small,
+    vertical: AppSize.xSmall,
   );
 
   static EdgeInsets horizontal(double value) {

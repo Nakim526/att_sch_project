@@ -10,9 +10,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColor.lightPrimaryBg,
     primaryColor: AppColor.lightPrimary,
 
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColor.lightSecondaryBg,
-    ),
+    appBarTheme: const AppBarTheme(backgroundColor: AppColor.lightSecondaryBg),
 
     datePickerTheme: DatePickerThemeData(
       backgroundColor: AppColor.lightSurface,
@@ -25,11 +23,11 @@ class AppTheme {
       backgroundColor: AppColor.lightSecondaryBg,
     ),
 
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: AppColor.lightSecondaryBg,
     ),
 
-    cardTheme: const CardTheme(color: AppColor.lightSurface),
+    cardTheme: const CardThemeData(color: AppColor.lightSurface),
 
     colorScheme: const ColorScheme.light(
       primary: AppColor.lightPrimary,
@@ -80,9 +78,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColor.darkPrimaryBg,
     primaryColor: AppColor.darkPrimary,
 
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColor.darkSecondaryBg,
-    ),
+    appBarTheme: const AppBarTheme(backgroundColor: AppColor.darkSecondaryBg),
 
     datePickerTheme: DatePickerThemeData(
       backgroundColor: AppColor.darkSurface,
@@ -95,11 +91,11 @@ class AppTheme {
       backgroundColor: AppColor.darkSecondaryBg,
     ),
 
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: AppColor.darkSecondaryBg,
     ),
 
-    cardTheme: const CardTheme(color: AppColor.darkSurface),
+    cardTheme: const CardThemeData(color: AppColor.darkSurface),
 
     colorScheme: const ColorScheme.dark(
       primary: AppColor.darkPrimary,

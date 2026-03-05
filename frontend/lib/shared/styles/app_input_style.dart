@@ -17,12 +17,14 @@ class AppInputStyle {
     bool isError = false,
     int minLines = 1,
     int maxLines = 1,
+    bool enabled = true,
   }) {
     final radius = borderRadius ?? AppBorderRadius.xSmall;
 
     return InputDecoration(
       filled: true,
-      fillColor: context.surface,
+      fillColor:
+          enabled ? context.surface : context.surface.withValues(alpha: 0.5),
       isDense: true,
       hintText: hintText,
       hintStyle: AppTextStyle.of(context, AppTextVariant.hint),
@@ -51,15 +53,17 @@ class AppInputStyle {
     EdgeInsets? padding,
     bool isError = false,
     BoxConstraints? constraints,
+    bool enabled = true,
   }) {
     final radius = borderRadius ?? AppBorderRadius.xSmall;
 
     return InputDecoration(
       filled: true,
-      fillColor: context.surface,
+      fillColor:
+          enabled ? context.surface : context.outline.withValues(alpha: 0.1),
       isDense: true,
       hintText: hintText,
-      contentPadding: padding ?? AppSpacing.normal,
+      contentPadding: AppSpacing.field,
       constraints: constraints ?? _singleLineConstraints,
       border: _border(radius),
       enabledBorder: _border(
@@ -70,6 +74,8 @@ class AppInputStyle {
         radius,
         color: isError ? context.error : context.primary,
       ),
+      suffixIconConstraints: _iconConstraints,
+      prefixIconConstraints: _iconConstraints,
     );
   }
 
@@ -90,12 +96,11 @@ class AppInputStyle {
   }
 
   static const BoxConstraints _singleLineConstraints = BoxConstraints(
-    minHeight: AppSize.zero,
-    maxHeight: double.infinity,
+    minHeight: AppSize.fieldHeight,
   );
 
   static const BoxConstraints _iconConstraints = BoxConstraints(
-    maxHeight: AppSize.fieldHeight - 2,
+    maxHeight: AppSize.fieldHeight,
     maxWidth: 70,
   );
 }

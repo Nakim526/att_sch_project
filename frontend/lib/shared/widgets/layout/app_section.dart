@@ -1,9 +1,12 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
 import 'package:att_school/core/utils/extensions/theme_extension.dart';
+import 'package:att_school/shared/styles/app_text_style.dart';
+import 'package:att_school/shared/widgets/elements/app_text.dart';
 import 'package:flutter/material.dart';
 
 class AppSection extends StatelessWidget {
+  final String? title;
   final List<Widget> children;
   final double? borderCircular;
   final EdgeInsets? padding;
@@ -11,6 +14,7 @@ class AppSection extends StatelessWidget {
 
   const AppSection({
     super.key,
+    this.title,
     required this.children,
     this.borderCircular,
     this.padding,
@@ -43,8 +47,12 @@ class AppSection extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: spacing ?? AppSize.medium,
-              children: children,
+              spacing: spacing ?? AppSize.normal,
+              children: [
+                if (title != null)
+                  AppText(title!, variant: AppTextVariant.subtitle),
+                ...children,
+              ],
             ),
           ),
         ),

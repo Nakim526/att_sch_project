@@ -1,8 +1,6 @@
 import 'package:att_school/core/constant/size/app_size.dart';
 import 'package:att_school/core/constant/size/app_spacing.dart';
 import 'package:att_school/core/utils/extensions/theme_extension.dart';
-// import 'package:att_school/core/utils/formatter/currency_formatter.dart';
-// import 'package:att_school/core/utils/formatter/date_time_formatter.dart';
 import 'package:att_school/shared/styles/app_button_style.dart';
 import 'package:att_school/shared/styles/app_text_style.dart';
 import 'package:att_school/shared/widgets/elements/button/app_button.dart';
@@ -15,8 +13,8 @@ class AppTableList extends StatefulWidget {
   final Map<String, String? Function(dynamic value)>? customData;
   final List<Map<String, dynamic>> data;
   final List<String> cellLink;
-  final Function(String) onDetail;
-  final Function(dynamic) onRemove;
+  final Function(String id) onDetail;
+  final Function(dynamic id) onRemove;
   final double? nameColumnWidth;
   final bool hasAction;
   final bool hasPagination;
@@ -97,25 +95,20 @@ class _AppTableListState extends State<AppTableList> {
           return DataCell(
             ConstrainedBox(
               constraints: BoxConstraints(
-                minWidth: key == 'grade' ? 50 : widget.minWidth,
+                minWidth: widget.minWidth,
                 maxWidth: widget.maxWidth,
               ),
               child: Row(
                 children: [
                   if (value is String)
                     Expanded(
-                      child: AppText(
-                        value,
-                        variant: AppTextVariant.body,
-                        textAlign: key == 'grade' ? TextAlign.center : null,
-                      ),
+                      child: AppText(value, variant: AppTextVariant.body),
                     )
                   else
                     Expanded(
                       child: AppText(
                         value != null ? value.toString() : '',
                         variant: AppTextVariant.body,
-                        textAlign: key == 'grade' ? TextAlign.center : null,
                       ),
                     ),
                 ],
@@ -129,6 +122,14 @@ class _AppTableListState extends State<AppTableList> {
               padding: AppSpacing.none,
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => widget.onRemove(detail),
+            ),
+          )
+        else
+          DataCell(
+            IconButton(
+              padding: AppSpacing.none,
+              icon: const Icon(Icons.remove_red_eye, color: Colors.grey),
+              onPressed: () => widget.onDetail(detail['id']),
             ),
           ),
       ],
@@ -224,11 +225,10 @@ class _AppTableListState extends State<AppTableList> {
                   label: AppText(key, variant: AppTextVariant.subtitle),
                 ),
               ),
-              if (widget.hasAction)
-                const DataColumn(
-                  label: SizedBox(),
-                  columnWidth: FixedColumnWidth(70),
-                ),
+              const DataColumn(
+                label: SizedBox(),
+                columnWidth: FixedColumnWidth(70),
+              ),
             ],
             headingRowHeight: AppSize.xxLarge,
             dataRowMinHeight: AppSize.zero,
