@@ -1,37 +1,106 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Google Login Test</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Login Test</title>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .token-box {
+      margin-top: 20px;
+      padding: 10px;
+      background: #eee;
+      border-radius: 5px;
+      word-break: break-all;
+      font-size: 12px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Google Login Test</h1>
+
     <div
       id="g_id_onload"
       data-client_id="530669528444-ud001l7i8jd8o7nte1c81r3ft9e4de6u.apps.googleusercontent.com"
       data-callback="handleCredentialResponse"
+      data-auto_prompt="false"
     ></div>
 
     <div class="g_id_signin"></div>
 
-    <div>ID TOKEN: <span id="id_token"></span></div>
+    <div class="status" id="status">Belum login</div>
 
-    <script>
-      async function handleCredentialResponse(response) {
-        console.log("ID TOKEN:", response.credential);
+    <div class="token-box">
+      <strong>ID TOKEN:</strong>
+      <div id="id_token">-</div>
+    </div>
+  </div>
 
+  <script>
+    async function handleCredentialResponse(response) {
+      const status = document.getElementById("status");
+      const tokenEl = document.getElementById("id_token");
+
+      status.textContent = "Mengirim token ke server...";
+
+      try {
         const res = await fetch("http://localhost:3000/api/auth/google", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             idToken: response.credential,
           }),
         });
 
         const data = await res.json();
-        console.log(data);
 
-        document.getElementById("id_token").textContent = data.idToken;
+        console.log("Server response:", data);
+
+        tokenEl.textContent = data.idToken || "Tidak ada token";
+        status.textContent = "Login berhasil ✅";
+
+      } catch (error) {
+        console.error("Login error:", error);
+        status.textContent = "Login gagal ❌";
       }
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>
