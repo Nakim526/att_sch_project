@@ -141,7 +141,13 @@
 
           console.log("Server response:", data);
 
-          tokenEl.textContent = data.idToken || "Tidak ada token";
+          if (!data.token) {
+            status.textContent = "Login gagal ❌";
+            alert(`Login gagal: ${data.message}`);
+            return;
+          }
+
+          tokenEl.textContent = data.token || "Tidak ada token";
           status.textContent = "Login berhasil ✅";
         } catch (error) {
           console.error("Login error:", error);
