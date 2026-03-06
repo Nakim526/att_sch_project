@@ -58,8 +58,6 @@
       }
 
       .google-btn {
-        display: flex;
-        justify-content: center;
         width: 100%;
         margin-top: 10px;
       }
@@ -142,8 +140,7 @@
           console.log("Server response:", data);
 
           if (!data.token) {
-            status.textContent = "Login gagal ❌";
-            alert(`Login gagal: ${data.message}`);
+            status.textContent = `Login gagal: ${data.message}`;
             return;
           }
 
@@ -151,7 +148,7 @@
           status.textContent = "Login berhasil ✅";
         } catch (error) {
           console.error("Login error:", error);
-          status.textContent = "Login gagal ❌";
+          status.textContent = "Login gagal ❌ " + error.message;
         }
       }
     </script>
