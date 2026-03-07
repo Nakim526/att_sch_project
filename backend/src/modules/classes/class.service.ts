@@ -108,7 +108,7 @@ class ClassService {
       include: {
         classTeachers: true,
         enrollments: { include: { student: true } },
-        teachingAssignments: { include: { schedules: true } },
+        teachingAssignments: { include: { schedules: true, subject: true } },
       },
     });
   }
